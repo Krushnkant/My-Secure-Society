@@ -1,0 +1,50 @@
+td {
+    color: #949494;
+}
+
+table.dataTable thead th, table.dataTable thead td {
+    border-bottom: 1px solid #111;
+}
+
+table.dataTable tfoot th, table.dataTable tfoot td {
+    border-top: 1px solid #111;
+}
+.page-titles {
+    margin-bottom: 15px;
+}
+
+[data-header-position="fixed"] .content-body {
+    padding-top: 6rem;
+}
+
+table.dataTable tbody td {
+    padding: 13px 16px;
+}
+
+.modal-footer {
+    justify-content: space-between;
+}
+
+.toast-success {
+    background-color: #46b632;
+}
+
+#toast-container .toast-message {
+    font-size: 13px;
+}
+
+#toast-container .toast-close-button {
+    font-size: 20px;
+}
+
+.dataTables_wrapper .dataTables_processing {
+    color: var(--primary);
+}
+
+.nav-header .brand-logo h2 {
+    color: #bdbdc7;
+}
+
+[data-sidebar-style="full"][data-layout="vertical"] .menu-toggle .nav-header .brand-logo h2 {
+    display: none;
+}
