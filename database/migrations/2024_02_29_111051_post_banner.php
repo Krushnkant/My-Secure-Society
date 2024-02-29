@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('PostStatusBanner', function (Blueprint $table) {
-            $table->bigIncrements('PostStatusBannerId')->index();
-            $table->integer('BusinessProfileId')->index();
+        Schema::create('PostBanner', function (Blueprint $table) {
+            $table->bigIncrements('PostBannerId')->index();
+            $table->integer('UserId')->index();
             $table->integer('SocietyId')->index();
             $table->string('BannerUrl');
             $table->dateTime('ReleaseDate');
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('PostStatusBanner');
+        Schema::dropIfExists('PostBannerConfig');
     }
 };

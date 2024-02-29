@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('PostStatusBannerConfiguration', function (Blueprint $table) {
-            $table->bigIncrements('PostStatusBannerConfigurationId')->index();
+        Schema::create('PostBannerConfig', function (Blueprint $table) {
+            $table->bigIncrements('PostBannerConfigId')->index();
             $table->integer('BlockFlatId')->index();
             $table->integer('CreateBannerFor')->enum([1, 2])->default(1)->comment('1 - Business, 2 - Personal Profile');
             $table->integer('MasterItemId')->comment('Depends only CreateBannerFor (Value will be BusinessProfileId or SocietyMemberId)');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('PostStatusBannerConfiguration');
+        Schema::dropIfExists('PostBannerConfig');
     }
 };

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SocietyMemberDesignation', function (Blueprint $table) {
-            $table->bigIncrements('SocietyMemberDesignationId')->index();
+        Schema::create('ResidentDesignation', function (Blueprint $table) {
+            $table->bigIncrements('ResidentDesignationId')->index();
             $table->integer('SocietyId')->comment('0 for Common Designation for all Society')->index();
             $table->string('DesignationName', 30);
             $table->integer('canUpdateAuthorityClaims')->enum([1, 2])->default(1)->comment('1 - True, 2 - False')->index();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SocietyMemberDesignation');
+        Schema::dropIfExists('ResidentDesignation');
     }
 };
