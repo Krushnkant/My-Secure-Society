@@ -20,11 +20,13 @@ use App\Http\Controllers\Admin\ProductController;
 //     return view('welcome');
 // });
 
-Route::get('login',[AuthController::class,'index'])->name('admin.login');
+Route::get('admin',[AuthController::class,'index'])->name('admin.login');
 Route::post('adminpostlogin', [AuthController::class, 'postLogin'])->name('admin.postlogin');
 Route::get('logout', [AuthController::class, 'logout'])->name('admin.logout');
 Route::get('admin/403_page',[AuthController::class,'invalid_page'])->name('admin.403_page');
 
-Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-Route::get('products', [ProductController::class, 'index'])->name('admin.products');
-Route::post('/get-products', [ProductController::class, 'getProducts'])->name('products.getProducts');
+Route::group(['prefix'=>'admin','middleware'=>['auth'],'as'=>'admin.'],function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('products', [ProductController::class, 'index'])->name('products');
+    Route::post('/get-products', [ProductController::class, 'getProducts'])->name('products.getProducts');
+});

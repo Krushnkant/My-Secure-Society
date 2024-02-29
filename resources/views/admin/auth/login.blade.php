@@ -1,16 +1,6 @@
-<!DOCTYPE html>
-<html lang="en" class="h-100">
+@extends('admin.auth.layout')
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Login - Admin Panel </title>
-    <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon.png">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-
-</head>
+@section('content')
 
 <body class="h-100">
     <div class="authincation h-100">
@@ -22,28 +12,31 @@
                             <div class="col-xl-12">
                                 <div class="auth-form">
                                     <h2 class="text-center mb-4">Sign In</h2>
-                                    <form action="#">
+                                    <form method="post" action="" id="LoginForm">
+                                    {{ csrf_field() }}
                                         <div class="form-group">
-                                            <label><strong>Email</strong></label>
-                                            <input type="email" class="form-control" value="hello@example.com">
+                                            <label for="email"><strong>Email</strong></label>
+                                            <input type="email" name="Email" id="Email" class="form-control" placeholder="Email Id" value="{{ old('email') }}">
+                                            <div id="email-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                         </div>
                                         <div class="form-group">
-                                            <label><strong>Password</strong></label>
-                                            <input type="password" class="form-control" value="Password">
+                                            <label for="password"><strong>Password</strong></label>
+                                            <input type="password" name="Password" id="Password" class="form-control" placeholder="Password"  value="{{ old('password') }}">
+                                            <div id="password-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                         </div>
-                                        <!-- <div class="form-row d-flex justify-content-between mt-4 mb-2">
+                                        <div class="form-row d-flex justify-content-between mt-4 mb-2">
                                             <div class="form-group">
-                                                <div class="form-check ml-2">
+                                                <!-- <div class="form-check ml-2">
                                                     <input class="form-check-input" type="checkbox" id="basic_checkbox_1">
                                                     <label class="form-check-label" for="basic_checkbox_1">Remember me</label>
-                                                </div>
+                                                </div> -->
                                             </div>
                                             <div class="form-group">
                                                 <a href="page-forgot-password.html">Forgot Password?</a>
                                             </div>
-                                        </div> -->
+                                        </div>
                                         <div class="text-center mt-5">
-                                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                                            <button type="submit" id="loginSubmit" class="btn btn-primary btn-block">Sign In</button>
                                         </div>
                                     </form>
                                 </div>
@@ -55,15 +48,5 @@
         </div>
     </div>
 
-
-    <!--**********************************
-        Scripts
-    ***********************************-->
-    <!-- Required vendors -->
-    <script src="{{ asset('/vendor/global/global.min.js') }}"></script>
-    <script src="{{ asset('/js/quixnav-init.js') }}"></script>
-    <script src="{{ asset('/js/custom.min.js') }}"></script>
-
-</body>
-
-</html>
+@endsection
+  
