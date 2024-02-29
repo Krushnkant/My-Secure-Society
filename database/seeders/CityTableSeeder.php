@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class CityTableSeeder extends Seeder
 {
@@ -12,7 +13,7 @@ class CityTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('City')->truncate();
+        DB::table('city')->truncate();
         $Cities1 = array(
             array('CityName' => "Bombuflat", 'StateId' => 1),
             array('CityName' => "Garacharma", 'StateId' => 1),
@@ -6015,7 +6016,7 @@ class CityTableSeeder extends Seeder
             array('CityName' => "Hazart Imam", 'StateId' => 67),
             array('CityName' => "Khanabad", 'StateId' => 67),    
         );
-        DB::table('City')->insert($Cities1);
+        DB::table('city')->insert($Cities1);
 
         $Cities2 = array(
             array('CityName' => "Qal'eh-ye Zal", 'StateId' => 67),
@@ -12019,7 +12020,7 @@ class CityTableSeeder extends Seeder
             array('CityName' => "Haicheng", 'StateId' => 755),
             array('CityName' => "Heishan", 'StateId' => 755),
         );
-        DB::table('City')->insert($Cities2);
+        DB::table('city')->insert($Cities2);
             
         $Cities3 = array(
             array('CityName' => "Huanren", 'StateId' => 755),
@@ -18023,7 +18024,7 @@ class CityTableSeeder extends Seeder
             array('CityName' => "Pontoise", 'StateId' => 1305),
             array('CityName' => "Saint-Brice-sous-Foret", 'StateId' => 1305),
             );
-        DB::table('City')->insert($Cities3);
+        DB::table('city')->insert($Cities3);
             
         $Cities4 = array(
             array('CityName' => "Saint-Gratien", 'StateId' => 1305),
@@ -24027,7 +24028,7 @@ class CityTableSeeder extends Seeder
             array('CityName' => "Piove di Sacco", 'StateId' => 1896),
             array('CityName' => "Ponte San Nicolo", 'StateId' => 1896),
         );    
-        DB::table('City')->insert($Cities4);
+        DB::table('city')->insert($Cities4);
             
         $Cities5 = array(  
             array('CityName' => "Ponzano Veneto", 'StateId' => 1896),
@@ -30031,7 +30032,7 @@ class CityTableSeeder extends Seeder
             array('CityName' => "Winterswijk", 'StateId' => 2590),
             array('CityName' => "Wisch", 'StateId' => 2590),
         );
-        DB::table('City')->insert($Cities5);
+        DB::table('city')->insert($Cities5);
             
         $Cities6 = array(
             array('CityName' => "Zaltbommel", 'StateId' => 2590),
@@ -36056,7 +36057,7 @@ class CityTableSeeder extends Seeder
             array('CityName' => "Ruginesti", 'StateId' => 2976),
             array('CityName' => "Sihlea", 'StateId' => 2976),
         );
-        DB::table('City')->insert($Cities6);
+        DB::table('city')->insert($Cities6);
             
         $Cities7 = array(
             array('CityName' => "Slobozia Bradului", 'StateId' => 2976),
@@ -42060,7 +42061,7 @@ class CityTableSeeder extends Seeder
             array('CityName' => "Widnes", 'StateId' => 3842),
             array('CityName' => "Wigan", 'StateId' => 3842),
         );    
-        DB::table('City')->insert($Cities7);
+        DB::table('city')->insert($Cities7);
             
         $Cities8 = array(    
             array('CityName' => "Wigston", 'StateId' => 3842),
@@ -48378,6 +48379,6 @@ class CityTableSeeder extends Seeder
             array('CityName' => "Ravenswood", 'StateId' => 3976),
             array('CityName' => "Summersville", 'StateId' => 3976),
         );
-        DB::table('City')->insert($Cities8);
+        DB::table('city')->insert($Cities8);
     }
 }

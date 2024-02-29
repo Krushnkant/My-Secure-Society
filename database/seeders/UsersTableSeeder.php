@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class UsersTableSeeder extends Seeder
 {
@@ -14,14 +15,14 @@ class UsersTableSeeder extends Seeder
     public function run(): void
     {
         // Seed a single user
-        DB::table('users')->insert([
+        DB::table('User')->truncate();
+        DB::table('User')->insert([
             'UserType' => 1,
-            'FirstName' => 'Main',
-            'MiddleName' => 'Super',
-            'LastName' => 'Admin',
+            'FullName' => 'Super Admin',
             'MobileNo' => '9909909909',
             'Email' => 'admin@gmail.com',
-            'EmailVerifiedAt' => Carbon::now(),
+            'UserCode' => '123456',
+            //'EmailVerifiedAt' => Carbon::now(),
             'Password' => bcrypt('admin@123'),
             'Gender' => 2,
             'CreatedAt' => Carbon::now(),
