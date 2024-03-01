@@ -20,9 +20,11 @@ use App\Http\Controllers\Admin\ProductController;
 //     return view('welcome');
 // });
 
-Route::get('admin',[AuthController::class,'index'])->name('admin.login');
+Route::get('admin',[AuthController::class,'index'])->name('admin.login')->middleware('guest');
 Route::post('adminpostlogin', [AuthController::class, 'postLogin'])->name('admin.postlogin');
 Route::get('logout', [AuthController::class, 'logout'])->name('admin.logout');
+Route::get('forgot-password', [AuthController::class,'forgot_password'])->name('admin.forgot_password')->middleware('guest');
+Route::post('postforgetpassword',[AuthController::class,'postForgetpassword'])->name('admin.postforgetpassword');
 Route::get('admin/403_page',[AuthController::class,'invalid_page'])->name('admin.403_page');
 
 Route::group(['prefix'=>'admin','middleware'=>['auth'],'as'=>'admin.'],function () {

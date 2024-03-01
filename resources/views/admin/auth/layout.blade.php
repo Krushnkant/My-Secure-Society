@@ -45,14 +45,14 @@
                 if(res.status == 'failed'){
                     $('#loginSubmit').find('.loadericonfa').hide();
                     $('#loginSubmit').prop('disabled',false);
-                    if (res.errors.Email) {
-                        $('#email-error').show().text(res.errors.Email);
+                    if (res.errors.email) {
+                        $('#email-error').show().text(res.errors.email);
                     } else {
                         $('#email-error').hide();
                     }
 
-                    if (res.errors.Password) {
-                        $('#password-error').show().text(res.errors.Password);
+                    if (res.errors.password) {
+                        $('#password-error').show().text(res.errors.password);
                     } else {
                         $('#password-error').hide();
                     }
@@ -79,6 +79,49 @@
             error: function (data) {
                 $('#loginSubmit').find('.loadericonfa').hide();
                 $('#loginSubmit').prop('disabled',false);
+                toastr.error("Please try again",'Error',{timeOut: 5000});
+            }
+        });
+    });
+
+    $('#ForgetForm').on('submit', function (e) {
+        $("#email-error").html("");
+        $("#password-error").html("");
+        var thi = $(this);
+        $('#forgetSubmit').find('.loadericonfa').show();
+        $('#forgetSubmit').prop('disabled',true);
+        e.preventDefault();
+        var formData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('admin.postforgetpassword') }}",
+            data: formData,
+            success: function (res) {
+                if(res.status == 'failed'){
+                    $('#forgetSubmit').find('.loadericonfa').hide();
+                    $('#forgetSubmit').prop('disabled',false);
+                    if (res.errors.email) {
+                        $('#email-error').show().text(res.errors.email);
+                    } else {
+                        $('#email-error').hide();
+                    }
+                }
+                if(res.status == 200){
+                    $('#forgetSubmit').prop('disabled',false);
+                    toastr.success("Send mail Successfully",'Success',{timeOut: 5000});
+                    location.href ="{{ url('/messagebox') }}";
+                    //return redirect()->back();
+                }
+
+                if(res.status == 400){
+                    $('#forgetSubmit').find('.loadericonfa').hide();
+                    $('#forgetSubmit').prop('disabled',false);
+                    toastr.error("Opps! You have entered invalid credentials",'Error',{timeOut: 5000});
+                }
+            },
+            error: function (data) {
+                $('#forgetSubmit').find('.loadericonfa').hide();
+                $('#forgetSubmit').prop('disabled',false);
                 toastr.error("Please try again",'Error',{timeOut: 5000});
             }
         });

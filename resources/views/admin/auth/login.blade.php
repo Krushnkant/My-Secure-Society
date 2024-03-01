@@ -16,12 +16,12 @@
                                     {{ csrf_field() }}
                                         <div class="form-group">
                                             <label for="email"><strong>Email</strong></label>
-                                            <input type="email" name="Email" id="Email" class="form-control" placeholder="Email Id" value="{{ old('email') }}">
+                                            <input type="email" name="email" id="email" class="form-control" placeholder="Email Id" value="{{ old('email') }}">
                                             <div id="email-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                         </div>
                                         <div class="form-group">
                                             <label for="password"><strong>Password</strong></label>
-                                            <input type="password" name="Password" id="Password" class="form-control" placeholder="Password"  value="{{ old('password') }}">
+                                            <input type="password" name="password" id="password" class="form-control" placeholder="Password"  value="{{ old('password') }}">
                                             <div id="password-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                         </div>
                                         <div class="form-row d-flex justify-content-between mt-4 mb-2">
@@ -32,7 +32,7 @@
                                                 </div> -->
                                             </div>
                                             <div class="form-group">
-                                                <a href="page-forgot-password.html">Forgot Password?</a>
+                                                <a href="{{ URL::to('forgot-password') }}">Forgot Password?</a>
                                             </div>
                                         </div>
                                         <div class="text-center mt-5">
