@@ -18,7 +18,7 @@
                                             <div id="email-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                         </div>
                                         <div class="text-center">
-                                            <button class="btn btn-primary btn-block" type="submit" id="forgetSubmit">Submit <i class="fa fa-spinner fa-spin loadericonfa" style="display:none;"></i></button>
+                                            <button class="btn btn-primary btn-block" type="submit" id="forgetSubmit">Send Password Reset Link <i class="fa fa-spinner fa-spin loadericonfa" style="display:none;"></i></button>
                                         </div>
                                     </form>
                                 </div>

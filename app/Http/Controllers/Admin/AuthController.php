@@ -84,12 +84,48 @@ class AuthController extends Controller
         ]);
 
         $data2 = [
-            'message1' => url('resetpassword/'.$token)
+            'message1' => route('reset.password.get', $token)
         ]; 
         $templateName = 'mails.forgetPassword';
         $subject = 'Forget Password';
         $mail_sending = Helpers::MailSending($templateName, $data2, $request->email, $subject);
 
         return response()->json(['status'=>200]); 
+    }
+
+    public function showResetPasswordForm($token)
+    { 
+       return view('admin.auth.reset_password', ['token' => $token])->with('page','reset-password');
+    }
+
+    /**
+     * Write code on Method
+     *
+     * @return response()
+     */
+    public function submitResetPasswordForm(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required'
+        ]);
+
+        $updatePassword = DB::table('password_reset_tokens')
+                            ->where([
+                              'email' => $request->email, 
+                              'token' => $request->token
+                            ])
+                            ->first();
+
+        if(!$updatePassword){
+            return back()->withInput()->with('error', 'Invalid token!');
+        }
+
+        $user = User::where('email', $request->email)
+                    ->update(['password' => Hash::make($request->password)]);
+
+        DB::table('password_reset_tokens')->where(['email'=> $request->email])->delete();
+
+        return redirect('/login')->with('message', 'Your password has been changed!');
     }
 }
