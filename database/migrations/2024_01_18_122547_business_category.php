@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('BusinessCategory', function (Blueprint $table) {
-            $table->bigIncrements('BusinessCategoryId')->index();
-            $table->integer('ParentBusinessCategory')->default(0);
-            $table->integer('StepNo')->default(0)->comment('0, 1, 2');
-            $table->string('BusinessCategoryName', 50);
+        Schema::create('business_category', function (Blueprint $table) {
+            $table->bigIncrements('business_category_id')->index();
+            $table->integer('parent_business_category_id')->default(0);
+            $table->integer('step_no')->default(0)->comment('0, 1, 2');
+            $table->string('business_category_came', 50);
             $table->integer('eStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('BusinessCategory');
+        Schema::dropIfExists('business_category');
     }
 };

@@ -39,11 +39,11 @@ return new class extends Migration
     {
         Schema::create('ImprovementSuggestion', function (Blueprint $table) {
             $table->bigIncrements('ImprovementSuggestionId')->index();
-            $table->integer('UserId')->index();
+            $table->integer('user_id')->index();
             $table->string('Message');
             $table->integer('Feature')->enum([1])->default(1)->comment('1 - Blood Donate, 2 - Amenity, 3 - Maintanance, 4 - Staff Management')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
         });
     }
 

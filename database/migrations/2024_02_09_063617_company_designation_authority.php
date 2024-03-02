@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('CompanyDesignationAuthority', function (Blueprint $table) {
-            $table->bigIncrements('CompanyDesignationAuthorityId')->index();
-            $table->integer('CompanyDesignationId')->index();
+        Schema::create('company_designation_authority', function (Blueprint $table) {
+            $table->bigIncrements('company_designation_authority_id')->index();
+            $table->integer('company_designation_id')->index();
             $table->integer('eAuthority')->enum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-            $table->integer('canView')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
-            $table->integer('canAdd')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
-            $table->integer('canEdit')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
-            $table->integer('canDelete')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
-            $table->integer('canPrint')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
+            $table->integer('can_view')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
+            $table->integer('can_add')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
+            $table->integer('can_edit')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
+            $table->integer('can_delete')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
+            $table->integer('can_print')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
             $table->integer('eStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('CompanyDesignationAuthority');
+        Schema::dropIfExists('company_designation_authority');
     }
 };

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->bigIncrements('ServiceRequestReplyId')->index();
             $table->integer('ServiceRequestId')->index();
             $table->string('ReplyDescription', 500);
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
         });
     }
 

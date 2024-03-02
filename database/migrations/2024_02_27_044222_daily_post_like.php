@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('DailyPostLike', function (Blueprint $table) {
             $table->bigIncrements('DailyPostLikeId')->index();
             $table->integer('SocietyDailyPostId')->index();
-            $table->integer('UserId');
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('user_id');
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 

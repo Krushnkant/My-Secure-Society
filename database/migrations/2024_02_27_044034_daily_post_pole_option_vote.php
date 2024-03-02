@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('DailyPostPoleOptionVote', function (Blueprint $table) {
             $table->bigIncrements('DailyPostPoleOptionVoteId')->index();
             $table->integer('SocietyDailyPostPoleOptionId')->index();
-            $table->integer('UserId');
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('user_id');
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 

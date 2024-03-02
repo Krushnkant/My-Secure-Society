@@ -11,24 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('LoanRequest', function (Blueprint $table) {
-            $table->bigIncrements('LoanRequestId')->index();
-            $table->string('LoanNo', 30)->unique()->comment('Format: L-YYYYSocietyId+0001');
-            $table->integer('SocietyId')->index();
-            $table->integer('BlockFlatId')->index();
-            $table->decimal('RequestedLoanAmount', 10, 2);
-            $table->decimal('LoanAmount', 10, 2);
-            $table->decimal('OutstandingAmount', 10, 2);
-            $table->decimal('PaidAmount', 10, 2);
-            $table->decimal('InterestRate', 10, 2);
-            $table->string('LoanDescription', 400);
-            $table->string('ApprovalDescription', 400)->nullable();
-            $table->integer('LoanStatus')->enum([1, 2, 3, 4])->comment('1 - Approved, 2 - Rejected, 3 - Pending, 4 - Closed')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+        Schema::create('loan_request', function (Blueprint $table) {
+            $table->bigIncrements('loan_request_id')->index();
+            $table->string('loan_no', 30)->unique()->comment('Format: L-YYYYSocietyId+0001');
+            $table->integer('society_id')->index();
+            $table->integer('block_flat_id')->index();
+            $table->decimal('requested_loan_amount', 10, 2);
+            $table->decimal('loan_amount', 10, 2);
+            $table->decimal('outstanding_amount', 10, 2);
+            $table->decimal('paid_amount', 10, 2);
+            $table->decimal('interest_rate', 10, 2);
+            $table->string('loan_description', 400);
+            $table->string('approval_description', 400)->nullable();
+            $table->integer('loan_status')->enum([1, 2, 3, 4])->comment('1 - Approved, 2 - Rejected, 3 - Pending, 4 - Closed')->index();
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 

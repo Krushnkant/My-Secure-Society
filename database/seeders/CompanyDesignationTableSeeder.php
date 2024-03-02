@@ -14,25 +14,25 @@ class CompanyDesignationTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('CompanyDesignation')->truncate();
+        DB::table('company_designation')->truncate();
         $Designation = array(
             array(
-                'DesignationName' => "System Admin",
+                'designation_name' => "System Admin",
                 'eStatus' => 1,
-                'CreatedAt' => Carbon::now(),
-                'CreatedBy' => 1,
-                'UpdatedAt' => Carbon::now(),
-                'UpdatedBy' => 1
+                'created_at' => Carbon::now(),
+                'created_by' => 1,
+                'updated_at' => Carbon::now(),
+                'updated_by' => 1
             ),
             // array(
-            //     'DesignationName' => "Sub Admin",
+            //     'designation_name' => "Sub Admin",
             //     'eStatus' => 1,
             //     'CreatedAt' => Carbon::now(),
             //     'CreatedBy' => 1,
-            //     'UpdatedAt' => Carbon::now(),
-            //     'UpdatedBy' => 1
+            //     'updated_at' => Carbon::now(),
+            //     'updated_by' => 1
             // )
         );
-        DB::table('CompanyDesignation')->insert($Designation);
+        DB::table('company_designation')->insert($Designation);
     }
 }

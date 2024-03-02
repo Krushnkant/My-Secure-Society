@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('Country', function (Blueprint $table) {
-            $table->bigIncrements('CountryId')->index();
-            $table->string('CountryCode', 30);
-            $table->string('CountryName', 60);
-            $table->integer('PhoneCode');
+        Schema::create('country', function (Blueprint $table) {
+            $table->bigIncrements('counrty_id')->index();
+            $table->string('counrty_code', 30);
+            $table->string('counrty_name', 60);
+            $table->integer('phone_code');
         });
     }
 
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('Country');
+        Schema::dropIfExists('country');
     }
 };

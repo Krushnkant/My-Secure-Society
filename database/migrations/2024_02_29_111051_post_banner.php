@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('PostBanner', function (Blueprint $table) {
-            $table->bigIncrements('PostBannerId')->index();
-            $table->integer('UserId')->index();
-            $table->integer('SocietyId')->index();
-            $table->string('BannerUrl');
-            $table->dateTime('ReleaseDate');
+        Schema::create('post_banner', function (Blueprint $table) {
+            $table->bigIncrements('post_banner_id')->index();
+            $table->integer('user_id')->index();
+            $table->integer('society_id')->index();
+            $table->string('banner_url');
+            $table->dateTime('release_date');
             $table->integer('eStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('PostBannerConfig');
+        Schema::dropIfExists('post_banner');
     }
 };

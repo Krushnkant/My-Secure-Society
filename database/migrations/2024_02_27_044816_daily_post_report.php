@@ -16,8 +16,8 @@ return new class extends Migration
             $table->integer('SocietyDailyPostId')->index();
             $table->integer('DailyPostReportOptionId');
             $table->integer('DailyPostReportStatus')->enum([1, 2])->default(1)->comment('1 - Post Hidden, 2 - No Action')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
         });
     }
 

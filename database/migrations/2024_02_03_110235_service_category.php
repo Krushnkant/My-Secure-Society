@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ServiceCategory', function (Blueprint $table) {
-            $table->bigIncrements('ServiceCategoryId')->index();
-            $table->integer('SocietyId')->index();
-            $table->integer('SocietyDepartmentId')->index();
+        Schema::create('service_category', function (Blueprint $table) {
+            $table->bigIncrements('service_category_id')->index();
+            $table->integer('society_id')->index();
+            $table->integer('society_department_id')->index();
             // $table->integer('ParentServiceCategoryId')->comment('0 For First Parent Category. Max upto 3')->index();
-            $table->string('ServiceCategoryName', 50);
-            $table->string('CategoryDescription', 400)->nullable();
+            $table->string('service_category_name', 50);
+            $table->string('category_description', 400)->nullable();
             $table->integer('eStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ServiceCategory');
+        Schema::dropIfExists('service_category');
     }
 };

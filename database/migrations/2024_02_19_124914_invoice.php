@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigIncrements('InvoiceId')->index();
             $table->integer('InvoiceType')->index()->comment('1 - Maintenance, 2 - Loan Interest, 3 - Loan Payment, 4 - Move In, 5 - Move Out, 6 - Amenity Booking, 7 - Payment Invoice');
             $table->integer('InvoiceToUserType')->index()->comment('1 - Society Member, 2 - Guard, 3 - Staff Member, 4 - Other');
-            $table->integer('BlockFlatId')->index()->comment('0 if InvoiceToUserType is not 1(Society Member)');
+            $table->integer('block_flat_id')->index()->comment('0 if InvoiceToUserType is not 1(Society Member)');
             $table->integer('InvoiceToUserId');
             $table->string('InvoiceUserName', 50);
             $table->string('InvoiceNo', 30)->comment('Format: YYYY+SocietyId+0001');
@@ -25,11 +25,11 @@ return new class extends Migration
             $table->decimal('InvoiceAmount', 10, 2);
             $table->integer('PenaltyStatus')->enum([1, 2])->default(1)->comment('1 - No Penalty, 2 - Penalty Applied')->index();
             $table->integer('eStatus')->enum([1, 3])->default(1)->comment('1 - Active, 3 - Delete')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 

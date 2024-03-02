@@ -15,8 +15,8 @@ return new class extends Migration
             $table->bigIncrements('EmergencyAlertId')->index();
             $table->integer('AlertReasonType')->index()->comment('1 - Fire, 2 - Stuck in Lift, 3 - Animal Threat, 4 - Other');
             $table->string('AlertMessage');
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
         });
     }
 

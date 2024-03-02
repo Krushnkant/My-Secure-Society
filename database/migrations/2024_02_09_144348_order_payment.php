@@ -18,8 +18,8 @@ return new class extends Migration
             $table->decimal('AmountPaid', 10, 2);
             $table->string('PaymentNote')->nullable();
             $table->dateTime('PaymentDate')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
         });
     }
 

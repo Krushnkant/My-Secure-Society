@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('BloodDonateRequest', function (Blueprint $table) {
             $table->bigIncrements('BloodDonateRequestId')->index();
-            $table->integer('SocietyId');
+            $table->integer('society_id');
             $table->string('PatientName', 70);
             $table->integer('RelationwithPatient')->enum([1, 2, 3, 4])->comment('1 - Own, 2 - Family, 3 - Relative, 4 - Other');
             $table->string('BloodGroup')->enum(['A+, A-, B+, B-, O+, O-, AB+, AB-'])->nullable()->index();
@@ -24,15 +24,15 @@ return new class extends Migration
             $table->string('HospitalAddress');
             $table->string('Landmark', 50);
             $table->integer('PinCode');
-            $table->integer('CityId');
-            $table->integer('StateId');
-            $table->integer('CountryId');
+            $table->integer('city_id');
+            $table->integer('state_id');
+            $table->integer('counrty_id');
             $table->integer('RequestStatus')->enum([1, 2, 3])->default(1)->comment('1 - Open, 2 - Closed, 3 - Deleted')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 

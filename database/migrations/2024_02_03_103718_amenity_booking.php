@@ -17,10 +17,10 @@ return new class extends Migration
             $table->integer('BookingNo')->index();
             $table->dateTime('BookingTime');
             $table->integer('BookingStatus')->enum([1, 2, 3])->default(1)->comment('1 - Booked, 2 - Pending, 3 - Cancelled')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
         });
     }
 

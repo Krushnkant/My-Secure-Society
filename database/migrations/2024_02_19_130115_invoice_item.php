@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('InvoiceItemDescription');
             $table->decimal('InvoiceItemAmount', 10, 2);
             $table->integer('eStatus')->enum([1, 3])->default(1)->comment('1 - Active, 3 - Delete')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 

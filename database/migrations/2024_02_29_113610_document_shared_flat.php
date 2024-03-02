@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('DocumentSharedFlat', function (Blueprint $table) {
             $table->bigIncrements('DocumentSharedFlatId')->index();
-            $table->integer('BlockFlatId')->index();
+            $table->integer('block_flat_id')->index();
             $table->integer('SocietyDocumentId')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
         });
     }
 

@@ -11,20 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SocietyMember', function (Blueprint $table) {
-            $table->bigIncrements('SocietyMemberId')->index();
-            $table->integer('ParentSocietyMemberId')->index();
-            $table->integer('UserId')->index();
-            $table->integer('BlockFlatId')->index();
-            $table->integer('ResidentDesignationId')->index();
-            $table->integer('SocietyDepartmentId')->nullable()->comment('Null for Not Member of any Department');
-            $table->integer('ResidentType')->enum([1, 2])->comment('1 - Tenant, 2 - Owner')->index();
+        Schema::create('society_member', function (Blueprint $table) {
+            $table->bigIncrements('society_member_id')->index();
+            $table->integer('parent_society_member_id')->index();
+            $table->integer('user_id')->index();
+            $table->integer('block_flat_id')->index();
+            $table->integer('resident_designation_id')->index();
+            $table->integer('society_department_id')->nullable()->comment('Null for Not Member of any Department');
+            $table->integer('resident_type')->enum([1, 2])->comment('1 - Tenant, 2 - Owner')->index();
             $table->integer('eStatus')->enum([1, 2, 3, 4, 5])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending, 5 - Rejected')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SocietyMember');
+        Schema::dropIfExists('society_member');
     }
 };

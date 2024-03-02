@@ -22,11 +22,11 @@ return new class extends Migration
             $table->string('PinCode', 10);
             $table->decimal('Latitude', 10, 8)->nullable();
             $table->decimal('Longitude', 11, 8)->nullable();
-            $table->integer('CityId');
-            $table->integer('StateId');
-            $table->integer('CountryId');
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
+            $table->integer('city_id');
+            $table->integer('state_id');
+            $table->integer('counrty_id');
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
         });
     }
 

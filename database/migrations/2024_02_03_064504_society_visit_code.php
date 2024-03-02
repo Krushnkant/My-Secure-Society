@@ -18,8 +18,8 @@ return new class extends Migration
             $table->integer('VerificationStatus')->enum([1, 2, 3])->default(1)->comment('1 - Verified, 2 - Pending, 3 - Cancelled')->index();
             $table->dateTime('ValidFromTime');
             $table->dateTime('ValidToTime');
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
         });
     }
 

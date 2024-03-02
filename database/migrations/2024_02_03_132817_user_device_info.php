@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('UserDeviceInfo', function (Blueprint $table) {
             $table->bigIncrements('UserDeviceInfoId')->index();
-            $table->integer('UserId')->index();
+            $table->integer('user_id')->index();
             $table->string('DeviceId');
             $table->string('ImeiNo');
             $table->string('PhoneCompany');
             $table->string('DeviceModal');
             $table->string('DeviceOs');
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 

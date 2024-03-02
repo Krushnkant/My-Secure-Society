@@ -23,11 +23,11 @@ return new class extends Migration
     {
         Schema::create('SocietyPanelConfiguration', function (Blueprint $table) {
             $table->bigIncrements('SocietyPanelConfigurationId')->index();
-            $table->integer('SocietyId');
+            $table->integer('society_id');
             $table->string('ConfigurationName');
             $table->string('ConfigurationValue');
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
         });
     }
 

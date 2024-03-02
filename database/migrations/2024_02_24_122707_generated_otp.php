@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('MobileNo', 15);
             $table->integer('OtpCode');
             $table->dateTime('ExpireTime')->comment('GenerateTime + 30 Min');
-            $table->dateTime('CreatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->dateTime('created_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 

@@ -67,226 +67,226 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
 
     public function run(): void
     {
-        DB::table('CompanyDesignationAuthority')->truncate();
-        //canView, canAdd, canEdit, canDelete, canPrint (0 - Disabled, 1 - True, 2 - False)
+        DB::table('company_designation_authority')->truncate();
+        //can_view, can_add, can_edit, can_delete, can_print (0 - Disabled, 1 - True, 2 - False)
         $DesignationAuthority = array(
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 1, // Company Designation
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 2, // Company Designation Authority
-                "canView" => 1, 
-                "canAdd" => 0, 
-                "canEdit" => 1, 
-                "canDelete" => 0, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 0, 
+                "can_edit" => 1, 
+                "can_delete" => 0, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 3, // Company User & User Designation 
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 4, // Government Emergency No
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 5, // Business Category
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 6, // Post Status Banner
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 7, // Society
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 8, // Society Block
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 9, // Block Flat
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 10, // Subscription Order
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 11, // Order Payment
-                "canView" => 1, 
-                "canAdd" => 0, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 0, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 12, // Company Profile
-                "canView" => 1, 
-                "canAdd" => 0, 
-                "canEdit" => 1, 
-                "canDelete" => 0, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 0, 
+                "can_edit" => 1, 
+                "can_delete" => 0, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 13, // Service Vendor
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 14, // Daily Help Service
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 15, // Post Status Banner
-                "canView" => 1, 
-                "canAdd" => 0, 
-                "canEdit" => 0, 
-                "canDelete" => 0, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 0, 
+                "can_edit" => 0, 
+                "can_delete" => 0, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 16, // Push Notification
-                "canView" => 1, 
-                "canAdd" => 1, 
-                "canEdit" => 1, 
-                "canDelete" => 1, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 1, 
+                "can_edit" => 1, 
+                "can_delete" => 1, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 17, // Society Member
-                "canView" => 1, 
-                "canAdd" => 0, 
-                "canEdit" => 0, 
-                "canDelete" => 0, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 0, 
+                "can_edit" => 0, 
+                "can_delete" => 0, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             ),
             array( 
-                'CompanyDesignationId' => 1, 
+                'company_designation_id' => 1, 
                 "eAuthority" => 18, // Business Profile & Business Profile Category
-                "canView" => 1, 
-                "canAdd" => 0, 
-                "canEdit" => 0, 
-                "canDelete" => 0, 
-                "canPrint" => 1, 
+                "can_view" => 1, 
+                "can_add" => 0, 
+                "can_edit" => 0, 
+                "can_delete" => 0, 
+                "can_print" => 1, 
                 "eStatus" => 1,
                 "UpdatedAt" => Carbon::now(), 
                 "UpdatedBy" => 1
             )
         );
-        DB::table('CompanyDesignationAuthority')->insert($DesignationAuthority);
+        DB::table('company_designation_authority')->insert($DesignationAuthority);
     }
 }

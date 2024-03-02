@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('SocietyVisitor', function (Blueprint $table) {
             $table->bigIncrements('SocietyVisitorId')->index();
-            $table->integer('SocietyId')->index();
-            $table->integer('BlockFlatId')->comment('0 for Campus Visitor')->index();
+            $table->integer('society_id')->index();
+            $table->integer('block_flat_id')->comment('0 for Campus Visitor')->index();
             $table->integer('VisitorType')->enum([1, 2, 3, 4, 5])->default(1)->comment('1 - Delivery, 2 - Cab, 3 - Guest, 4 - Daily Help, 5 - Campus Visitor')->index();
             $table->integer('ServiceVendorId')->comment('0 for Non-Service Visit (Guest, Daily Help, Other option of Delivery, and Cab which haven not existed)')->index();
             $table->integer('DailyHelpProviderId')->comment('0 If Visitor Gatepass is not for DailyHelp Service Provider')->index();
@@ -28,11 +28,11 @@ return new class extends Migration
             // $table->dateTime('ExitTime');
             $table->integer('VisitorStatus')->enum([1, 2, 3, 4, 5])->default(1)->comment('1 - Pre Approved, 2 - Approved 3 - Rejected, 4 - Pending, 5 - Cancelled')->index();
             $table->integer('ApprovedBy')->comment('0 till not Approved');
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 

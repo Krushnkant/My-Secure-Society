@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
             CityTableSeeder::class,
             CompanyDesignationTableSeeder::class,
             CompanyDesignationAuthorityTableSeeder::class,
-            CompanyUserDesignationTableSeeder::class,
+            company_user_designationTableSeeder::class,
             CountryTableSeeder::class,
             StateTableSeeder::class,
             UsersTableSeeder::class,

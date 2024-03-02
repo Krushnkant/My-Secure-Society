@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('City', function (Blueprint $table) {
-            $table->bigIncrements('CityId')->index();
-            $table->integer('StateId')->index();
-            $table->string('CityName', 60);
+        Schema::create('city', function (Blueprint $table) {
+            $table->bigIncrements('city_id')->index();
+            $table->integer('state_id')->index();
+            $table->string('city_name', 60);
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('City');
+        Schema::dropIfExists('city');
     }
 };

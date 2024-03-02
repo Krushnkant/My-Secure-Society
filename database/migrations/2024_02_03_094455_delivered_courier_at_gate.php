@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('DeliveredCourierAtGate', function (Blueprint $table) {
             $table->bigIncrements('DeliveredCourierAtGateId')->index();
-            $table->integer('SocietyId')->index();
-            $table->integer('BlockFlatId')->index();
+            $table->integer('society_id')->index();
+            $table->integer('block_flat_id')->index();
             $table->integer('ServiceVendorId')->index();
             $table->integer('CollectionOTP');
             $table->integer('CourierCollectionStatus')->comment('1 - Pending, 2 - Delivered')->index();
             $table->integer('CollectedByUserId')->nullable()->index();
             $table->dateTime('CollectedTime')->nullable();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
         });
     }
 

@@ -11,20 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('PaymentTransaction', function (Blueprint $table) {
-            $table->bigIncrements('PaymentTransactionId')->index();
-            $table->integer('InvoiceId')->index();
-            $table->string('TransactionNo', 200)->nullable();
-            $table->string('PaymentCurrency', 20);
-            $table->decimal('TransactionAmount', 10, 2);
-            $table->string('GatewayName', 100)->nullable();
-            $table->integer('PaymentMode')->enum([1, 2])->comment('1 - Offline, 2 - Online, 3 - Cheque')->index();
-            $table->integer('PaymentStatus')->enum([1, 2, 3, 4, 5, 6])->default(1)->comment('1 - Paid, 2 - Failed, 3 - Due, 4 - Pending, 5 - In Hold, 6 - Refund')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+        Schema::create('payment_transaction', function (Blueprint $table) {
+            $table->bigIncrements('payment_transaction_id')->index();
+            $table->integer('invoice_id')->index();
+            $table->string('transaction_no', 200)->nullable();
+            $table->string('payment_currency', 20);
+            $table->decimal('transaction_amount', 10, 2);
+            $table->string('gateway_name', 100)->nullable();
+            $table->integer('payment_mode')->enum([1, 2])->comment('1 - Offline, 2 - Online, 3 - Cheque')->index();
+            $table->integer('payment_status')->enum([1, 2, 3, 4, 5, 6])->default(1)->comment('1 - Paid, 2 - Failed, 3 - Due, 4 - Pending, 5 - In Hold, 6 - Refund')->index();
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('PaymentTransaction');
+        Schema::dropIfExists('payment_transaction');
     }
 };

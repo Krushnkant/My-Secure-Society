@@ -16,8 +16,8 @@ return new class extends Migration
             $table->integer('BusinessProfileId')->index();
             $table->integer('BusinessCategoryId')->index();
             $table->integer('IsPrimary')->default(2)->index()->comment('1 - True, 2 - False');
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
         });
     }
 

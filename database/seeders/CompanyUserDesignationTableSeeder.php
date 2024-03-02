@@ -7,19 +7,19 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class CompanyUserDesignationTableSeeder extends Seeder
+class company_user_designationTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        DB::table('CompanyUserDesignation')->truncate();
-        DB::table('CompanyUserDesignation')->insert([
-            'UserId' => 1,
-            'CompanyDesignationId' => 1,
-            'UpdatedAt' => Carbon::now(),
-            'UpdatedBy' => 1,
+        DB::table('company_user_designation')->truncate();
+        DB::table('company_user_designation')->insert([
+            'user_id' => 1,
+            'company_designation_id' => 1,
+            'updated_at' => Carbon::now(),
+            'updated_by' => 1,
         ]);
     }
 }

@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('CompanyUserDesignation', function (Blueprint $table) {
-            $table->bigIncrements('CompanyUserDesignationId')->index();
-            $table->integer('UserId')->index();
-            $table->integer('CompanyDesignationId')->index();
+        Schema::create('company_user_designation', function (Blueprint $table) {
+            $table->bigIncrements('company_user_designation_id')->index();
+            $table->integer('user_id')->index();
+            $table->integer('company_designation_id')->index();
             $table->integer('eStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('CompanyUserDesignation');
+        Schema::dropIfExists('company_user_designation');
     }
 };

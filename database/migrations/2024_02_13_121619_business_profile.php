@@ -24,15 +24,15 @@ return new class extends Migration
             $table->string('PinCode', 10)->index();
             $table->decimal('Latitude', 10, 8)->nullable();
             $table->decimal('Longitude', 11, 8)->nullable();
-            $table->integer('CityId')->index();
-            $table->integer('StateId')->index();
-            $table->integer('CountryId');
+            $table->integer('city_id')->index();
+            $table->integer('state_id')->index();
+            $table->integer('counrty_id');
             $table->integer('eStatus')->enum([1, 2, 3])->default(1)->index()->comment('1 - Active, 2 - InActive, 3 - Delete');
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 

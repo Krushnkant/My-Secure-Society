@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('SubscriptionOrder', function (Blueprint $table) {
             $table->bigIncrements('SubscriptionOrderId')->index();
-            $table->integer('SocietyId')->index();
+            $table->integer('society_id')->index();
             $table->string('OrderId');
             $table->integer('TotalFlat');
             $table->decimal('AmountPerFlat', 10, 2);
@@ -25,11 +25,11 @@ return new class extends Migration
             $table->decimal('TotalOutstandingAmount', 10, 2);
             $table->integer('OrderStatus')->enum([1, 2, 3])->default(1)->comment('1 - Pending, 2 - In Progress, 3 - Completed, 4 - Cancelled')->index();
             $table->dateTime('DueDate')->index();
-            $table->dateTime('CreatedAt')->nullable();
-            $table->integer('CreatedBy')->index();
-            $table->dateTime('UpdatedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('UpdatedBy')->index();
-            $table->softDeletes('DeletedAt');
+            $table->dateTime('created_at')->nullable();
+            $table->integer('created_by')->index();
+            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->integer('updated_by')->index();
+            $table->softDeletes('deleted_at');
         });
     }
 
