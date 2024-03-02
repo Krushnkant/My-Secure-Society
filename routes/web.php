@@ -25,6 +25,8 @@ Route::post('adminpostlogin', [AuthController::class, 'postLogin'])->name('admin
 Route::get('logout', [AuthController::class, 'logout'])->name('admin.logout');
 Route::get('forgot-password', [AuthController::class,'forgot_password'])->name('admin.forgot_password')->middleware('guest');
 Route::post('postforgetpassword',[AuthController::class,'postForgetpassword'])->name('admin.postforgetpassword');
+Route::get('reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset.password.get');
+Route::post('reset-password', [AuthController::class, 'submitResetPasswordForm'])->name('reset.password.post');
 Route::get('admin/403_page',[AuthController::class,'invalid_page'])->name('admin.403_page');
 
 Route::group(['prefix'=>'admin','middleware'=>['auth'],'as'=>'admin.'],function () {

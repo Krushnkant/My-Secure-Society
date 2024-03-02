@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class company_user_designationTableSeeder extends Seeder
+class CompanyUserDesignationTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

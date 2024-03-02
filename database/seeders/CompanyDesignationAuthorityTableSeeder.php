@@ -79,8 +79,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -91,8 +91,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 0, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -103,8 +103,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -115,8 +115,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -127,8 +127,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -139,8 +139,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -151,8 +151,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -163,8 +163,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -175,8 +175,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -187,8 +187,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -199,8 +199,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -211,8 +211,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 0, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -223,8 +223,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -235,8 +235,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -247,8 +247,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 0, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -259,8 +259,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 1, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -271,8 +271,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 0, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             ),
             array( 
                 'company_designation_id' => 1, 
@@ -283,8 +283,8 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_delete" => 0, 
                 "can_print" => 1, 
                 "eStatus" => 1,
-                "UpdatedAt" => Carbon::now(), 
-                "UpdatedBy" => 1
+                "updated_at" => Carbon::now(), 
+                "updated_by" => 1
             )
         );
         DB::table('company_designation_authority')->insert($DesignationAuthority);
