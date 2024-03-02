@@ -14,7 +14,7 @@ class Helpers{
 		$fromName = env('MAIL_USERNAME');
         $settings = [];
         $data = array('setting'=> $settings,'data'=>$data);
-		\Mail::send($template, $data, function($message) use ($fromEmail, $fromName, $to, $sub) {
+		Mail::send($template, $data, function($message) use ($fromEmail, $fromName, $to, $sub) {
          $message->from($fromEmail,$fromName);
          $message->to($to);
          $message->subject($sub);

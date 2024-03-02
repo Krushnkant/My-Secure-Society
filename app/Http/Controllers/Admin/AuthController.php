@@ -11,6 +11,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Http\Helpers;
+use DB; 
+use Carbon\Carbon;
+use Mail; 
 
 class AuthController extends Controller
 {
@@ -65,29 +68,28 @@ class AuthController extends Controller
     public function postForgetpassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email'
+            'email' => 'required|email|exists:user',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }
 
-        $user = User::where('email',$request->email)->where('estatus',1)->first();
-        if ($user){
-            $string = Str::random(15);
-            $user = User::where('email',$request->email)->first();
-            $user->forget_token = $string;
-            $user->save();
+        $token = Str::random(64);
 
-            $mailData = [
-                'message' => url('resetpassword/'.$string)
-            ]; 
-            $templateName = 'email.ResetPassword';
-            $subject = 'Forget Password';
-            $mail_sending = Helpers::MailSending($templateName, $mailData, $request->email, $subject);
+        DB::table('password_reset_tokens')->insert([
+            'email' => $request->email, 
+            'token' => $token, 
+            'created_at' => Carbon::now()
+        ]);
 
-            return response()->json(['status'=>200]); 
-        }    
-        return response()->json(['status'=>400]);
+        $data2 = [
+            'message1' => url('resetpassword/'.$token)
+        ]; 
+        $templateName = 'mails.forgetPassword';
+        $subject = 'Forget Password';
+        $mail_sending = Helpers::MailSending($templateName, $data2, $request->email, $subject);
+
+        return response()->json(['status'=>200]); 
     }
 }

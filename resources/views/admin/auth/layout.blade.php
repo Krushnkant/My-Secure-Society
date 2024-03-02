@@ -107,9 +107,10 @@
                     }
                 }
                 if(res.status == 200){
+                    $('#forgetSubmit').find('.loadericonfa').hide();
                     $('#forgetSubmit').prop('disabled',false);
                     toastr.success("Send mail Successfully",'Success',{timeOut: 5000});
-                    location.href ="{{ url('/messagebox') }}";
+                   // location.href ="{{ url('/messagebox') }}";
                     //return redirect()->back();
                 }
 
