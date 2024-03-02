@@ -25,11 +25,10 @@ return new class extends Migration
             $table->string('blood_group')->enum(['A+, A-, B+, B-, O+, O-, AB+, AB-'])->nullable()->index();
             $table->string('firebase_id')->nullable();
             $table->string('token')->nullable();
-            $table->integer('e_status')->enum([1, 2, 3])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete')->index();
+            $table->integer('estatus')->enum([1, 2, 3])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete')->index();
             $table->integer('created_by')->index();
             $table->integer('updated_by')->index();
-            $table->dateTime('created_at')->default(\Carbon\Carbon::now());
-            $table->dateTime('updated_at')->default(null)->onUpdate(\Carbon\Carbon::now());
+            $table->timestamps();
             $table->softDeletes();
         });
     }

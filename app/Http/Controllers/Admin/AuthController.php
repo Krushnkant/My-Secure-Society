@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use App\Http\Helpers;
 
 class AuthController extends Controller
 {
@@ -38,7 +40,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            if ($user->e_status == 1) {
+            if ($user->estatus == 1) {
                 return response()->json(['status' => 200]);
             } else {
                 Auth::logout(); // Log out the user if their status is not active
@@ -70,20 +72,19 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }
 
-        $user = User::where('email',$request->email)->where('role',3)->where('estatus',1)->first();
+        $user = User::where('email',$request->email)->where('estatus',1)->first();
         if ($user){
-            $string = str_random(15);
+            $string = Str::random(15);
             $user = User::where('email',$request->email)->first();
             $user->forget_token = $string;
             $user->save();
 
-            $data2 = [
-                //'message1' => 'https://gemver.matoresell.com/public/resetpassword/'.$string
-                'message1' => url('resetpassword/'.$string)
+            $mailData = [
+                'message' => url('resetpassword/'.$string)
             ]; 
-            $templateName = 'email.mailDataforgetpassword';
+            $templateName = 'email.ResetPassword';
             $subject = 'Forget Password';
-            $mail_sending = Helpers::MailSending($templateName, $data2, $request->email, $subject);
+            $mail_sending = Helpers::MailSending($templateName, $mailData, $request->email, $subject);
 
             return response()->json(['status'=>200]); 
         }    
