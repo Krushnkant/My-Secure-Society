@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 use App\Http\Helpers;
 use DB; 
 use Carbon\Carbon;
-use Mail; 
+use Toastr; 
 
 class AuthController extends Controller
 {
@@ -75,7 +75,7 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }
 
-        $token = Str::random(64);
+        $token = strtoupper(Str::random(15));
 
         DB::table('password_reset_tokens')->insert([
             'email' => $request->email, 
@@ -83,18 +83,23 @@ class AuthController extends Controller
             'created_at' => Carbon::now()
         ]);
 
-        $data2 = [
-            'message1' => route('reset.password.get', $token)
+        $data = [
+            'url' => route('reset.password.get', $token),
+            'logo' => route('reset.password.get', $token),
         ]; 
         $templateName = 'mails.forgetPassword';
         $subject = 'Forget Password';
-        $mail_sending = Helpers::MailSending($templateName, $data2, $request->email, $subject);
+        $mail_sending = Helpers::MailSending($templateName, $data, $request->email, $subject);
 
         return response()->json(['status'=>200]); 
     }
 
     public function showResetPasswordForm($token)
     { 
+        $data = DB::table('password_reset_tokens')->where(['token' => $token])->first();
+        if(!$data || Carbon::parse($data->created_at)->diffInMinutes(Carbon::now()) >= 60){
+            return redirect()->route('admin.login');
+        }
        return view('admin.auth.reset_password', ['token' => $token])->with('page','reset-password');
     }
 
@@ -105,27 +110,26 @@ class AuthController extends Controller
      */
     public function submitResetPasswordForm(Request $request)
     {
-        $request->validate([
-            'password' => 'required|string|min:6|confirmed',
-            'password_confirmation' => 'required'
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'password' => 'required|same:confirm_password',
         ]);
-
-        $updatePassword = DB::table('password_reset_tokens')
-                            ->where([
-                              'email' => $request->email, 
-                              'token' => $request->token
-                            ])
-                            ->first();
-
+      
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
+        }
+        $updatePassword = DB::table('password_reset_tokens')->where(['token' => $request->token])->first();
         if(!$updatePassword){
-            return back()->withInput()->with('error', 'Invalid token!');
+            return response()->json(['status'=>400]);
         }
 
-        $user = User::where('email', $request->email)
-                    ->update(['password' => Hash::make($request->password)]);
+        $user = User::where('email', $updatePassword->email)->update(['password' => Hash::make($request->password)]);
 
-        DB::table('password_reset_tokens')->where(['email'=> $request->email])->delete();
+        DB::table('password_reset_tokens')->where(['email'=> $updatePassword->email])->delete();
 
-        return redirect('/login')->with('message', 'Your password has been changed!');
-    }
+
+        return response()->json(['status'=>200]); 
+    }    
+    
+    
 }

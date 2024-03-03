@@ -10,7 +10,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon.png">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('vendor/toastr/css/toastr.min.css') }}">
-
 </head>
 
 <body class="h-100">
@@ -60,7 +59,7 @@
 
                 if(res.status == 200){
                     $('#loginSubmit').prop('disabled',false);
-                    toastr.success("You have Successfully loggedin",'Success',{timeOut: 5000});
+                    toastr.success("You have successfully login",'Success',{timeOut: 5000});
                     location.href ="{{ url('admin/dashboard') }}";
                 }
 
@@ -109,6 +108,7 @@
                 if(res.status == 200){
                     $('#forgetSubmit').find('.loadericonfa').hide();
                     $('#forgetSubmit').prop('disabled',false);
+                    $("#ForgetForm")[0].reset();
                     toastr.success("Send mail Successfully",'Success',{timeOut: 5000});
                    // location.href ="{{ url('/messagebox') }}";
                     //return redirect()->back();
@@ -123,6 +123,56 @@
             error: function (data) {
                 $('#forgetSubmit').find('.loadericonfa').hide();
                 $('#forgetSubmit').prop('disabled',false);
+                toastr.error("Please try again",'Error',{timeOut: 5000});
+            }
+        });
+    });
+
+    $('#ResetForm').on('submit', function (e) {
+        $("#email-error").html("");
+        $("#password-error").html("");
+        var thi = $(this);
+        $('#resetSubmit').find('.loadericonfa').show();
+        $('#resetSubmit').prop('disabled',true);
+        e.preventDefault();
+        var formData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('reset.password.post') }}",
+            data: formData,
+            success: function (res) {
+                console.log(res);
+                if(res.status == 'failed'){
+                    $('#resetSubmit').find('.loadericonfa').hide();
+                    $('#resetSubmit').prop('disabled',false);
+                   
+                    if (res.errors.password) {
+                        $('#password-error').show().text(res.errors.password);
+                    } else {
+                        $('#password-error').hide();
+                    }
+
+                    if (res.errors.confirm_password) {
+                        $('#confirm_password-error').show().text(res.errors.confirm_password);
+                    } else {
+                        $('#confirm_password-error').hide();
+                    }
+                }
+                if(res.status == 200){
+                    $('#resetSubmit').prop('disabled',false);
+                    toastr.success("You have Successfully Reset Password",'Success',{timeOut: 5000});
+                    location.href ="{{ route('admin.login') }}";
+                }
+
+                if(res.status == 400){
+                    $('#resetSubmit').find('.loadericonfa').hide();
+                    $('#resetSubmit').prop('disabled',false);
+                    toastr.error("Opps! You have entered invalid credentials",'Error',{timeOut: 5000});
+                }
+            },
+            error: function (data) {
+                $('#resetSubmit').find('.loadericonfa').hide();
+                $('#resetSubmit').prop('disabled',false);
                 toastr.error("Please try again",'Error',{timeOut: 5000});
             }
         });
