@@ -17,7 +17,7 @@ use Toastr;
 
 class AuthController extends Controller
 {
-    private $page = " Admin";
+    private $page = "Admin";
 
     public function index()
     {
@@ -94,7 +94,7 @@ class AuthController extends Controller
         return response()->json(['status'=>200]); 
     }
 
-    public function showResetPasswordForm($token)
+    public function reset_password($token)
     { 
         $data = DB::table('password_reset_tokens')->where(['token' => $token])->first();
         if(!$data || Carbon::parse($data->created_at)->diffInMinutes(Carbon::now()) >= 60){
@@ -108,7 +108,7 @@ class AuthController extends Controller
      *
      * @return response()
      */
-    public function submitResetPasswordForm(Request $request)
+    public function postResetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'token' => 'required',

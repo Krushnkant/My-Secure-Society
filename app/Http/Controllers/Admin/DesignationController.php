@@ -5,16 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Designation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class DesignationController extends Controller
 {
     
-
     public function index()
     {
         return view('admin.designation.list');
     }
-
+    
     public function alldesignationlist(Request $request){
       
         // Page Length
@@ -46,5 +47,56 @@ class DesignationController extends Controller
         return response()->json(["draw"=> $request->draw, "recordsTotal"=> $recordsTotal, "recordsFiltered" => $recordsFiltered, 'data' => $data], 200);
     }
 
-    
+    public function addorupdatedesignation(Request $request){
+        $messages = [
+            'designation_name.required' =>'Please provide a designation name',
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'designation_name' => 'required',
+        ], $messages);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
+        }
+        if(!isset($request->id)){
+            $designation = new Designation();
+            $designation->designation_name = $request->designation_name;
+            $designation->created_by = Auth::user()->user_id;
+            $designation->updated_by = Auth::user()->user_id;
+            $designation->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $designation->save();
+            return response()->json(['status' => '200', 'action' => 'add']);
+        }
+        else{
+            $designation = Designation::find($request->id);
+            if ($designation) {
+                $designation->designation_name = $request->designation_name;
+                $designation->updated_by = Auth::user()->user_id;
+                $designation->save();
+                return response()->json(['status' => '200', 'action' => 'update']);
+            }
+            return response()->json(['status' => '400']);
+        }
+    }
+
+    public function editdesignation($id){
+        $designation = Designation::find($id);
+        return response()->json($designation);
+    }
+
+    public function changedesignationstatus($id){
+        $designation = Designation::find($id);
+        if ($designation->estatus==1){
+            $designation->estatus = 2;
+            $designation->save();
+            return response()->json(['status' => '200','action' =>'deactive']);
+        }
+        if ($designation->estatus==2){
+            $designation->estatus = 1;
+            $designation->save();
+            return response()->json(['status' => '200','action' =>'active']);
+        }
+    }
+
 }

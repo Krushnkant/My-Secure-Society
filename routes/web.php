@@ -27,8 +27,8 @@ Route::post('adminpostlogin', [AuthController::class, 'postLogin'])->name('admin
 Route::get('logout', [AuthController::class, 'logout'])->name('admin.logout');
 Route::get('forgot-password', [AuthController::class,'forgot_password'])->name('admin.forgot_password')->middleware('guest');
 Route::post('postforgetpassword',[AuthController::class,'postForgetpassword'])->name('admin.postforgetpassword');
-Route::get('reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('reset.password.get');
-Route::post('reset-password', [AuthController::class, 'submitResetPasswordForm'])->name('reset.password.post');
+Route::get('reset-password/{token}', [AuthController::class, 'reset_password'])->name('admin.reset_password');
+Route::post('reset-password', [AuthController::class, 'postResetPassword'])->name('admin.postResetPassword');
 Route::get('admin/403_page',[AuthController::class,'invalid_page'])->name('admin.403_page');
 
 Route::group(['prefix'=>'admin','middleware'=>['auth'],'as'=>'admin.'],function () {
@@ -45,8 +45,10 @@ Route::group(['prefix'=>'admin','middleware'=>['auth'],'as'=>'admin.'],function 
 
     Route::get('designation',[DesignationController::class,'index'])->name('designation.list');
     Route::post('alldesignationlist',[DesignationController::class,'alldesignationlist'])->name('designation.alldesignationlist');
-    Route::get('designation/create',[DesignationController::class,'create'])->name('designation.add');
-    Route::post('designation/save',[DesignationController::class,'save'])->name('designation.save');
+    Route::post('addorupdatedesignation',[DesignationController::class,'addorupdatedesignation'])->name('designation.addorupdatedesignation');
+    Route::get('designation/{id}/edit',[DesignationController::class,'editdesignation'])->name('designation.edit');
+    Route::get('designation/{id}/delete',[DesignationController::class,'deletedesignation'])->name('designation.delete');
+    Route::get('changedesignationstatus/{id}',[DesignationController::class,'changedesignationstatus'])->name('designation.changedesignationstatus');
    
 
 });

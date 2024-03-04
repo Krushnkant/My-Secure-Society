@@ -138,7 +138,7 @@
         var formData = $(this).serialize();
         $.ajax({
             type: 'POST',
-            url: "{{ route('reset.password.post') }}",
+            url: "{{ route('admin.postResetPassword') }}",
             data: formData,
             success: function (res) {
                 console.log(res);

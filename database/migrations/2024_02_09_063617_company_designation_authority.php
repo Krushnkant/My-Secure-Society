@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('company_designation_authority', function (Blueprint $table) {
-            $table->bigIncrements('company_designation_authority_id')->index();
+            $table->bigIncrements('designation_auth_id')->index();
             $table->integer('company_designation_id')->index();
             $table->integer('eAuthority')->enum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
             $table->integer('can_view')->enum([0, 1, 2])->default(0)->comment('0 - Disabled, 1 - True, 2 - False');
