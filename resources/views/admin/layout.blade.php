@@ -187,6 +187,12 @@
                             <li><a href="./app-calender.html">Calendar</a></li>
                         </ul>
                     </li>
+                    <li>
+                        <a href="{{ route('admin.bussiness_category.list') }}"><i class="icon icon-single-04"></i><span class="nav-text">Bussiness Category</span></a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.designation.list') }}"><i class="icon icon-single-04"></i><span class="nav-text">Designation</span></a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -278,5 +284,4 @@
     <script src="{{ asset('/js/dashboard/dashboard-1.js') }}"></script>
     @yield('js')
 </body>
-
 </html>

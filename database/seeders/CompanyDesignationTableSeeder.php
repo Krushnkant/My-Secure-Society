@@ -18,7 +18,7 @@ class CompanyDesignationTableSeeder extends Seeder
         $Designation = array(
             array(
                 'designation_name' => "System Admin",
-                'eStatus' => 1,
+                'estatus' => 1,
                 'created_at' => Carbon::now(),
                 'created_by' => 1,
                 'updated_at' => Carbon::now(),
@@ -26,7 +26,7 @@ class CompanyDesignationTableSeeder extends Seeder
             ),
             // array(
             //     'designation_name' => "Sub Admin",
-            //     'eStatus' => 1,
+            //     'estatus' => 1,
             //     'CreatedAt' => Carbon::now(),
             //     'CreatedBy' => 1,
             //     'updated_at' => Carbon::now(),

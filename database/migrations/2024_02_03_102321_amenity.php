@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('AmenityDescription', 500)->nullable();
             $table->integer('IsChargeable')->enum([1, 2])->default(1)->comment('1 - True, 2 - false')->index();
             $table->integer('ApplicablePaymentType')->enum([1, 2, 3])->default(1)->comment('1 - Offline, 2 - Online, 3 - Other')->index();
-            $table->integer('eStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
+            $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

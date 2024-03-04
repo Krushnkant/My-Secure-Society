@@ -24,7 +24,7 @@ return new class extends Migration
             $table->date('DueDate');
             $table->decimal('InvoiceAmount', 10, 2);
             $table->integer('PenaltyStatus')->enum([1, 2])->default(1)->comment('1 - No Penalty, 2 - Penalty Applied')->index();
-            $table->integer('eStatus')->enum([1, 3])->default(1)->comment('1 - Active, 3 - Delete')->index();
+            $table->integer('estatus')->enum([1, 3])->default(1)->comment('1 - Active, 3 - Delete')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

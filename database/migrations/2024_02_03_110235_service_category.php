@@ -18,7 +18,7 @@ return new class extends Migration
             // $table->integer('ParentServiceCategoryId')->comment('0 For First Parent Category. Max upto 3')->index();
             $table->string('service_category_name', 50);
             $table->string('category_description', 400)->nullable();
-            $table->integer('eStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
+            $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
