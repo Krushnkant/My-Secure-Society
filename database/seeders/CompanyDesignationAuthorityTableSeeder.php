@@ -78,7 +78,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -90,7 +90,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -102,7 +102,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -114,7 +114,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -126,7 +126,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -138,7 +138,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -150,7 +150,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -162,7 +162,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -174,7 +174,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -186,7 +186,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -198,7 +198,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -210,7 +210,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -222,7 +222,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -234,7 +234,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -246,7 +246,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -258,7 +258,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -270,7 +270,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             ),
@@ -282,7 +282,7 @@ class CompanyDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "eStatus" => 1,
+                "estatus" => 1,
                 "updated_at" => Carbon::now(), 
                 "updated_by" => 1
             )

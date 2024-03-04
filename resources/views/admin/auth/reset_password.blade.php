@@ -11,9 +11,10 @@
                             <div class="auth-form">
                                 <h4 class="text-center mb-4">Reset Password</h4>
                                 <form id="ResetForm" method="post">
+                                    {{ csrf_field() }}
                                     <div class="form-group">
                                         <label><strong>Password</strong></label>
-                                        <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                        <input type="hidden" name="token" value="{{ $token }}">
                                         <input type="password" class="form-control" id="password" name="password" placeholder="********" value="{{ old('password') }}" autofocus>
                                         <div id="password-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                     </div>
@@ -38,56 +39,4 @@
     </div>
 </div>
 
-<script type="text/javascript">
-    $('#ResetForm').on('submit', function (e) {
-        $("#email-error").html("");
-        $("#password-error").html("");
-        var thi = $(this);
-        $('#resetSubmit').find('.loadericonfa').show();
-        $('#resetSubmit').prop('disabled',true);
-        e.preventDefault();
-        var formData = $(this).serialize();
-        $.ajax({
-            type: 'POST',
-            url: "{{ route('reset.password.post') }}",
-            data: formData,
-            success: function (res) {
-                console.log(res);
-                if(res.status == 'failed'){
-                    $('#resetSubmit').find('.loadericonfa').hide();
-                    $('#resetSubmit').prop('disabled',false);
-                   
-                    if (res.errors.password) {
-                        $('#password-error').show().text(res.errors.password);
-                    } else {
-                        $('#password-error').hide();
-                    }
-
-                    if (res.errors.confirm_password) {
-                        $('#confirm_password-error').show().text(res.errors.confirm_password);
-                    } else {
-                        $('#confirm_password-error').hide();
-                    }
-                }
-                if(res.status == 200){
-                    $('#resetSubmit').prop('disabled',false);
-                    toastr.success("You have Successfully Reset Password",'Success',{timeOut: 5000});
-                    location.href ="{{ url('/') }}";
-                    //return redirect()->back();
-                }
-
-                if(res.status == 400){
-                    $('#resetSubmit').find('.loadericonfa').hide();
-                    $('#resetSubmit').prop('disabled',false);
-                    toastr.error("Opps! You have entered invalid credentials",'Error',{timeOut: 5000});
-                }
-            },
-            error: function (data) {
-                $('#resetSubmit').find('.loadericonfa').hide();
-                $('#resetSubmit').prop('disabled',false);
-                toastr.error("Please try again",'Error',{timeOut: 5000});
-            }
-        });
-    });
-</script>
 @endsection

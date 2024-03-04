@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('ChargeName', 100);
             $table->integer('AmountType')->enum([1, 2])->default(2)->comment('1 - Percentage on Invoice Total Amount, 2 - Fix Amount')->index();
             $table->decimal('ChargeAmount', 10, 2);
-            $table->integer('eStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
+            $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

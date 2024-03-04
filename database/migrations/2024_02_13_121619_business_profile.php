@@ -27,7 +27,7 @@ return new class extends Migration
             $table->integer('city_id')->index();
             $table->integer('state_id')->index();
             $table->integer('counrty_id');
-            $table->integer('eStatus')->enum([1, 2, 3])->default(1)->index()->comment('1 - Active, 2 - InActive, 3 - Delete');
+            $table->integer('estatus')->enum([1, 2, 3])->default(1)->index()->comment('1 - Active, 2 - InActive, 3 - Delete');
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

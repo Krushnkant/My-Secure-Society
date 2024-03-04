@@ -1,48 +1,189 @@
-<?php 
 
-//dd($setting['company_address']);
-$CompanyAddress = isset($setting['company_address'])?$setting['company_address']:"";
-$CompanyName = isset($setting['company_name'])?$setting['company_name']:"";
-$CompanyLogo = isset($setting['company_logo'])?$setting['company_logo']:""; 
-$CompanyEmail = isset($setting['company_email'])?$setting['company_email']:"";
+<!DOCTYPE html>
 
-?>
-
-<!doctype html>
-<html>
-
+<html >
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gemver Affordable Luxury</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Template</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            font-size: 13px;
+            line-height: 21px;
+            color: #737883;
+            background: #f7fbff;
+            padding: 0;
+            display: flex;align-items: center;justify-content: center;
+            min-height: 100vh;
+        }
+        h1,h2,h3,h4,h5,h6 {
+            color: #334257;
+        }
+        * {
+            box-sizing: border-box
+        }
+
+        :root {
+           --base: #006161
+        }
+
+        .main-table {
+            width: 500px;
+            background: #FFFFFF;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .main-table-td {
+        }
+        img {
+            max-width: 100%;
+        }
+        .cmn-btn{
+            background: var(--base);
+            color: #fff;
+            padding: 8px 20px;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .mb-1 {
+            margin-bottom: 5px;
+        }
+        .mb-2 {
+            margin-bottom: 10px;
+        }
+        .mb-3 {
+            margin-bottom: 15px;
+        }
+        .mb-4 {
+            margin-bottom: 20px;
+        }
+        .mb-5 {
+            margin-bottom: 25px;
+        }
+        hr {
+            border-color : rgba(0, 170, 109, 0.3);
+            margin: 16px 0
+        }
+        .border-top {
+            border-top: 1px solid rgba(0, 170, 109, 0.3);
+            padding: 15px 0 10px;
+            display: block;
+        }
+        .d-block {
+            display: block;
+        }
+        .privacy {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+.privacy a {
+    text-decoration: none;
+    color: #334257;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+.privacy a span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #334257;
+    display: inline-block;
+    margin: 0 7px;
+}
+        .social {
+            margin: 15px 0 8px;
+            display: block;
+        }
+        .copyright{
+            text-align: center;
+            display: block;
+        }
+        div {
+            display: block;
+        }
+        a {
+            text-decoration: none;
+        }
+        .text-base {
+            color: var(--base);
+font-weight: 700
+        }
+        .mail-img-1 {
+            width: 140px;
+            height: 60px;
+            object-fit: contain
+        }
+        .mail-img-2 {
+            width: 130px;
+            height: 45px;
+            object-fit: contain
+        }
+        .mail-img-3 {
+            width: 100%;
+            height: 172px;
+            object-fit: cover
+        }
+.social img {
+width: 24px;    
+}
+    </style>
+
 </head>
-<body style="background-color: #f5f5f5;">
-    <div style="margin: auto; align-items: center; justify-content: center;margin-top: 50px;min-height: 100vh;">
-        <div style="font-family: 'Roboto', sans-serif; margin:20px; ">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <img src="{{ url('images/company/'.$CompanyLogo) }}" alt=""  style="width: 150px;">
-            </div>
-            
-            <div style="text-align: center; background-color: #fff; padding: 50px; min-width:650px; ">
-                <div style="margin-bottom: 25px; font-weight: 900;font-size: 18px;">Reset your gemver password.</div>
-              
-                <div style="margin-bottom: 5px; font-size: 13px;">
-                    {{ $data['message1'] }} <br>
-                <a href="{{ $data['message1'] }}" style="background-color: #4CAF50; border: none;color: white;text-align: center; text-decoration: none;display: inline-block;font-size: 16px;padding:5px;margin: 4px 2px;cursor: pointer;">Reset password</a>
 
 
-                    
-                </div>
-                <div style="margin-bottom: 5px; font-size: 13px;">
-                    Thank you!
-                    <div style="margin-top:3px;">{{ $CompanyName }} Team</div>
-                </div>
-            </div>
-          
-            <div style="text-align: center; margin-top: 50px;color: #b7b7b7;font-size: 13px;">
-                © 2022 {{ $CompanyName }} 
-            </div>
-        </div>
-    </div>
+<body style="background-color: #e9ecef;padding:15px">
+
+    <table  class="main-table">
+        <tbody>
+            <tr>
+                <td class="main-table-td">
+                    <img class="mail-img-1" src='{{ asset('/image/password.png') }}' id="logoViewer" alt="">
+                    <h2 id="mail-title" class="mt-2"> 
+                        Change Password Request 
+                    </h2>
+                    <div class="mb-1" id="mail-body">
+                        <div class="mb-1" id="mail-body">
+                            <p>The following user has forgotten his password &amp; requested to change/reset their password.&nbsp;</p>
+                        </div>
+                    </div>
+                    @if ($data['url'])
+                    <span class="d-block text-center" style="margin-top: 16px">
+                    <a href="{{ $data['url']??'#' }}" class="cmn-btn" id="mail-button">{{ $data['url'] }}</a>
+                    </span>
+                    @endif
+
+                    <hr>
+                    <div class="mb-2" id="mail-footer">
+                        Please contact us for any queries, we’re always happy to help.
+                    </div>
+                    <div>
+                       Thanks & Regards,
+                    </div>
+                    <div class="mb-4">
+                        {{ $company_name }}
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="copyright" id="mail-copyright">
+                        Copyright 2024 {{ $company_name }}. All right reserved
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
 </body>
-
 </html>
+

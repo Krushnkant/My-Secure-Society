@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigIncrements('company_user_designation_id')->index();
             $table->integer('user_id')->index();
             $table->integer('company_designation_id')->index();
-            $table->integer('eStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
+            $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
             $table->softDeletes('deleted_at');

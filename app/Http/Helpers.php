@@ -11,9 +11,8 @@ class Helpers{
 	
 	public static function MailSending($template, $data, $to, $sub){
 		$fromEmail = env('MAIL_USERNAME');
-		$fromName = env('MAIL_USERNAME');
-        $settings = [];
-        $data = array('setting'=> $settings,'data'=>$data);
+		$fromName = env('MAIL_FROM_NAME');
+        $data = array('company_name'=> env('MAIL_FROM_NAME'),'data'=>$data);
 		Mail::send($template, $data, function($message) use ($fromEmail, $fromName, $to, $sub) {
          $message->from($fromEmail,$fromName);
          $message->to($to);
@@ -34,4 +33,6 @@ class Helpers{
             return null;
         }
     }
+
+    
 }
