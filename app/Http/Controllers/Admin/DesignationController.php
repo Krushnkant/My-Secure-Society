@@ -80,12 +80,23 @@ class DesignationController extends Controller
         }
     }
 
-    public function editdesignation($id){
+    public function edit($id){
         $designation = Designation::find($id);
         return response()->json($designation);
     }
 
-    public function changedesignationstatus($id){
+    public function delete($id){
+        $designation = Designation::find($id);
+        if ($designation){
+            $designation->estatus = 3;
+            $designation->save();
+            $designation->delete();
+            return response()->json(['status' => '200']);
+        }
+        return response()->json(['status' => '400']);
+    }
+
+    public function changestatus($id){
         $designation = Designation::find($id);
         if ($designation->estatus==1){
             $designation->estatus = 2;
@@ -97,6 +108,14 @@ class DesignationController extends Controller
             $designation->save();
             return response()->json(['status' => '200','action' =>'active']);
         }
+    }
+
+    public function multipledelete(Request $request)
+    {
+        $ids = $request->input('ids');
+        Designation::whereIn('company_designation_id', $ids)->delete();
+
+        return response()->json(['status' => '200']);
     }
 
 }

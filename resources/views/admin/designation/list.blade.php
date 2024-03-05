@@ -17,8 +17,8 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
-                            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#DesignationModal">Add New</button>
-                            <button type="button" class="btn btn-outline-danger sweet-ajax1" >Delete</button>
+                            <button type="button" id="AddBtn_Designation" class="btn btn-outline-primary" data-toggle="modal" data-target="#DesignationModal">Add New</button>
+                            <button type="button" id="deleteSelected" class="btn btn-outline-danger sweet-ajax1" >Selected Delete</button>
                         </div>
                     </div>
                     <div class="tab-content">
@@ -26,6 +26,7 @@
                             <table id="designationTable" class="display" style="width:100%">
                                 <thead class="">
                                     <tr>
+                                        <th><input type="checkbox" id="selectAll"></th>
                                         <th>Designation Name</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -33,6 +34,7 @@
                                 </thead>
                                 <tfoot>
                                     <tr>
+                                        <th></th>
                                         <th>Designation Name</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -128,6 +130,14 @@
                 searching: true,
                 aoColumns: [
                     {
+                        width: "5%",
+                        data: 'id',
+                        orderable: false,
+                        render: function(data, type, row) {
+                            return `<input type="checkbox" class="select-checkbox" data-id="${row.company_designation_id}">`;
+                        }
+                    },
+                    {
                         width: "20%",
                         data: 'designation_name',
                     },
@@ -148,16 +158,78 @@
                         render: function(data, type, row) {
                             return `<span>
                                 <a href="#" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.company_designation_id}"><i class="fa fa-pencil color-muted"></i> </a>
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="delete" id="deleteBtn" data-id="${row.company_designation_id}"><i class="fa fa-close color-danger"></i></a>
                             </span>
                             `; 
                         }
                     }
-                ]
+                ],
+                 initComplete: function() {
+                    // Handle "Select All" checkbox change event
+                    $('#selectAll').on('change', function() {
+                        if (this.checked) {
+                            $('.select-checkbox').prop('checked', true);
+                        } else {
+                            $('.select-checkbox').prop('checked', false);
+                        }
+                    });
+
+                    
+                    $('#designationTable tbody').on('change', '.select-checkbox', function() {
+                        // Check if all checkboxes are checked
+                        var allChecked = $('.select-checkbox:checked').length === $('.select-checkbox').length;
+                        $('#selectAll').prop('checked', allChecked);
+                    });
+
+                    // Example AJAX code for deleting selected rows
+                    $('#deleteSelected').on('click', function() {
+                        var selectedRows = $('.select-checkbox:checked');
+                        if (selectedRows.length === 0) {
+                            toastr.error("Please select at least one row to delete.",'Error',{timeOut: 5000});
+                            return;
+                        }
+                        var selectedIds = [];
+                        swal({
+                            title: "Are you sure to delete ?",
+                            text: "You will not be able to recover this imaginary file !!",
+                            type: "warning",
+                            showCancelButton: !0,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, delete it !!",
+                            closeOnConfirm: !1,
+                            closeOnCancel: !0
+                        })
+                        .then((willDelete) => {
+                        if (willDelete.value) {
+
+                        $('.select-checkbox:checked').each(function() {
+                            selectedIds.push($(this).data('id'));
+                        });
+
+                        // Perform AJAX request to delete selected rows
+                        $.ajax({
+                            url: "{{ route('admin.designation.multipledelete') }}",
+                            type: "POST",
+                            data: { ids: selectedIds },
+                            success: function(response) {
+                                // Handle success response
+                                console.log(response);
+                                toastr.success("Designation Deleted",'Success',{timeOut: 5000});
+                                getTableData('',true);
+                            },
+                            error: function(xhr, status, error) {
+                                toastr.error("Please try again",'Error',{timeOut: 5000});
+                            }
+                        });
+                    } 
+            });
+                    });
+         
+                }
             });
         }
         
-        $(".sweet-ajax1").on("click", function() {
+        $('body').on('click', '#deleteBtn', function () {
             swal({
                 title: "Are you sure to delete ?",
                 text: "You will not be able to recover this imaginary file !!",
@@ -165,11 +237,31 @@
                 showCancelButton: !0,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, delete it !!",
-                closeOnConfirm: !1
-            }, function() {
-                alert();
-                swal("Deleted !!", "Hey, your imaginary file has been deleted !!", "success")
+                closeOnConfirm: !1,
+                closeOnCancel: !0
             })
+            .then((willDelete) => {
+            if (willDelete.value) {
+            var remove_id = $(this).attr('data-id');
+            $.ajax({
+                type: 'GET',
+                url: "{{ url('admin/designation') }}" +'/' + remove_id +'/delete',
+                success: function (res) {
+                    if(res.status == 200){
+                        toastr.success("Designation Deleted",'Success',{timeOut: 5000});
+                        getTableData('',true);
+                    }
+
+                    if(res.status == 400){
+                        toastr.error("Please try again",'Error',{timeOut: 5000});
+                    }
+                },
+                error: function (data) {
+                    toastr.error("Please try again",'Error',{timeOut: 5000});
+                }
+            });
+            } 
+            });
         });
 
         $('body').on('click', '#save_newBtn', function () {
@@ -319,6 +411,10 @@
             $('#designation_name').val(data.designation_name);
             $("#DesignationModal").modal('show');
         });
+
+        
+
+    
     });
     </script>
 @endsection
