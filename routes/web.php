@@ -44,11 +44,14 @@ Route::group(['prefix'=>'admin','middleware'=>['auth'],'as'=>'admin.'],function 
 
 
     Route::get('designation',[DesignationController::class,'index'])->name('designation.list');
-    Route::post('alldesignationlist',[DesignationController::class,'alldesignationlist'])->name('designation.alldesignationlist');
-    Route::post('addorupdatedesignation',[DesignationController::class,'addorupdatedesignation'])->name('designation.addorupdatedesignation');
+    Route::post('designation/listdata',[DesignationController::class,'listdata'])->name('designation.listdata');
+    Route::post('designation/addorupdate',[DesignationController::class,'addorupdate'])->name('designation.addorupdate');
     Route::get('designation/{id}/edit',[DesignationController::class,'edit'])->name('designation.edit');
     Route::get('designation/{id}/delete',[DesignationController::class,'delete'])->name('designation.delete');
-    Route::get('changedesignationstatus/{id}',[DesignationController::class,'changestatus'])->name('designation.changedesignationstatus');
+    Route::get('designation/changestatus/{id}',[DesignationController::class,'changestatus'])->name('designation.changestatus');
     Route::post('designation/multipledelete', [DesignationController::class,'multipledelete'])->name('designation.multipledelete');
+
+    Route::get('designation/{id}/permission',[DesignationController::class,'permissiondesignation'])->name('designation.permissiondesignation');
+    Route::post('designation/savepermission',[DesignationController::class,'savepermission'])->name('designation.savepermission');
 
 });

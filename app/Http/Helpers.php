@@ -34,5 +34,23 @@ class Helpers{
         }
     }
 
+    public static function getModulesArray()
+    {
+        return [
+            1 => 'Company Designation',
+            2 => 'Company Designation Authority',
+            3 => 'Company User & User Designation',
+            4 => 'Government Emergency No',
+            5 => 'Business Category',
+            6 => 'Post Status Banner',
+            7 => 'Society',
+            8 => 'Society Block',
+            9 => 'Block Flat',
+            10 => 'Subscription Order',
+            11 => 'Order Payment',
+            12 => 'Company Profile',
+        ];
+    }
+
     
 }
