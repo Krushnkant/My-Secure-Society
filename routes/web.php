@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\admin\BussinessCategoryController;
+use App\Http\Controllers\admin\BusinessCategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DesignationController;
 use App\Http\Controllers\Admin\ProductController;
@@ -37,10 +37,10 @@ Route::group(['prefix'=>'admin','middleware'=>['auth'],'as'=>'admin.'],function 
     Route::post('/get-products', [ProductController::class, 'getProducts'])->name('products.getProducts');
 
 
-    Route::get('bussiness_category',[BussinessCategoryController::class,'index'])->name('bussiness_category.list');
-    Route::get('bussiness_category/create',[BussinessCategoryController::class,'create'])->name('bussiness_category.add');
-    Route::post('bussiness_category/save',[BussinessCategoryController::class,'save'])->name('bussiness_category.save');
-    Route::post('allbussinesscategorylist',[BussinessCategoryController::class,'allbussinesscategorylist'])->name('allbussinesscategorylist');
+    Route::get('business_category',[BusinessCategoryController::class,'index'])->name('business_category.list');
+    Route::get('business_category/create',[BusinessCategoryController::class,'create'])->name('business_category.add');
+    Route::post('bssiness_category/save',[BusinessCategoryController::class,'save'])->name('business_category.save');
+    Route::post('allbusinesscategorylist',[BusinessCategoryController::class,'allbusinesscategorylist'])->name('allbusinesscategorylist');
 
 
     Route::get('designation',[DesignationController::class,'index'])->name('designation.list');
