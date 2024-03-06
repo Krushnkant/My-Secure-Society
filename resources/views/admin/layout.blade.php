@@ -188,7 +188,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="{{ route('admin.bussiness_category.list') }}"><i class="icon icon-single-04"></i><span class="nav-text">Bussiness Category</span></a>
+                        <a href="{{ route('admin.business_category.list') }}"><i class="icon icon-single-04"></i><span class="nav-text">Business Category</span></a>
                     </li>
                     <li>
                         <a href="{{ route('admin.designation.list') }}"><i class="icon icon-single-04"></i><span class="nav-text">Designation</span></a>
