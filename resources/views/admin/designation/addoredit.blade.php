@@ -13,7 +13,7 @@
                     <div class="row">
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Designation Name *</label>
+                                <label class="text-label">Designation Name <span class="text-danger">*</span></label>
                                 <input type="text" name="designation_name" id="designation_name" class="form-control" placeholder="Designation Name">
                                 <div id="designation_name-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                             </div>

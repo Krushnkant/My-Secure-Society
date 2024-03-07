@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Helpers;
+use App\Models\Designation;
 use App\Models\User;
+use App\Models\UserDesignation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     public function index()
     {
-        return view('admin.users.list');
+        $designations = Designation::where('estatus',1)->get();
+        return view('admin.users.list',compact('designations'));
     }
     
     public function listdata(Request $request){
@@ -49,39 +52,77 @@ class UserController extends Controller
 
     public function addorupdate(Request $request){
         $messages = [
-            'full_name.required' =>'Please provide a full name',
+            'full_name.required' => 'Please provide a FullName',
+            'mobile_no.required' => 'Please provide a Mobile No.',
+            'email.required' => 'Please provide a Email Address.',
+            'password.required' => 'Please provide a Password.',
         ];
-
-        $validator = Validator::make($request->all(), [
-            'full_name' => 'required',
-        ], $messages);
+        if(!isset($request->id)){
+            $validator = Validator::make($request->all(), [
+                'full_name' => 'required',
+                'mobile_no' => 'required|numeric|digits:10|unique:user,mobile_no,NULL,id,deleted_at,NULL',
+                'email' => 'required|email|unique:user,email,NULL,id,deleted_at,NULL',
+                'password' => 'required',
+            ], $messages);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'full_name' => 'required',
+                'mobile_no' => 'required|numeric|digits:10',
+                'email' => 'required|email',
+            ], $messages);
+        }
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }
         if(!isset($request->id)){
-            $user = new Designation();
+            $user = new User();
             $user->full_name = $request->full_name;
+            $user->user_code = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
+            $user->user_type = $request->user_type;
+            $user->email = $request->email;
+            $user->password = Hash::make($request->password);
+            $user->mobile_no = $request->mobile_no;
+            $user->gender = $request->gender;
+            $user->blood_group = $request->blood_group;
             $user->created_by = Auth::user()->user_id;
             $user->updated_by = Auth::user()->user_id;
             $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
             $user->save();
-
-            $this->defalt_permission($user->user_id);
-            
+            $this->addUserDesignation($user,$request);
             return response()->json(['status' => '200', 'action' => 'add']);
-        }
-        else{
+        }else{
             $user = User::find($request->id);
             if ($user) {
                 $user->full_name = $request->full_name;
+                $user->user_type = $request->user_type;
+                $user->email = $request->email;
+                $user->mobile_no = $request->mobile_no;
+                $user->gender = $request->gender;
+                $user->blood_group = $request->blood_group;
                 $user->updated_by = Auth::user()->user_id;
                 $user->save();
+                $this->addUserDesignation($user,$request);
                 return response()->json(['status' => '200', 'action' => 'update']);
             }
+           
             return response()->json(['status' => '400']);
         }
+
     }
+
+    public function addUserDesignation($user,$request){
+        $user_designation = UserDesignation::where('user_id',$user->user_id)->first();
+        if($user_designation){
+            $user_designation->company_designation_id = $request->designation;
+        }else{
+            $user_designation =  New UserDesignation();
+            $user_designation->user_id = $user->user_id;
+            $user_designation->company_designation_id = $request->designation;
+        }
+        $user_designation->save();
+    }
+    
 
     public function edit($id){
         $user = User::find($id);
