@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('admin.layout.app')
 @section('title', 'Designation')
 
 @section('pageTitleAndBreadcrumb')
@@ -29,7 +29,7 @@
                                                     
                                 
                                                     <div class="col-lg-8 col-md-8 col-sm-12  table-responsive" id="">
-                                                      
+                
                                                             <table id="" class="table table-striped customNewtable userPermissionFormTable" style="">
                                                                 <thead>
                                                                     <tr>
