@@ -1,10 +1,10 @@
-@extends('admin.layout')
-@section('title', 'Business Category')
+@extends('admin.layout.app')
+@section('title', 'Business Categoty')
 
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>Business Category</h4>
+            <h4>Business Categoty</h4>
         </div>
     </div>
 @endsection
@@ -17,13 +17,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
-                            <button type="button" id="AddBtn_BusinessCategory" class="btn btn-outline-primary" data-toggle="modal" data-target="#BusinessCategoryModal">Add New</button>
+                            <button type="button" id="AddBtn_BusinessCategoty" class="btn btn-outline-primary" data-toggle="modal" data-target="#BusinessCategoryModal">Add New</button>
                             <button type="button" id="deleteSelected" class="btn btn-outline-danger sweet-ajax1" >Selected Delete</button>
                         </div>
                     </div>
                     <div class="tab-content">
                         <div class="table-responsive">
-                            <table id="businessCategoryTable" class="display" style="width:100%">
+                            <table id="businesscategoryTable" class="display" style="width:100%">
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
@@ -43,38 +43,9 @@
                             </table>
                         </div>
                     </div>
-                    <div class="modal modal-right fade" id="BusinessCategoryModal" tabindex="-1" role="dialog" aria-labelledby="BusinessCategoryModal">
-                        <div class="modal-dialog modal-xl" role="document">
-                            <div class="modal-content">
-                                <form class="form-valide" id="categoryform" action="#" method="post">
-                                {{ csrf_field() }}
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Add Category</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body px-5">
-                                        <div class="row">
-                                            <div class="col-lg-6 mb-2">
-                                                <div class="form-group">
-                                                    <label class="text-label">Category Name *</label>
-                                                    <input type="text" name="category_name" id="category_name" class="form-control" placeholder="Designation Name">
-                                                    <div id="category_name-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer modal-footer-fixed px-5">
-                                        <input type="hidden" name="id" id="id">
-                                        <button type="button" id="save_newBtn" class="btn btn-primary">Save & New <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
-                                        <button type="button" id="save_closeBtn" class="btn btn-outline-primary">Save & Close <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
-                                        <button type="button" class="btn btn-light ml-auto" data-dismiss="modal">Close</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    
+                    @include('admin.business_category.addoredit')
+                   
                 </div>
             </div>
         </div>
@@ -91,7 +62,7 @@
     <script  type="text/javascript">
 
         $(document).ready(function() {
-            getTableData('',true);
+            getTableData('',1);
         });
 
         $.ajaxSetup({
@@ -101,11 +72,11 @@
         });
 
         function getTableData(tab_type='', is_clearState=false) {
-            $('#categoryTable').DataTable({
-                processing: true,
-                serverSide: true,
-                destroy: true,
-                processing: true,
+            $('#businesscategoryTable').DataTable({
+                processing: 1,
+                serverSide: 1,
+                destroy: 1,
+                processing: 1,
                 "language": {
                     'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>'
                 },
@@ -114,11 +85,11 @@
                         return false;
                     }
                     else{
-                        return true;
+                        return 1;
                     }
                 },
                 ajax: {
-                    url: "{{ route('admin.category.allbusinesscategorylist') }}",
+                    url: "{{ route('admin.businesscategory.listdata') }}",
                     type: "POST",
                     data: function (data) {
                         data.search = $('input[type="search"]').val();
@@ -127,7 +98,7 @@
                 },
                 order: ['1', 'DESC'],
                 pageLength: 10,
-                searching: true,
+                searching: 1,
                 aoColumns: [
                     {
                         width: "5%",
@@ -144,10 +115,11 @@
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
+                        orderable: false,
                         render: function(data, type, row) {
                             // Add the HTML for the status update switch
                             return `<label class="switch">
-                                    <input type="checkbox" onchange="chageDesignationStatus(${row.company_designation_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
+                                    <input type="checkbox" id="statuscheck_${row.business_category_id}" onchange="changeStatus(${row.business_category_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
                                     <span class="slider"></span>
                             </label>`;
                         }
@@ -155,10 +127,12 @@
                     {
                         data: 'id',
                         width: "5%",
+                        orderable: false,
                         render: function(data, type, row) {
                             return `<span>
-                                <a href="#" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.company_designation_id}"><i class="fa fa-pencil color-muted"></i> </a>
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="delete" id="deleteBtn" data-id="${row.company_designation_id}"><i class="fa fa-close color-danger"></i></a>
+                                
+                                <a href="#" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.business_category_id}"><i class="fa fa-pencil color-muted"></i> </a>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.business_category_id}"><i class="fa fa-close color-danger"></i></a>
                             </span>
                             `; 
                         }
@@ -168,14 +142,14 @@
                     // Handle "Select All" checkbox change event
                     $('#selectAll').on('change', function() {
                         if (this.checked) {
-                            $('.select-checkbox').prop('checked', true);
+                            $('.select-checkbox').prop('checked', 1);
                         } else {
                             $('.select-checkbox').prop('checked', false);
                         }
                     });
 
                     
-                    $('#designationTable tbody').on('change', '.select-checkbox', function() {
+                    $('#businesscategoryTable tbody').on('change', '.select-checkbox', function() {
                         // Check if all checkboxes are checked
                         var allChecked = $('.select-checkbox:checked').length === $('.select-checkbox').length;
                         $('#selectAll').prop('checked', allChecked);
@@ -208,21 +182,21 @@
 
                         // Perform AJAX request to delete selected rows
                         $.ajax({
-                            url: "{{ route('admin.designation.multipledelete') }}",
+                            url: "{{ route('admin.businesscategory.multipledelete') }}",
                             type: "POST",
                             data: { ids: selectedIds },
                             success: function(response) {
                                 // Handle success response
                                 console.log(response);
-                                toastr.success("Designation Deleted",'Success',{timeOut: 5000});
-                                getTableData('',true);
+                                toastr.success("Category Deleted",'Success',{timeOut: 5000});
+                                getTableData('',1);
                             },
                             error: function(xhr, status, error) {
                                 toastr.error("Please try again",'Error',{timeOut: 5000});
                             }
                         });
                     } 
-            });
+                     });
                     });
          
                 }
@@ -245,11 +219,11 @@
             var remove_id = $(this).attr('data-id');
             $.ajax({
                 type: 'GET',
-                url: "{{ url('admin/designation') }}" +'/' + remove_id +'/delete',
+                url: "{{ url('admin/businesscategory') }}" +'/' + remove_id +'/delete',
                 success: function (res) {
                     if(res.status == 200){
-                        toastr.success("Designation Deleted",'Success',{timeOut: 5000});
-                        getTableData('',true);
+                        toastr.success("Category Deleted",'Success',{timeOut: 5000});
+                        getTableData('',1);
                     }
 
                     if(res.status == 400){
@@ -265,30 +239,30 @@
         });
 
         $('body').on('click', '#save_newBtn', function () {
-            save_designation($(this),'save_new');
+            save_category($(this),'save_new');
         });
 
         $('body').on('click', '#save_closeBtn', function () {
-            save_designation($(this),'save_close');
+            save_category($(this),'save_close');
         });
 
-        function save_designation(btn,btn_type){
-            $(btn).prop('disabled',true);
+        function save_category(btn,btn_type){
+            $(btn).prop('disabled',1);
             $(btn).find('.loadericonfa').show();
-            var formData = $("#designationform").serializeArray();
+            var formData = $("#businesscategoryform").serializeArray();
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/addorupdatedesignation') }}",
+                url: "{{ url('admin/businesscategory/addorupdate') }}",
                 data: formData,
                 success: function (res) {
                     if(res.status == 'failed'){
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled',false);
-                        if (res.errors.designation_name) {
-                            $('#designation_name-error').show().text(res.errors.designation_name);
+                        if (res.errors.business_category_name) {
+                            $('#business_category_name-error').show().text(res.errors.business_category_name);
                         } else {
-                            $('#designation_name-error').hide();
+                            $('#business_category_name-error').hide();
                         }
                     }
 
@@ -298,10 +272,10 @@
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled',false);
                             if(res.action == 'add'){
-                                toastr.success("Designation Added",'Success',{timeOut: 5000});
+                                toastr.success("Category Added",'Success',{timeOut: 5000});
                             }
                             if(res.action == 'update'){
-                                toastr.success("Designation Updated",'Success',{timeOut: 5000});
+                                toastr.success("Category Updated",'Success',{timeOut: 5000});
                             }
                         }
 
@@ -310,20 +284,20 @@
                             $(btn).prop('disabled',false);
                             $("#BusinessCategoryModal").find('form').trigger('reset');
                             $('#id').val("");
-                            $('#designation_name-error').html("");
+                            $('#business_category_name-error').html("");
                             $("#BusinessCategoryModal").find("#save_newBtn").removeAttr('data-action');
                             $("#BusinessCategoryModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#BusinessCategoryModal").find("#save_newBtn").removeAttr('data-id');
                             $("#BusinessCategoryModal").find("#save_closeBtn").removeAttr('data-id');
-                            $("#designation_name").focus();
+                            $("#business_category_name").focus();
                             if(res.action == 'add'){
-                                toastr.success("Designation Added",'Success',{timeOut: 5000});
+                                toastr.success("Category Added",'Success',{timeOut: 5000});
                             }
                             if(res.action == 'update'){
-                                toastr.success("Designation Updated",'Success',{timeOut: 5000});
+                                toastr.success("Category Updated",'Success',{timeOut: 5000});
                             }
                         }
-                        getTableData('',true);
+                        getTableData('',1);
                     }
 
                     if(res.status == 400){
@@ -342,54 +316,32 @@
             });
         }
 
-
-        $("#saveNew").on("click", function () {
-            toastr.success("Product has been Updated Successfully!", "Success", {
-                timeOut: 500000000,
-                closeButton: !0,
-                debug: !1,
-                newestOnTop: !0,
-                progressBar: !0,
-                positionClass: "toast-top-right",
-                preventDuplicates: !0,
-                onclick: null,
-                showDuration: "300",
-                hideDuration: "1000",
-                extendedTimeOut: "1000",
-                showEasing: "swing",
-                hideEasing: "linear",
-                showMethod: "fadeIn",
-                hideMethod: "fadeOut",
-                tapToDismiss: !1
-            })
-        });
-
-        $('body').on('click', '#AddBtn_Designation', function () {     
-            $('#BusinessCategoryModal').find('.modal-title').html("Add Designation");
+        $('body').on('click', '#AddBtn_BusinessCategory', function () {     
+            $('#BusinessCategoryModal').find('.modal-title').html("Add Business Category");
             $("#BusinessCategoryModal").find('form').trigger('reset');
             $('#id').val("");
-            $('#designation_name-error').html("");
+            $('#business_category_name-error').html("");
             $("#BusinessCategoryModal").find("#save_newBtn").removeAttr('data-action');
             $("#BusinessCategoryModal").find("#save_closeBtn").removeAttr('data-action');
             $("#BusinessCategoryModal").find("#save_newBtn").removeAttr('data-id');
             $("#BusinessCategoryModal").find("#save_closeBtn").removeAttr('data-id');
-            $("#designation_name").focus();
+            $("#business_category_name").focus();
         });
 
-        function chageDesignationStatus(id) {
+        function changeStatus(id) {
             $.ajax({
                 type: 'GET',
-                url: "{{ url('admin/changedesignationstatus') }}" +'/' + id,
+                url: "{{ url('admin/businesscategory/changestatus') }}" +'/' + id,
                 success: function (res) {
                     if(res.status == 200 && res.action=='deactive'){
-                        $("#Designationstatuscheck_"+id).val(2);
-                        $("#Designationstatuscheck_"+id).prop('checked',false);
-                        toastr.success("Designation Deactivated",'Success',{timeOut: 5000});
+                        $("#statuscheck_"+id).val(2);
+                        $("#statuscheck_"+id).prop('checked',false);
+                        toastr.success("Category Deactivated",'Success',{timeOut: 5000});
                     }
                     if(res.status == 200 && res.action=='active'){
-                        $("#Designationstatuscheck_"+id).val(1);
-                        $("#Designationstatuscheck_"+id).prop('checked',true);
-                        toastr.success("Designation activated",'Success',{timeOut: 5000});
+                        $("#statuscheck_"+id).val(1);
+                        $("#statuscheck_"+id).prop('checked',1);
+                        toastr.success("Category activated",'Success',{timeOut: 5000});
                     }
                 },
                 error: function (data) {
@@ -401,20 +353,17 @@
         $('body').on('click', '#editBtn', function () {
         var edit_id = $(this).attr('data-id');
        
-        $('#BusinessCategoryModal').find('.modal-title').html("Edit Designation");
-        $.get("{{ url('admin/designation') }}" +'/' + edit_id +'/edit', function (data) {
+        $('#BusinessCategoryModal').find('.modal-title').html("Edit Business Category");
+        $.get("{{ url('admin/businesscategory') }}" +'/' + edit_id +'/edit', function (data) {
             $('#BusinessCategoryModal').find('#save_newBtn').attr("data-action","update");
             $('#BusinessCategoryModal').find('#save_closeBtn').attr("data-action","update");
             $('#BusinessCategoryModal').find('#save_newBtn').attr("data-id",edit_id);
             $('#BusinessCategoryModal').find('#save_closeBtn').attr("data-id",edit_id);
-            $('#id').val(data.company_designation_id);
-            $('#designation_name').val(data.designation_name);
+            $('#id').val(data.business_category_id);
+            $('#business_category_name').val(data.business_category_name);
             $("#BusinessCategoryModal").modal('show');
         });
-
-        
-
-    
     });
+
     </script>
 @endsection
