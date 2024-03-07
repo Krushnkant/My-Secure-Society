@@ -10,4 +10,5 @@ class CompanyDesignationAuthority extends Model
     use HasFactory;
     protected $table = 'company_designation_authority';
     protected $primaryKey = 'designation_auth_id';
+    public $timestamps = false;
 }

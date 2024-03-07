@@ -101,6 +101,7 @@ class UserController extends Controller
                 $user->gender = $request->gender;
                 $user->blood_group = $request->blood_group;
                 $user->updated_by = Auth::user()->user_id;
+                $user->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
                 $user->save();
                 $this->addUserDesignation($user,$request);
                 return response()->json(['status' => '200', 'action' => 'update']);
@@ -115,10 +116,14 @@ class UserController extends Controller
         $user_designation = UserDesignation::where('user_id',$user->user_id)->first();
         if($user_designation){
             $user_designation->company_designation_id = $request->designation;
+            $user_designation->updated_by = Auth::user()->user_id;
+            $user_designation->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
         }else{
             $user_designation =  New UserDesignation();
             $user_designation->user_id = $user->user_id;
             $user_designation->company_designation_id = $request->designation;
+            $user_designation->updated_by = Auth::user()->user_id;
+            $user_designation->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
         }
         $user_designation->save();
     }

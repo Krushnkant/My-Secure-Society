@@ -18,18 +18,17 @@ class UserPermission
     {
         if( Auth::check() )
         {
-           
-            if (getUserType()==1){
+            $designation_id = getUserDesignation();
+            if ($designation_id==1){
                 return $next($request);
             }
             elseif ($request->route()->getName() == 'admin.dashboard'){
                 return $next($request);
             }
             else{
-                $inner_routes = explode(",",$project_page['inner_routes']);
-                if (isset($project_page['inner_routes']) && in_array($request->route()->getName(),$inner_routes)){
-                    $page_id = $project_page['id'];
-                    $user_permission = \App\Models\CompanyDesignationAuthority::where('company_designation_id',Auth::user()->user_type)
+                $modules = getModulesArray();
+                foreach($modules as $key => $module){
+                    $user_permission = \App\Models\CompanyDesignationAuthority::where('company_designation_id',$designation_id)->where('eAuthority',$key)
                         ->where(function($query) {
                             $query->where('can_view',1)
                                 ->orWhere('can_add', 1)
@@ -37,30 +36,40 @@ class UserPermission
                                 ->orWhere('can_delete', 1)
                                 ->orWhere('can_print', 1);
                         })
-                        ->first();
+                        ->first(); 
                     if ($user_permission){
-                        if ($request->route()->getName()=='admin.designation.list' && $user_permission->can_view == 0){
+                        if ($request->route()->getName()=='admin.designation.list' && $key == 1 && $user_permission->can_view == 2){
                             return redirect(route('admin.403_page'));
                         }
-                        else if ($request->route()->getName()=='admin.designation.addorupdate' && $user_permission->can_add == 0){
+                        else if ($request->route()->getName()=='admin.designation.addorupdate' && $key == 1 && $user_permission->can_add == 2){
                             return redirect(route('admin.403_page'));
                         }
-                        else if ($request->route()->getName()=='admin.users.edit' && $user_permission->can_edit == 0){
+                        else if ($request->route()->getName()=='admin.usdesignationers.edit' && $key == 1 && $user_permission->can_edit == 2){
                             return redirect(route('admin.403_page'));
                         }
-                        else if ($request->route()->getName()=='admin.users.delete' && $user_permission->can_delete == 0){
+                        else if ($request->route()->getName()=='admin.designation.delete' && $key == 1 && $user_permission->can_delete == 2){
                             return redirect(route('admin.403_page'));
                         }
-                        else if ($request->route()->getName()=='admin.users.print' && $user_permission->can_print == 0){
+                        else if ($request->route()->getName()=='admin.designation.print' && $key == 1 && $user_permission->can_print == 2){
                             return redirect(route('admin.403_page'));
-                        }else{
-                            return $next($request);
+                        }else if ($request->route()->getName()=='admin.businesscategory.list' && $key == 5 && $user_permission->can_view == 2){
+                            return redirect(route('admin.403_page'));
                         }
-                    }else{
-                        return redirect(route('admin.403_page'));
+                        else if ($request->route()->getName()=='admin.businesscategory.addorupdate' && $key == 5 && $user_permission->can_add == 2){
+                            return redirect(route('admin.403_page'));
+                        }
+                        else if ($request->route()->getName()=='admin.businesscategory.edit' && $key == 5 && $user_permission->can_edit == 2){
+                            return redirect(route('admin.403_page'));
+                        }
+                        else if ($request->route()->getName()=='admin.businesscategory.delete' && $key == 5 && $user_permission->can_delete == 2){
+                            return redirect(route('admin.403_page'));
+                        }
+                        else if ($request->route()->getName()=='admin.businesscategory.print' && $key == 5 && $user_permission->can_print == 2){
+                            return redirect(route('admin.403_page'));
+                        }
                     }
-                    
                 }
+                return $next($request);
             }
         }
 

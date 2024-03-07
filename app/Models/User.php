@@ -35,5 +35,10 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function userdesignation()
+    {
+        return $this->hasOne(UserDesignation::class,'user_id', 'user_id');
+    }
+
    
 }
