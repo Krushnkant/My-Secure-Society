@@ -13,62 +13,81 @@
                     <div class="row">
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Full Name *</label>
+                                <label class="text-label">Full Name <span class="text-danger">*</span></label>
                                 <input type="text" name="full_name" id="full_name" class="form-control" placeholder="Full Name">
                                 <div id="full_name-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                             </div>
                         </div>
-                        <div class="col-lg-6 mb-2">1 - Company Admin User, 2 - Resident App User, 3 - Guard App User, 4 - App User, 5 - Daily Help User, 6 - Staff Member
+                        <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">User Type *</label>
-                                <select class="single-select-placeholder js-states">
-                                    <option value="1">Super Admin</option>
-                                    <option value="Hawaii">Hawaii</option>
-                                    <option value="California">California</option>
+                                <label class="text-label">Email Address <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email Address">
+                                    <div id="email-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-2">
+                            <div class="form-group">
+                                <label class="text-label">Designation <span class="text-danger">*</span></label>
+                                <select class="single-select-placeholder js-states" name="designation">
+                                    @foreach ($designations as $designation)
+                                         <option value="{{ $designation->company_designation_id }}">{{ $designation->designation_name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Email Address*</label>
+                                <label class="text-label">User Type <span class="text-danger">*</span></label>
+                                <select class="single-select-placeholder js-states" name="user_type">
+                                    <option value="1">Company Admin User</option>
+                                    <option value="2">Resident App User</option>
+                                    <option value="3">Guard App User</option>
+                                    <option value="4">App User</option>
+                                    <option value="5">Daily Help User</option>
+                                    <option value="6">Staff Member</option>
+                                </select>
+                            </div>
+                        </div>
+                       
+                        <div class="col-lg-6 mb-2">
+                            <div class="form-group">
+                                <label class="text-label">Mobile Number <span class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <input type="email" class="form-control" id="inputGroupPrepend2" aria-describedby="inputGroupPrepend2" placeholder="example@example.com.com" required>
+                                    <input type="number" name="mobile_no" id="mobile_no" class="form-control" placeholder="Mobile Number" >
+                                    <div id="mobile_no-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Phone Number*</label>
+                                <label class="text-label">Password <span class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <input type="text" name="phoneNumber" class="form-control" placeholder="(+1)408-657-9007" required>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" >
+                                    <div id="password-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Password*</label>
-                                <div class="input-group">
-                                    <input type="email" class="form-control" id="inputGroupPrepend2" aria-describedby="inputGroupPrepend2" placeholder="example@example.com.com" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                            <label class="text-label">Password*</label>
+                            <label class="text-label">Gender <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <label class="radio-inline">
-                                        <input type="radio" name="gender" value="1" checked> Male</label>
-                                        
+                                        <input type="radio" name="gender" value="2" checked> Male
+                                    </label>
+                                    &nbsp;&nbsp;&nbsp;   
                                     <label class="radio-inline">
-                                        <input type="radio" name="gender" value="2"> Female</label>
+                                        <input type="radio" name="gender" value="1"> Female
+                                    </label>
                                     
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Blood Group *</label>
-                                <select class="single-select-placeholder js-states">
+                                <label class="text-label">Blood Group <span class="text-danger">*</span></label>
+                                <select class="single-select-placeholder js-states" name="blood_group">
                                     <option value="A+">A+</option> 
                                     <option value="A-">A-</option> 
                                     <option value="B+">B+</option> 

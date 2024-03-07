@@ -267,6 +267,17 @@
                         } else {
                             $('#full_name-error').hide();
                         }
+                        if (res.errors.email) {
+                            $('#email-error').show().text(res.errors.email);
+                        } else {
+                            $('#email-error').hide();
+                        }
+                        if (res.errors.mobile_no) {
+                            $('#mobile_no-error').show().text(res.errors.mobile_no);
+                        } else {
+                            $('#mobile_no-error').hide();
+                        }
+
                     }
 
                     if(res.status == 200){
@@ -275,10 +286,10 @@
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled',false);
                             if(res.action == 'add'){
-                                toastr.success("Designation Added",'Success',{timeOut: 5000});
+                                toastr.success("User Added",'Success',{timeOut: 5000});
                             }
                             if(res.action == 'update'){
-                                toastr.success("Designation Updated",'Success',{timeOut: 5000});
+                                toastr.success("User Updated",'Success',{timeOut: 5000});
                             }
                         }
 
@@ -288,16 +299,18 @@
                             $("#UserModal").find('form').trigger('reset');
                             $('#id').val("");
                             $('#full_name-error').html("");
+                            $('#email-error').html("");
+                            $('#mobile_no-error').html("");
                             $("#UserModal").find("#save_newBtn").removeAttr('data-action');
                             $("#UserModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#UserModal").find("#save_newBtn").removeAttr('data-id');
                             $("#UserModal").find("#save_closeBtn").removeAttr('data-id');
                             $("#full_name").focus();
                             if(res.action == 'add'){
-                                toastr.success("Designation Added",'Success',{timeOut: 5000});
+                                toastr.success("User Added",'Success',{timeOut: 5000});
                             }
                             if(res.action == 'update'){
-                                toastr.success("Designation Updated",'Success',{timeOut: 5000});
+                                toastr.success("User Updated",'Success',{timeOut: 5000});
                             }
                         }
                         getTableData('',1);
@@ -318,28 +331,6 @@
                 }
             });
         }
-
-
-        $("#saveNew").on("click", function () {
-            toastr.success("Product has been Updated Successfully!", "Success", {
-                timeOut: 500000000,
-                closeButton: !0,
-                debug: !1,
-                newestOnTop: !0,
-                progressBar: !0,
-                positionClass: "toast-top-right",
-                preventDuplicates: !0,
-                onclick: null,
-                showDuration: "300",
-                hideDuration: "1000",
-                extendedTimeOut: "1000",
-                showEasing: "swing",
-                hideEasing: "linear",
-                showMethod: "fadeIn",
-                hideMethod: "fadeOut",
-                tapToDismiss: !1
-            })
-        });
 
         $('body').on('click', '#AddBtn_User', function () {     
             $('#UserModal').find('.modal-title').html("Add User");
@@ -379,13 +370,20 @@
         var edit_id = $(this).attr('data-id');
        
         $('#UserModal').find('.modal-title').html("Edit User");
-        $.get("{{ url('admin/designuserstion') }}" +'/' + edit_id +'/edit', function (data) {
+        $.get("{{ url('admin/users') }}" +'/' + edit_id +'/edit', function (data) {
             $('#UserModal').find('#save_newBtn').attr("data-action","update");
             $('#UserModal').find('#save_closeBtn').attr("data-action","update");
             $('#UserModal').find('#save_newBtn').attr("data-id",edit_id);
             $('#UserModal').find('#save_closeBtn').attr("data-id",edit_id);
             $('#id').val(data.user_id);
             $('#full_name').val(data.full_name);
+            $('#email').val(data.email);
+            $('#mobile_no').val(data.mobile_no);
+            $('#password').val(data.password);
+            $('#password').prop('disabled', true);
+            $('input[name="gender"][value="' + data.gender + '"]').prop('checked', true);
+            $('select[name="blood_group"]').val(data.blood_group).trigger('change');
+            $('select[name="user_type"]').val(data.user_type).trigger('change');
             $("#UserModal").modal('show');
         });
     });
