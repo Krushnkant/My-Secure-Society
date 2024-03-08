@@ -14529,7 +14529,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   box-shadow: none;
   border-radius: 0;
   width: auto;
-  max-width: 250px;
+  max-width: 285px;
   opacity: 1; }
   [direction="rtl"] #toast-container > div {
     padding: 15px 50px 15px 15px;
