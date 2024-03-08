@@ -30,7 +30,7 @@ class DesignationController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'desc';
 
         // get data from products table
-        $query = Designation::select('*');
+        $query = Designation::select('*')->where('company_designation_id','<>',1);
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('designation_name', 'like', "%".$search."%");
@@ -155,9 +155,10 @@ class DesignationController extends Controller
     public function permissiondesignation($id)
     {
         $modules = Helpers::getModulesArray();
+        $designation = Designation::select('designation_name')->find($id);
         $designation_permissions = CompanyDesignationAuthority::where('company_designation_id', $id)->orderBy('eAuthority', 'asc')->get();
        // $user_permissions = CompanyDesignationAuthority::join('project_pages', 'user_permissions.project_page_id', '=', 'project_pages.id')->select('user_permissions.*', 'project_pages.label')->where('user_permissions.user_id', $id)->orderBy('user_permissions.project_page_id', 'asc')->get();
-        return view('admin.designation.permission', compact('designation_permissions','modules'));
+        return view('admin.designation.permission', compact('designation_permissions','modules','designation'));
     }
 
     public function savepermission(Request $request)

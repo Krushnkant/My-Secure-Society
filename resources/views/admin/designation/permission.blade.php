@@ -4,7 +4,7 @@
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>Designation Permission</h4>
+            <h4>{{ $designation->designation_name }} Designation Permission</h4>
         </div>
     </div>
 @endsection
@@ -12,92 +12,72 @@
 @section('content')
 
     <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
+      
+            <div class="col-lg-12">
+                <div class="card">
                    
-                    <div class="tab-content">
+                    <div class="card-body">
                         <div class="table-responsive">
                             <form class="form-valide" id="permissionForm" action="#" method="post">
                                 {{ csrf_field() }}
-                               
-                                <div class="modal-body px-5">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    
-                                
-                                                    <div class="col-lg-8 col-md-8 col-sm-12  table-responsive" id="">
-                
-                                                            <table id="" class="table table-striped customNewtable userPermissionFormTable" style="">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th class="text-center">#</th>
-                                                                        <th>Module</th>
-                                                                        <th class="text-center">View</th>
-                                                                        <th class="text-center">Add</th>
-                                                                        <th class="text-center">Edit</th>
-                                                                        <th class="text-center">Delete</th>
-                                                                        <th class="text-center">Print</th>
-                                                                    </tr>
-                                                                </thead>
-                                
-                                                                <tbody>
-                                                                    <?php $i=1; ?>
-                                                                        @foreach($designation_permissions as $designation_permission)
-                                                                        <input type="hidden" value="{{ $designation_permission->company_designation_id }}"
-                                                                            name="company_designation_id">
-                                                                        <input type="hidden" class="eAuthority"
-                                                                            value="{{ $designation_permission->eAuthority }}">
-                                                                        <tr>
-                                                                            <th class="text-center">{{ $i }}</th>
-                                                                            <td>{{ $modules[$i]; }}</td>
-                                                                            <td class="text-center"><input type="checkbox"
-                                                                                    class=" permissionCheckBox"
-                                                                                    value="{{ $designation_permission->can_view }}" name="canViewArr[]" {{
-                                                                                    $designation_permission->can_view==1?"checked":'' }} {{  $designation_permission->can_view==0?"disabled":'' }} ></td>
-                                                                            <td class="text-center"><input type="checkbox"
-                                                                                    class=" permissionCheckBox"
-                                                                                    value="{{ $designation_permission->can_add }}" name="canAddArr[]" {{
-                                                                                    $designation_permission->can_add==1?"checked":'' }} {{  $designation_permission->can_add==0?"disabled":'' }}></td>
-                                                                             <td class="text-center"><input type="checkbox"
-                                                                                class=" permissionCheckBox"
-                                                                                value="{{ $designation_permission->can_edit }}" name="canEditArr[]" {{
-                                                                                $designation_permission->can_edit==1?"checked":'' }} {{  $designation_permission->can_edit==0?"disabled":'' }}></td>        
-                                                                            <td class="text-center"><input type="checkbox"
-                                                                                    class=" permissionCheckBox"
-                                                                                    value="{{ $designation_permission->can_delete }}" name="canDeleteArr[]" {{
-                                                                                    $designation_permission->can_delete==1?"checked":'' }} {{  $designation_permission->can_delete==0?"disabled":'' }}></td>
-                                                                            <td class="text-center"><input type="checkbox"
-                                                                                class=" permissionCheckBox"
-                                                                                value="{{ $designation_permission->can_print }}" name="canPrintArr[]" {{
-                                                                                $designation_permission->can_print==1?"checked":'' }} {{  $designation_permission->can_print==0?"disabled":'' }}></td>        
-                                                                        </tr>
-                                                                        <?php $i++; ?>
-                                                                        @endforeach
-                                                                  </tbody>
-                                                            </table>
-                                                    
-                                                    </div>
-                                
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer modal-footer-fixed px-5">
-                                    <input type="hidden" name="id" id="id">
-                                    <button type="submit" id="savePermissionBtn" class="btn btn-primary">Save <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
-                                    <button type="button" class="btn btn-light ml-auto" data-dismiss="modal">Close</button>
-                                </div>
+                            <table class="table table-striped table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">#</th>
+                                        <th>Module</th>
+                                        <th class="text-center">View</th>
+                                        <th class="text-center">Add</th>
+                                        <th class="text-center">Edit</th>
+                                        <th class="text-center">Delete</th>
+                                        <th class="text-center">Print</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <?php $i=1; ?>
+                                        @foreach($designation_permissions as $designation_permission)
+                                        <input type="hidden" value="{{ $designation_permission->company_designation_id }}"
+                                            name="company_designation_id">
+                                        <input type="hidden" class="eAuthority"
+                                            value="{{ $designation_permission->eAuthority }}">
+                                        <tr>
+                                            <th class="text-center">{{ $i }}</th>
+                                            <td>{{ $modules[$i]; }}</td>
+                                            <td class="text-center"><input type="checkbox"
+                                                    class=" permissionCheckBox"
+                                                    value="{{ $designation_permission->can_view }}" name="canViewArr[]" {{
+                                                    $designation_permission->can_view==1?"checked":'' }} {{  $designation_permission->can_view==0?"disabled":'' }} ></td>
+                                            <td class="text-center"><input type="checkbox"
+                                                    class=" permissionCheckBox"
+                                                    value="{{ $designation_permission->can_add }}" name="canAddArr[]" {{
+                                                    $designation_permission->can_add==1?"checked":'' }} {{  $designation_permission->can_add==0?"disabled":'' }}></td>
+                                             <td class="text-center"><input type="checkbox"
+                                                class=" permissionCheckBox"
+                                                value="{{ $designation_permission->can_edit }}" name="canEditArr[]" {{
+                                                $designation_permission->can_edit==1?"checked":'' }} {{  $designation_permission->can_edit==0?"disabled":'' }}></td>        
+                                            <td class="text-center"><input type="checkbox"
+                                                    class=" permissionCheckBox"
+                                                    value="{{ $designation_permission->can_delete }}" name="canDeleteArr[]" {{
+                                                    $designation_permission->can_delete==1?"checked":'' }} {{  $designation_permission->can_delete==0?"disabled":'' }}></td>
+                                            <td class="text-center"><input type="checkbox"
+                                                class=" permissionCheckBox"
+                                                value="{{ $designation_permission->can_print }}" name="canPrintArr[]" {{
+                                                $designation_permission->can_print==1?"checked":'' }} {{  $designation_permission->can_print==0?"disabled":'' }}></td>        
+                                        </tr>
+                                        <?php $i++; ?>
+                                        @endforeach
+                                  </tbody>
+                                 
+                            </table>
+                            <input type="hidden" name="id" id="id">
+                                <button type="submit" id="savePermissionBtn" class="btn btn-primary">Save <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
                             </form>
                         </div>
                     </div>
-                  
                 </div>
             </div>
-        </div>
+           
+        
     </div>
 
 @endsection
