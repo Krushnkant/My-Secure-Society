@@ -52,6 +52,8 @@ class UserController extends Controller
 
     public function addorupdate(Request $request){
         $messages = [
+            'profile_pic.image' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
+            'profile_pic.mimes' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
             'full_name.required' => 'Please provide a FullName',
             'mobile_no.required' => 'Please provide a Mobile No.',
             'email.required' => 'Please provide a Email Address.',
@@ -59,6 +61,7 @@ class UserController extends Controller
         ];
         if(!isset($request->id)){
             $validator = Validator::make($request->all(), [
+                'profile_pic' => 'image|mimes:jpeg,png,jpg',
                 'full_name' => 'required',
                 'mobile_no' => 'required|numeric|digits:10|unique:user,mobile_no,NULL,id,deleted_at,NULL',
                 'email' => 'required|email|unique:user,email,NULL,id,deleted_at,NULL',
@@ -66,6 +69,7 @@ class UserController extends Controller
             ], $messages);
         }else{
             $validator = Validator::make($request->all(), [
+                'profile_pic' => 'image|mimes:jpeg,png,jpg',
                 'full_name' => 'required',
                 'mobile_no' => 'required|numeric|digits:10',
                 'email' => 'required|email',
@@ -88,12 +92,29 @@ class UserController extends Controller
             $user->created_by = Auth::user()->user_id;
             $user->updated_by = Auth::user()->user_id;
             $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $image_name=null;
+            if ($request->hasFile('profile_pic')) {
+                $image = $request->file('profile_pic');
+                $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('images/profile_pic');
+                $image->move($destinationPath, $image_name);
+                if(isset($old_image)) {
+                    $old_image = public_path('images/profile_pic/' . $old_image);
+                    if (file_exists($old_image)) {
+                        unlink($old_image);
+                    }
+                }
+                $user->profile_pic_url = $image_name;
+            }
             $user->save();
+           
             $this->addUserDesignation($user,$request);
             return response()->json(['status' => '200', 'action' => 'add']);
         }else{
             $user = User::find($request->id);
             if ($user) {
+                $old_image = $user->profile_pic;
+                $image_name = $old_image;
                 $user->full_name = $request->full_name;
                 $user->user_type = $request->user_type;
                 $user->email = $request->email;
@@ -102,7 +123,21 @@ class UserController extends Controller
                 $user->blood_group = $request->blood_group;
                 $user->updated_by = Auth::user()->user_id;
                 $user->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+                if ($request->hasFile('profile_pic')) {
+                    $image = $request->file('profile_pic');
+                    $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+                    $destinationPath = public_path('images/profile_pic');
+                    $image->move($destinationPath, $image_name);
+                    if(isset($old_image)) {
+                        $old_image = public_path('images/profile_pic/' . $old_image);
+                        if (file_exists($old_image)) {
+                            unlink($old_image);
+                        }
+                    }
+                    $user->profile_pic_url = $image_name;
+                }
                 $user->save();
+                
                 $this->addUserDesignation($user,$request);
                 return response()->json(['status' => '200', 'action' => 'update']);
             }
@@ -130,7 +165,7 @@ class UserController extends Controller
     
 
     public function edit($id){
-        $user = User::find($id);
+        $user = User::with('userdesignation')->find($id);
         return response()->json($user);
     }
 

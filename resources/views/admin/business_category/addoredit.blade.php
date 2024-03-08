@@ -1,5 +1,5 @@
 <div class="modal modal-right fade" id="BusinessCategoryModal" tabindex="-1" role="dialog" aria-labelledby="BusinessCategoryModal">
-    <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
             <form class="form-valide" id="businesscategoryform" action="#" method="post">
             {{ csrf_field() }}
@@ -11,7 +11,7 @@
                 </div>
                 <div class="modal-body px-5">
                     <div class="row">
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-lg-12 mb-2">
                             <div class="form-group">
                                 <label class="text-label">Bussiness Category Name <span class="text-danger">*</span></label>
                                 <input type="text" name="business_category_name" id="business_category_name" class="form-control" placeholder="Business Category Name">

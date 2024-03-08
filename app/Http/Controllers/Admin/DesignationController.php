@@ -98,16 +98,17 @@ class DesignationController extends Controller
             $user_permission->can_add = 2;
             $user_permission->can_edit = 2;
             $user_permission->can_delete = 2;
-            $user_permission->can_print = 2;
-            if($key == 12){
+            $user_permission->can_print = 0;
+            if($key == 2){
                 $user_permission->can_add = 0;
                 $user_permission->can_delete = 0;
             }
-            if($key == 2){
-                $user_permission->can_add = 0;
-            }
             if($key == 11){
                 $user_permission->can_add = 0;
+            }
+            if($key == 12){
+                $user_permission->can_add = 0;
+                $user_permission->can_delete = 0;
             }
             $user_permission->save();
         }

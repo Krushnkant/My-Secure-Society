@@ -69,8 +69,9 @@
                                   </tbody>
                                  
                             </table>
-                            <input type="hidden" name="id" id="id">
+                            @if(getUserDesignation()==1 || (getUserDesignation()!=1 && is_edit(2)))
                                 <button type="submit" id="savePermissionBtn" class="btn btn-primary">Save <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
+                            @endif    
                             </form>
                         </div>
                     </div>
@@ -138,7 +139,7 @@
             $(thi).val(1);
         } else {
             $(thi).attr('checked', false);
-            $(thi).val(0);
+            $(thi).val(2);
         }
    });
 

@@ -84,8 +84,8 @@ class AuthController extends Controller
         ]);
 
         $data = [
-            'url' => route('reset.password.get', $token),
-            'logo' => route('reset.password.get', $token),
+            'url' => route('admin.reset_password', $token),
+            'logo' => '',
         ]; 
         $templateName = 'mails.forgetPassword';
         $subject = 'Forget Password';
