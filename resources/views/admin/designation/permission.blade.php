@@ -69,7 +69,7 @@
                                   </tbody>
                                  
                             </table>
-                            @if(getUserDesignation()==1 || (getUserDesignation()!=1 && is_edit(2)))
+                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_edit(2)))
                                 <button type="submit" id="savePermissionBtn" class="btn btn-primary">Save <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
                             @endif    
                             </form>

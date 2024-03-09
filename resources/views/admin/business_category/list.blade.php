@@ -1,10 +1,10 @@
 @extends('admin.layout.app')
-@section('title', 'Business Categoty')
+@section('title', 'Business Category')
 
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>Business Categoty</h4>
+            <h4>Business Category</h4>
         </div>
     </div>
 @endsection
@@ -17,11 +17,11 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
-                            @if (getUserDesignation() == 1 || (getUserDesignation() != 1 && is_add(5)))
-                                <button type="button" id="AddBtn_BusinessCategoty" class="btn btn-outline-primary"
+                            @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_add(5)))
+                                <button type="button" id="AddBtn_BusinessCategory" class="btn btn-outline-primary"
                                     data-toggle="modal" data-target="#BusinessCategoryModal">Add New</button>
                             @endif
-                            @if (getUserDesignation() == 1 || (getUserDesignation() != 1 && is_delete(5)))
+                            @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(5)))
                                 <button type="button" id="deleteSelected" class="btn btn-outline-danger sweet-ajax1">
                                     Delete</button>
                             @endif
@@ -122,7 +122,7 @@
                         width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignation() == 1 || (getUserDesignation() != 1 && is_edit(5)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(5)));
                             if (is_edit) {
                                 var estatus = `<label class="switch">
                                         <input type="checkbox" id="statuscheck_${row.business_category_id}" onchange="changeStatus(${row.business_category_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
@@ -142,17 +142,17 @@
                         width: "5%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignation() == 1 || (getUserDesignation() != 1 && is_edit(5)));
-                            var is_delete = @json(getUserDesignation() == 1 || (getUserDesignation() != 1 && is_delete(5)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(5)));
+                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(5)));
                             var action = `<span>`;
 
                             if (is_edit) {
                                 action +=
-                                    `<a href="#" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.business_category_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
+                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.business_category_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
                             }
                             if (is_delete) {
                                 action +=
-                                    `<a href="#" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.business_category_id}"><i class="fa fa-close color-danger"></i></a>`;
+                                    `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.business_category_id}"><i class="fa fa-close color-danger"></i></a>`;
                             }
                             action += `</span>`;
                             return action;

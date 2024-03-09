@@ -18,10 +18,10 @@
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
                             
-                            @if(getUserDesignation()==1 || (getUserDesignation()!=1 && is_add(3)) )
+                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_add(3)) )
                             <button type="button" id="AddBtn_User" class="btn btn-outline-primary" data-toggle="modal" data-target="#UserModal">Add New</button>
                             @endif
-                            @if(getUserDesignation()==1 || (getUserDesignation()!=1 && is_delete(3)) )
+                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_delete(3)) )
                              <button type="button" id="deleteSelected" class="btn btn-outline-danger sweet-ajax1">Delete</button>
                             @endif
                         </div>
@@ -32,7 +32,12 @@
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
+                                        <th>Profile Image</th>
                                         <th>Full Name</th>
+                                        <th>Designation</th>
+                                        <th>User Type</th>
+                                       <th>Email</th>
+                                        <th>Mobile Number</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -40,7 +45,12 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
+                                        <th>Profile Image</th>
                                         <th>Full Name</th>
+                                        <th>Designation</th>
+                                        <th>User Type</th>
+                                       <th>Email</th>
+                                        <th>Mobile Number</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -101,6 +111,7 @@
                         data.tab_type = tab_type;
                     }
                 },
+                
                 order: ['1', 'DESC'],
                 pageLength: 10,
                 searching: 1,
@@ -113,15 +124,43 @@
                         }
                     },
                     {
-                        width: "20%",
+                        width: "10%",
+                        data: 'profile_pic_url',
+                        orderable: false,
+                        render: function(data, type, row) {
+                            var profile_pic = (data != "" && data != null) ? data : '{{ asset("image/avtar.png") }}';
+                            return `<div class="media-left">
+                                      <img class="media-object mr-3"  width="50px" height="50px" alt="Profile Pic" src="${profile_pic}" alt="...">
+                                </div>`;
+                        }
+                    },
+                    {
+                        width: "10%",
                         data: 'full_name',
+                    },
+                    {
+                        width: "10%",
+                        data: 'designation',
+                    },
+                    {
+                        width: "10%",
+                        data: 'user_type_name',
+                    },
+
+                    {
+                        width: "10%",
+                        data: 'email',
+                    },
+                    {
+                        width: "10%",
+                        data: 'mobile_no',
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignation() == 1 || (getUserDesignation() != 1 && is_edit(3)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
                             if (is_edit) {
                                 var estatus = `<label class="switch">
                                         <input type="checkbox" id="statuscheck_${row.user_id}" onchange="changeStatus(${row.user_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
@@ -137,11 +176,11 @@
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignation() == 1 || (getUserDesignation() != 1 && is_edit(3)));
-                            var is_delete = @json(getUserDesignation() == 1 || (getUserDesignation() != 1 && is_delete(3)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
+                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(3)));
                             var action =  `<span>`;
                             if(is_edit) {
                               action += `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.user_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
@@ -243,6 +282,8 @@
             $("#UserModal").find("#save_newBtn").removeAttr('data-id');
             $("#UserModal").find("#save_closeBtn").removeAttr('data-id');
             $("#full_name").focus();
+            var default_image = "{{ asset('image/avtar.png') }}";
+            $('#profilepic_image_show').attr('src', default_image);
         });
 
         $('body').on('click', '#save_newBtn', function() {
@@ -256,12 +297,14 @@
         function save_user(btn, btn_type) {
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
-            var formData = $("#userform").serializeArray();
+            var formData = new FormData($("#userform")[0]);
 
             $.ajax({
                 type: 'POST',
                 url: "{{ url('admin/users/addorupdate') }}",
                 data: formData,
+                processData: false,
+                contentType: false,
                 success: function(res) {
                     if (res.status == 'failed') {
                         $(btn).find('.loadericonfa').hide();
@@ -314,6 +357,8 @@
                             $("#UserModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#UserModal").find("#save_newBtn").removeAttr('data-id');
                             $("#UserModal").find("#save_closeBtn").removeAttr('data-id');
+                            var default_image = "{{ asset('image/avtar.png') }}";
+                            $('#profilepic_image_show').attr('src', default_image);
                             $("#full_name").focus();
                             if (res.action == 'add') {
                                 toastr.success("User Added successfully!", 'Success', {
@@ -372,6 +417,14 @@
                 $('select[name="blood_group"]').val(data.blood_group).trigger('change');
                 $('select[name="user_type"]').val(data.user_type).trigger('change');
                 $('select[name="designation"]').val(data.userdesignation.company_designation_id).trigger('change');
+                if(data.profile_pic_url==null){
+                    var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                    $('#profilepic_image_show').attr('src', default_image);
+                }
+                else{
+                    var profile_pic =  data.profile_pic_url;
+                    $('#profilepic_image_show').attr('src', profile_pic);
+                }
                 $("#UserModal").modal('show');
             });
         });

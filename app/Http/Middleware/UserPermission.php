@@ -19,7 +19,7 @@ class UserPermission
     {
         if( Auth::check() )
         {
-            $designation_id = getUserDesignation();
+            $designation_id = getUserDesignationId();
             if ($designation_id==1){
                 return $next($request);
             }

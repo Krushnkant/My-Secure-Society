@@ -31,7 +31,10 @@ class UserController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'desc';
 
         // get data from products table
-        $query = User::select('*')->where('user_type','!=',1);
+        $query = User::with('userdesignation')->select('*');
+        $query = $query->whereHas('userdesignation', function ($query) {
+            $query->where('company_designation_id', '!=', 1);
+        });
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('full_name', 'like', "%".$search."%");
@@ -47,7 +50,22 @@ class UserController extends Controller
         $recordsFiltered = $recordsTotal = $query->count();
         $data = $query->skip($skip)->take($pageLength)->get();
 
-        return response()->json(["draw"=> $request->draw, "recordsTotal"=> $recordsTotal, "recordsFiltered" => $recordsFiltered, 'data' => $data], 200);
+        $formattedData = $data->map(function ($item) {
+            
+            return [
+                'user_id' => $item->user_id,
+                'full_name' => $item->full_name,
+                'email' => $item->email,
+                'user_type' => $item->user_type,
+                'profile_pic_url' => $item->profile_pic_url,
+                'mobile_no' => $item->mobile_no,
+                'estatus' => $item->estatus,
+                'user_type' => $item->user_type,
+                'user_type_name' => getUserType($item->user_type),
+                'designation' => isset($item->userdesignation->designation)?$item->userdesignation->designation->designation_name:"",
+            ];
+        });
+        return response()->json(["draw"=> $request->draw, "recordsTotal"=> $recordsTotal, "recordsFiltered" => $recordsFiltered, 'data' => $formattedData], 200);
     }
 
     public function addorupdate(Request $request){
@@ -92,19 +110,8 @@ class UserController extends Controller
             $user->created_by = Auth::user()->user_id;
             $user->updated_by = Auth::user()->user_id;
             $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            $image_name=null;
-            if ($request->hasFile('profile_pic')) {
-                $image = $request->file('profile_pic');
-                $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path('images/profile_pic');
-                $image->move($destinationPath, $image_name);
-                if(isset($old_image)) {
-                    $old_image = public_path('images/profile_pic/' . $old_image);
-                    if (file_exists($old_image)) {
-                        unlink($old_image);
-                    }
-                }
-                $user->profile_pic_url = $image_name;
+            if ($request->hasFile('profile_pic')) { 
+                $user->profile_pic_url = $this->uploadProfileImage($request);
             }
             $user->save();
            
@@ -113,8 +120,7 @@ class UserController extends Controller
         }else{
             $user = User::find($request->id);
             if ($user) {
-                $old_image = $user->profile_pic;
-                $image_name = $old_image;
+                $old_image = $user->profile_pic_url;
                 $user->full_name = $request->full_name;
                 $user->user_type = $request->user_type;
                 $user->email = $request->email;
@@ -123,18 +129,8 @@ class UserController extends Controller
                 $user->blood_group = $request->blood_group;
                 $user->updated_by = Auth::user()->user_id;
                 $user->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-                if ($request->hasFile('profile_pic')) {
-                    $image = $request->file('profile_pic');
-                    $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-                    $destinationPath = public_path('images/profile_pic');
-                    $image->move($destinationPath, $image_name);
-                    if(isset($old_image)) {
-                        $old_image = public_path('images/profile_pic/' . $old_image);
-                        if (file_exists($old_image)) {
-                            unlink($old_image);
-                        }
-                    }
-                    $user->profile_pic_url = $image_name;
+                if ($request->hasFile('profile_pic')) { 
+                    $user->profile_pic_url = $this->uploadProfileImage($request,$old_image);
                 }
                 $user->save();
                 
@@ -145,6 +141,20 @@ class UserController extends Controller
             return response()->json(['status' => '400']);
         }
 
+    }
+
+    public function uploadProfileImage($request,$old_image=""){
+        $image = $request->file('profile_pic');
+        $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+        $destinationPath = public_path('images/profile_pic');
+        $image->move($destinationPath, $image_name);
+        if(isset($old_image) && $old_image != "") {
+            $old_image = public_path($old_image);
+            if (file_exists($old_image)) {
+                unlink($old_image);
+            }
+        }
+        return  'images/profile_pic/'.$image_name;           
     }
 
     public function addUserDesignation($user,$request){

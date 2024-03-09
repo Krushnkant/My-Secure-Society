@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('longitude', 11, 8)->nullable();
             $table->integer('city_id')->index();
             $table->integer('state_id')->index();
-            $table->integer('counrty_id')->index();
+            $table->integer('country_id')->index();
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();

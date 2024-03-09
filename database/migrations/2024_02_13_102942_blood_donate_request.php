@@ -26,7 +26,7 @@ return new class extends Migration
             $table->integer('PinCode');
             $table->integer('city_id');
             $table->integer('state_id');
-            $table->integer('counrty_id');
+            $table->integer('country_id');
             $table->integer('RequestStatus')->enum([1, 2, 3])->default(1)->comment('1 - Open, 2 - Closed, 3 - Deleted')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
