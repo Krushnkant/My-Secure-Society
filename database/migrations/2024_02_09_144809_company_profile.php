@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('Longitude', 11, 8)->nullable();
             $table->integer('city_id');
             $table->integer('state_id');
-            $table->integer('counrty_id');
+            $table->integer('country_id');
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
         });

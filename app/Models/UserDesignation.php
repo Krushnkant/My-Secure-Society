@@ -12,4 +12,10 @@ class UserDesignation extends Model
     protected $primaryKey = 'company_user_designation_id';
     public $timestamps = false;
 
+
+    public function designation()
+    {
+        return $this->hasOne(Designation::class,'company_designation_id', 'company_designation_id');
+    }
+
 }
