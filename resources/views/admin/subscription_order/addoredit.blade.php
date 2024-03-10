@@ -14,7 +14,7 @@
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
                                 <label class="text-label">Society <span class="text-danger">*</span></label>
-                                <select class=" js-states" name="society_id " id="society-dropdown">
+                                <select class="single-select-placeholder js-states" name="society_id" id="society-dropdown">
                                     <option value=""></option>
                                     @foreach ($societies as $society)
                                         <option value="{{ $society->society_id }}">
@@ -47,14 +47,14 @@
                             <div class="form-group">
                                 <label class="text-label" for="sub_total_amount">Sub Total Amount <span class="text-danger">*</span></label>
                                 <input type="number" name="sub_total_amount" id="sub_total_amount" class="form-control"
-                                    placeholder="Sub Total Amount">
+                                    placeholder="Sub Total Amount" readonly>
                                 <div id="sub_total_amount-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
                             </div>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label" for="gst_percent">GST Percent<span class="text-danger">*</span></label>
+                                <label class="text-label" for="gst_percent">GST Percent <span class="text-danger">*</span></label>
                                 <input type="number" name="gst_percent" id="gst_percent" class="form-control"
                                     placeholder="GST Percent">
                                 <div id="gst_percent-error" class="invalid-feedback animated fadeInDown"
@@ -63,25 +63,25 @@
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label" for="gst_amount">GST Amount<span class="text-danger">*</span></label>
+                                <label class="text-label" for="gst_amount">GST Amount <span class="text-danger">*</span></label>
                                 <input type="number" name="gst_amount" id="gst_amount" class="form-control"
-                                    placeholder="GST Amount">
+                                    placeholder="GST Amount" readonly>
                                 <div id="gst_amount-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
                             </div>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label" for="total_amount">Total Amount<span class="text-danger">*</span></label>
+                                <label class="text-label" for="total_amount">Total Amount <span class="text-danger">*</span></label>
                                 <input type="number" name="total_amount" id="total_amount" class="form-control"
-                                    placeholder="Total Amount">
+                                    placeholder="Total Amount" readonly>
                                 <div id="total_amount-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
                             </div>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label" for="total_paid_amount">Total Paid Amount<span class="text-danger">*</span></label>
+                                <label class="text-label" for="total_paid_amount">Total Paid Amount <span class="text-danger">*</span></label>
                                 <input type="number" name="total_paid_amount" id="total_paid_amount" class="form-control"
                                     placeholder="Total Paid Amount">
                                 <div id="total_paid_amount-error" class="invalid-feedback animated fadeInDown"
@@ -90,9 +90,9 @@
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label" for="total_outstanding_amount">Total Outstanding Amount<span class="text-danger">*</span></label>
+                                <label class="text-label" for="total_outstanding_amount">Total Outstanding Amount <span class="text-danger">*</span></label>
                                 <input type="number" name="total_outstanding_amount" id="total_outstanding_amount" class="form-control"
-                                    placeholder="Total Outstanding Amount">
+                                    placeholder="Total Outstanding Amount" readonly>
                                 <div id="total_outstanding_amount-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
                             </div>
@@ -100,8 +100,11 @@
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
                                 <label class="text-label">Order Status <span class="text-danger">*</span></label>
-                                <select class=" js-states" name="order_status" id="order-status-dropdown">
-                                    <option value=""></option>
+                                <select class="single-select-placeholder js-states" name="order_status" id="order-status-dropdown">
+                                    <option value="1">Pending</option>
+                                    <option value="2">In Progress</option>
+                                    <option value="3">Completed</option>
+                                    <option value="4">Cancelled</option>
                                 </select>
                                 <div id="order_status-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
@@ -109,15 +112,39 @@
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
+                                <label class="text-label">Payment Type <span class="text-danger">*</span></label>
+                                <select class="single-select-placeholder js-states" name="payment_type" id="payment-type-dropdown">
+                                    <option value="1">Offline</option>
+                                    <option value="2">Online</option>
+                                    <option value="3">Cheque</option>
+                                </select>
+                                <div id="order_status-error" class="invalid-feedback animated fadeInDown"
+                                    style="display: none;"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-2">
+                            <div class="form-group">
+                                <label class="text-label">Payment Date<span class="text-danger">*</span></label>
+                                <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" id="payment_date" class="form-control">
+                                <div id="payment_date-error" class="invalid-feedback animated fadeInDown"
+                                    style="display: none;"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-2">
+                            <div class="form-group">
                                 <label class="text-label">Due Date <span class="text-danger">*</span></label>
-                                <input type="date" name="due_date" id="due_date" class="form-control">
+                                <input type="date" name="due_date" value="{{ date('Y-m-d') }}" id="due_date" class="form-control">
                                 <div id="due_date-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
                             </div>
                         </div>
-                        
-                        
-                       
+                        <div class="col-lg-12 mb-2">
+                            <div class="form-group">
+                                <label class="text-label">Payment Note </label>
+                                <textarea name="payment_note" id="payment_note" class="form-control"></textarea>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 <div class="modal-footer modal-footer-fixed px-5">

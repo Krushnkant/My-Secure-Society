@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('total_paid_amount', 10, 2);
             $table->decimal('total_outstanding_amount', 10, 2);
             $table->integer('order_status')->enum([1, 2, 3])->default(1)->comment('1 - Pending, 2 - In Progress, 3 - Completed, 4 - Cancelled')->index();
-            $table->dateTime('DueDate')->index();
+            $table->dateTime('due_date')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

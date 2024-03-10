@@ -13,6 +13,7 @@ use App\Http\Controllers\admin\SocietyController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\admin\SubscriptionOrderController;
+use App\Http\Controllers\admin\OrderPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +112,7 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
      Route::post('company/profile/update',[CompanyProfileController::class,'update'])->name('company.profile.update');
 
 
-     // User Profile 
+     // User Profile
      Route::get('user/profile',[AuthController::class,'profile'])->name('user.profile');
      Route::post('user/profile/update',[AuthController::class,'updateprofile'])->name('user.profile.update');
      Route::post('user/password/change',[AuthController::class,'changepassword'])->name('user.password.change');
@@ -124,4 +125,13 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
     Route::get('subscriptionorder/{id}/delete',[SubscriptionOrderController::class,'delete'])->name('subscriptionorder.delete');
     Route::get('subscriptionorder/changestatus/{id}',[SubscriptionOrderController::class,'changestatus'])->name('subscriptionorder.changestatus');
     Route::post('subscriptionorder/multipledelete', [SubscriptionOrderController::class,'multipledelete'])->name('subscriptionorder.multipledelete');
+
+    // Order Payment
+    Route::get('orderpayment/{id}',[OrderPaymentController::class,'index'])->name('orderpayment.list');
+    Route::post('orderpayment/listdata',[OrderPaymentController::class,'listdata'])->name('orderpayment.listdata');
+    Route::post('orderpayment/addorupdate',[OrderPaymentController::class,'addorupdate'])->name('orderpayment.addorupdate');
+    Route::get('orderpayment/{id}/edit',[OrderPaymentController::class,'edit'])->name('orderpayment.edit');
+    Route::get('orderpayment/{id}/delete',[OrderPaymentController::class,'delete'])->name('orderpayment.delete');
+    Route::get('orderpayment/changestatus/{id}',[OrderPaymentController::class,'changestatus'])->name('orderpayment.changestatus');
+    Route::post('orderpayment/multipledelete', [OrderPaymentController::class,'multipledelete'])->name('orderpayment.multipledelete');
 });

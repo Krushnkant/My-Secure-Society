@@ -18,8 +18,8 @@
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
                             @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_add(9)))
-                                <button type="button" id="AddBtn_Flat" class="btn btn-outline-primary"
-                                    data-toggle="modal" data-target="#FlatModel">Add New</button>
+                                <button type="button" id="AddBtn_Flat" class="btn btn-outline-primary" data-toggle="modal"
+                                    data-target="#FlatModel">Add New</button>
                             @endif
                             @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(9)))
                                 <button type="button" id="deleteSelected" class="btn btn-outline-danger sweet-ajax1">
@@ -68,7 +68,7 @@
     <script src="{{ asset('/js/plugins-init/datatables.init.js') }}"></script>
 
     <script type="text/javascript">
-    $(".single-select-placeholder").select2();
+        $(".single-select-placeholder").select2();
         $(document).ready(function() {
             getTableData('', 1);
         });
@@ -123,10 +123,10 @@
                         data: 'is_empty',
                         orderable: false,
                         render: function(data, type, row) {
-                            if(data == 1){
-                             return  `<span class="badge badge-success">Yes</span>`;
+                            if (data == 1) {
+                                return `<span class="badge badge-success">Yes</span>`;
                             }
-                            return  `<span class="badge badge-danger">No</span>`;;
+                            return `<span class="badge badge-danger">No</span>`;;
                         }
                     },
                     {
@@ -157,7 +157,7 @@
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(9)));
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(9)));
                             var action = `<span>`;
-                           
+
                             if (is_edit) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.block_flat_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
@@ -375,7 +375,7 @@
         function changeStatus(id) {
             $.ajax({
                 type: 'GET',
-                url: "{{ url('admin/block/changestatus') }}" + '/' + id,
+                url: "{{ url('admin/flat/changestatus') }}" + '/' + id,
                 success: function(res) {
                     if (res.status == 200 && res.action == 'deactive') {
                         $("#statuscheck_" + id).val(2);
@@ -401,43 +401,43 @@
         }
         $('body').on('click', '#deleteBtn', function() {
             swal({
-                title: "Are you sure to delete ?",
-                text: "You will not be able to recover this imaginary file !!",
-                type: "warning",
-                showCancelButton: !0,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it !!",
-                closeOnConfirm: !1,
-                closeOnCancel: !0
-            })
-            .then((willDelete) => {
-                if (willDelete.value) {
-                    var remove_id = $(this).attr('data-id');
-                    $.ajax({
-                        type: 'GET',
-                        url: "{{ url('admin/block') }}" + '/' + remove_id + '/delete',
-                        success: function(res) {
-                            if (res.status == 200) {
-                                toastr.success("Block deleted successfully!", 'Success', {
-                                    timeOut: 5000
-                                });
-                                getTableData('', 1);
-                            }
+                    title: "Are you sure to delete ?",
+                    text: "You will not be able to recover this imaginary file !!",
+                    type: "warning",
+                    showCancelButton: !0,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it !!",
+                    closeOnConfirm: !1,
+                    closeOnCancel: !0
+                })
+                .then((willDelete) => {
+                    if (willDelete.value) {
+                        var remove_id = $(this).attr('data-id');
+                        $.ajax({
+                            type: 'GET',
+                            url: "{{ url('admin/flat') }}" + '/' + remove_id + '/delete',
+                            success: function(res) {
+                                if (res.status == 200) {
+                                    toastr.success("flat deleted successfully!", 'Success', {
+                                        timeOut: 5000
+                                    });
+                                    getTableData('', 1);
+                                }
 
-                            if (res.status == 400) {
+                                if (res.status == 400) {
+                                    toastr.error("Please try again", 'Error', {
+                                        timeOut: 5000
+                                    });
+                                }
+                            },
+                            error: function(data) {
                                 toastr.error("Please try again", 'Error', {
                                     timeOut: 5000
                                 });
                             }
-                        },
-                        error: function(data) {
-                            toastr.error("Please try again", 'Error', {
-                                timeOut: 5000
-                            });
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
         });
 
         $('body').on('click', '#viewFlat', function(e) {

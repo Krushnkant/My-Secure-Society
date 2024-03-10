@@ -36,8 +36,8 @@
                                         <th><input type="checkbox" id="selectAll"></th>
                                         <th>Order Id</th>
                                         <th>Society Name</th>
-                                        <th>Sub Total</th>
-                                        <th>GST Percent</th>
+                                        {{-- <th>Sub Total</th>
+                                        <th>GST Percent</th> --}}
                                         <th>Total Amount</th>
                                         <th>Total Paid Amount</th>
                                         <th>Total Outstanding Amount</th>
@@ -51,8 +51,8 @@
                                         <th></th>
                                         <th>Order Id</th>
                                         <th>Society Name</th>
-                                        <th>Sub Total</th>
-                                        <th>GST Percent</th>
+                                        {{-- <th>Sub Total</th>
+                                        <th>GST Percent</th> --}}
                                         <th>Total Amount</th>
                                         <th>Total Paid Amount</th>
                                         <th>Total Outstanding Amount</th>
@@ -84,9 +84,9 @@
         $("#society-dropdown").select2({
             placeholder: "Select a society"
         });
-        $("#order-status-dropdown").select2({
-        });
-      
+        $("#order-status-dropdown").select2({});
+        $("#payment-type-dropdown").select2({});
+
 
         $(document).ready(function() {
             getTableData('', 1);
@@ -141,15 +141,18 @@
                     {
                         width: "10%",
                         data: 'society_id',
+                        render: function(data, type, row) {
+                           return row.society.society_name
+                        }
                     },
-                    {
-                        width: "10%",
-                        data: 'sub_total_amount',
-                    },
-                    {
-                        width: "10%",
-                        data: 'gst_percent',
-                    },
+                    // {
+                    //     width: "10%",
+                    //     data: 'sub_total_amount',
+                    // },
+                    // {
+                    //     width: "10%",
+                    //     data: 'gst_percent',
+                    // },
                     {
                         width: "10%",
                         data: 'total_amount',
@@ -167,24 +170,24 @@
                         width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(10)));
-                            if (is_edit) {
-                                var estatus = `<label class="switch">
-                                        <input type="checkbox" id="statuscheck_${row.subscription_order_id}" onchange="changeStatus(${row.subscription_order_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
-                                        <span class="slider"></span>
-                                </label>`;
-                            } else {
-                                var statusText = (data == 1) ? 'Active' : 'Inactive';
-                                var badgeClass = (data == 1) ? 'success' : 'danger';
-                                var estatus =
-                                `<span class="badge badge-${badgeClass}">${statusText}</span>`;
+                            switch (data) {
+                                case 1:
+                                    return '<span class="badge badge-warning">Pending</span>';
+                                case 2:
+                                    return '<span class="badge badge-info">In Progress</span>';
+                                case 3:
+                                    return '<span class="badge badge-success">Completed</span>';
+                                case 4:
+                                    return '<span class="badge badge-danger">Cancelled</span>';
+                                default:
+                                    return '';
                             }
-                            return estatus;
                         }
                     },
                     {
                         width: "10%",
                         data: 'due_date',
+
                     },
                     {
                         data: 'id',
@@ -198,7 +201,7 @@
                             if (is_view) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Order Payment" id="viewOrderPayment"  data-id="${row.subscription_order_id}"><i class="fa fa-list color-muted"></i> </a>`;
-                                }    
+                                }
                             if (is_edit) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.subscription_order_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
@@ -290,18 +293,19 @@
 
         $('body').on('click', '#AddBtn_Order', function() {
             $('#OrderModal').find('.modal-title').html("Add Society");
-            $("#OrderModal").find('form').trigger('reset');
+            //$("#OrderModal").find('form').trigger('reset');
             $('#id').val("");
-            $('#society_name-error').html("");
-            $('#street_address1-error').html("");
-            $('#landmark-error').html("");
-            $('#pin_code-error').html("");
-            $('#city_id-error').html("");
-            $('#state_id-error').html("");
-            $('#country_id-error').html("");
-            $('#country-dropdown').trigger('change');
-            $('#state-dropdown').trigger('change');
-            $('#city-dropdown').trigger('change');
+            $('#society_id-error').html("");
+            $('#total_flat-error').html("");
+            $('#amount_per_flat-error').html("");
+            $('#sub_total_amount-error').html("");
+            $('#gst_percent-error').html("");
+            $('#gst_amount-error').html("");
+            $('#total_amount-error').html("");
+            $('#total_paid_amount-error').html("");
+            $('#total_outstanding_amount-error').html("");
+            $('#order_status-dropdown').trigger('change');
+            $('#society-dropdown').trigger('change');
             $("#OrderModal").find("#save_newBtn").removeAttr('data-action');
             $("#OrderModal").find("#save_closeBtn").removeAttr('data-action');
             $("#OrderModal").find("#save_newBtn").removeAttr('data-id');
@@ -332,7 +336,11 @@
                     if (res.status == 'failed') {
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
-                        
+                        if (res.errors.society_id) {
+                            $('#society_id-error').show().text(res.errors.society_id);
+                        } else {
+                            $('#society_id-error').hide();
+                        }
                         if (res.errors.total_flat) {
                             $('#total_flat-error').show().text(res.errors.total_flat);
                         } else {
@@ -357,6 +365,11 @@
                             $('#gst_amount-error').show().text(res.errors.gst_amount);
                         } else {
                             $('#gst_amount-error').hide();
+                        }
+                        if (res.errors.total_amount) {
+                            $('#total_amount-error').show().text(res.errors.total_amount);
+                        } else {
+                            $('#total_amount-error').hide();
                         }
                         if (res.errors.total_paid_amount) {
                             $('#total_paid_amount-error').show().text(res.errors.total_paid_amount);
@@ -397,7 +410,16 @@
                             $(btn).prop('disabled', false);
                             $("#OrderModal").find('form').trigger('reset');
                             $('#id').val("");
+                            $('#society_id-error').html("");
                             $('#total_flat-error').html("");
+                            $('#amount_per_flat-error').html("");
+                            $('#sub_total_amount-error').html("");
+                            $('#gst_percent-error').html("");
+                            $('#gst_amount-error').html("");
+                            $('#total_amount-error').html("");
+                            $('#total_paid_amount-error').html("");
+                            $('#total_outstanding_amount-error').html("");
+                            $('#order_status-dropdown').trigger('change');
                             $('#society-dropdown').trigger('change');
                             $("#OrderModal").find("#save_newBtn").removeAttr('data-action');
                             $("#OrderModal").find("#save_closeBtn").removeAttr('data-action');
@@ -441,68 +463,39 @@
         $('body').on('click', '#editBtn', function() {
             var edit_id = $(this).attr('data-id');
             $('#OrderModal').find('.modal-title').html("Edit Order");
-            $('#society_name-error').html("");
-            $('#street_address1-error').html("");
-            $('#landmark-error').html("");
-            $('#pin_code-error').html("");
-            $('#city_id-error').html("");
-            $('#state_id-error').html("");
-            $('#country_id-error').html("");
-         
+            $('#society_id-error').html("");
+            $('#total_flat-error').html("");
+            $('#amount_per_flat-error').html("");
+            $('#sub_total_amount-error').html("");
+            $('#gst_percent-error').html("");
+            $('#gst_amount-error').html("");
+            $('#total_amount-error').html("");
+            $('#total_paid_amount-error').html("");
+            $('#total_outstanding_amount-error').html("");
+            $('#order_status-dropdown').trigger('change');
+            $('#society-dropdown').trigger('change');
+
             $.get("{{ url('admin/subscriptionorder') }}" + '/' + edit_id + '/edit', function(data) {
                 $('#OrderModal').find('#save_newBtn').attr("data-action", "update");
                 $('#OrderModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#OrderModal').find('#save_newBtn').attr("data-id", edit_id);
                 $('#OrderModal').find('#save_closeBtn').attr("data-id", edit_id);
                 $('#id').val(data.subscription_order_id);
-                $('#society_name').val(data.society_name);
-                $('#street_address1').val(data.street_address1);
-                $('#street_address2').val(data.street_address2);
-                $('#landmark').val(data.landmark);
-                $('#pin_code').val(data.pin_code);
-                 
-                $('select[name="country_id"]').val(data.country_id).trigger('change');
+                $('#total_flat').val(data.total_flat);
+                $('#amount_per_flat').val(data.amount_per_flat);
+                $('#sub_total_amount').val(data.sub_total_amount);
+                $('#gst_percent').val(data.gst_percent);
+                $('#gst_amount').val(data.gst_amount);
+                $('#total_amount').val(data.total_amount);
+                $('#total_paid_amount').val(data.total_paid_amount);
+                    var formattedDueDate = new Date(data.due_date).toLocaleDateString('en-GB'); // Adjust the locale as needed
 
-                $.ajax({
-                    url: "{{ url('get-states-by-country') }}",
-                    type: "POST",
-                    data: {
-                        country_id: data.country_id,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    dataType: 'json',
-                    success: function(result) {
-                        // Populate state dropdown
-                        $('#state-dropdown').html('<option value="">Select State</option>');
-                        $.each(result.states, function(key, value) {
-                            $("#state-dropdown").append('<option data-value="' + value.state_id +
-                                '" value="' + value.state_id + '">' + value.state_name + '</option>');
-                        });
+                // Set the formatted date to the input
+                $('#due_date').val(formattedDueDate);
+                $('#total_outstanding_amount').val(data.total_outstanding_amount);
+                $('select[name="order_status"]').val(data.order_status).trigger('change');
+                $('select[name="society_id"]').val(data.society_id).trigger('change');
 
-                        // Set the selected state in the state dropdown
-                        $('#state-dropdown').val(data.state_id).trigger('change');
-
-                        $.ajax({
-                            url: "{{ url('get-cities-by-state') }}",
-                            type: "POST",
-                            data: {
-                                state_id: data.state_id,
-                                _token: '{{ csrf_token() }}'
-                            },
-                            dataType: 'json',
-                            success: function(result) {
-                                $('#city-dropdown').html('<option value="">Select City</option>');
-                                $.each(result.cities, function(key, value) {
-                                    $("#city-dropdown").append('<option data-value="' + value.city_id +
-                                        '" value="' + value.city_id + '">' + value.city_name + '</option>');
-                                });
-
-                                // Set the selected city in the city dropdown
-                                $('#city-dropdown').val(data.city_id).trigger('change');
-                            }
-                        });
-                    }
-                });
                 $("#OrderModal").modal('show');
             });
         });
@@ -576,58 +569,46 @@
                 });
         });
 
-        $('#country-dropdown').on('change', function() {
-            var country_id = $(this).val();
-            $("#state-dropdown").html('');
-            $.ajax({
-                url: "{{ url('get-states-by-country') }}",
-                type: "POST",
-                data: {
-                    country_id: country_id,
-                    _token: '{{ csrf_token() }}'
-                },
-                dataType: 'json',
-                success: function(result) {
-                    $('#state-dropdown').html('<option value="">Select State</option>');
-                    $.each(result.states, function(key, value) {
-                        $("#state-dropdown").append('<option data-value="' + value.state_id +
-                            '" value="' + value.state_id + '">' + value.state_name + '</option>');
-                    });
-                    
-                    // Trigger the change event on state dropdown after updating options
-                    $("#state-dropdown").trigger('change');
-                }
-            });
-        });
 
-        $('#state-dropdown').on('change', function() {
-            var state_id = $(this).val();
-            $("#city-dropdown").html('');
-            $.ajax({
-                url: "{{ url('get-cities-by-state') }}",
-                type: "POST",
-                data: {
-                    state_id: state_id,
-                    _token: '{{ csrf_token() }}'
-                },
-                dataType: 'json',
-                success: function(result) {
-                    $('#city-dropdown').html('<option value="">Select City</option>');
-                    $.each(result.cities, function(key, value) {
-                        $("#city-dropdown").append('<option data-value="' + value.city_id +
-                            '" value="' + value.city_id + '">' + value.city_name + '</option>');
-                    });
-                }
-            });
-        });
-
-        $('body').on('click', '#viewBlock', function(e) {
+        $('body').on('click', '#viewOrderPayment', function(e) {
             // e.preventDefault();
             var id = $(this).attr('data-id');
-            var url = "{{ url('admin/block') }}" + "/" + id;
+            var url = "{{ url('admin/orderpayment') }}" + "/" + id;
             window.open(url, "_blank");
         });
 
-       
+        $(document).ready(function () {
+        // Function to calculate and update values
+        function updateValues() {
+            var totalFlat = parseFloat($('#total_flat').val()) || 0;
+            var amountPerFlat = parseFloat($('#amount_per_flat').val()) || 0;
+            var gstPercent = parseFloat($('#gst_percent').val()) || 0;
+            var totalPaidAmount = parseFloat($('#total_paid_amount').val()) || 0;
+
+            // Calculate Sub Total
+            var subTotal = totalFlat * amountPerFlat;
+            $('#sub_total_amount').val(subTotal.toFixed(2));
+
+            // Calculate GST Amount
+            var gstAmount = (subTotal * gstPercent) / 100;
+            $('#gst_amount').val(gstAmount.toFixed(2));
+
+            // Calculate Total Amount
+            var totalAmount = subTotal + gstAmount;
+            $('#total_amount').val(totalAmount.toFixed(2));
+
+            // Calculate Total Outstanding Amount
+            var totalOutstandingAmount = totalAmount - totalPaidAmount;
+            $('#total_outstanding_amount').val(totalOutstandingAmount.toFixed(2));
+        }
+
+        // Event handlers for input changes
+        $('#total_flat, #amount_per_flat, #gst_percent, #total_paid_amount').on('input', function () {
+            updateValues();
+        });
+    });
+
+
+
     </script>
 @endsection

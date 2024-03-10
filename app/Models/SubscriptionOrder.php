@@ -13,4 +13,9 @@ class SubscriptionOrder extends Model
     protected $table = 'subscription_order';
     protected $primaryKey = 'subscription_order_id';
     protected $dates = ['deleted_at'];
+
+    public function society()
+    {
+        return $this->hasOne(Society::class,'society_id', 'society_id');
+    }
 }
