@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\admin\SocietyController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CompanyProfileController;
+use App\Http\Controllers\admin\SubscriptionOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -108,4 +109,19 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
      // Designation Permission
      Route::get('company/profile',[CompanyProfileController::class,'profile'])->name('company.profile');
      Route::post('company/profile/update',[CompanyProfileController::class,'update'])->name('company.profile.update');
+
+
+     // User Profile 
+     Route::get('user/profile',[AuthController::class,'profile'])->name('user.profile');
+     Route::post('user/profile/update',[AuthController::class,'updateprofile'])->name('user.profile.update');
+     Route::post('user/password/change',[AuthController::class,'changepassword'])->name('user.password.change');
+
+     // Subscription Order
+    Route::get('subscriptionorder',[SubscriptionOrderController::class,'index'])->name('subscriptionorder.list');
+    Route::post('subscriptionorder/listdata',[SubscriptionOrderController::class,'listdata'])->name('subscriptionorder.listdata');
+    Route::post('subscriptionorder/addorupdate',[SubscriptionOrderController::class,'addorupdate'])->name('subscriptionorder.addorupdate');
+    Route::get('subscriptionorder/{id}/edit',[SubscriptionOrderController::class,'edit'])->name('subscriptionorder.edit');
+    Route::get('subscriptionorder/{id}/delete',[SubscriptionOrderController::class,'delete'])->name('subscriptionorder.delete');
+    Route::get('subscriptionorder/changestatus/{id}',[SubscriptionOrderController::class,'changestatus'])->name('subscriptionorder.changestatus');
+    Route::post('subscriptionorder/multipledelete', [SubscriptionOrderController::class,'multipledelete'])->name('subscriptionorder.multipledelete');
 });

@@ -136,14 +136,14 @@
                             </li> -->
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                                    <img class="" src="{{ asset('/image/avtar.png') }}" alt="">
+                                    <img class="" src="{{ isset(Auth::user()->profile_pic_url) ? asset(Auth::user()->profile_pic_url) : asset('image/avtar.png') }}" alt="">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a href="#" class="dropdown-item">
+                                    <a href="{{ route('admin.user.profile') }}" class="dropdown-item">
                                         <i class="icon-user"></i>
                                         <span class="ml-2">Profile </span>
                                     </a>
-                                    <a href="{{ URL('logout') }}" class="dropdown-item">
+                                    <a href="{{ route('admin.logout') }}" class="dropdown-item">
                                         <i class="icon-key"></i>
                                         <span class="ml-2">Logout </span>
                                     </a>
