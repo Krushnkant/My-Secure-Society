@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('OrderPayment', function (Blueprint $table) {
-            $table->bigIncrements('OrderPaymentId')->index();
-            $table->integer('SubscriptionOrderId')->index();
-            $table->integer('PaymentType')->enum([1, 2])->default(1)->comment('1 - Offline, 2 - Online, 3 - Cheque')->index();
-            $table->decimal('AmountPaid', 10, 2);
-            $table->string('PaymentNote')->nullable();
-            $table->dateTime('PaymentDate')->index();
+        Schema::create('order_payment', function (Blueprint $table) {
+            $table->bigIncrements('order_payment_id')->index();
+            $table->integer('subscription_order_id')->index();
+            $table->integer('payment_type')->enum([1, 2])->default(1)->comment('1 - Offline, 2 - Online, 3 - Cheque')->index();
+            $table->decimal('amount_paid', 10, 2);
+            $table->string('payment_note')->nullable();
+            $table->dateTime('payment_date')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
         });
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('OrderPayment');
+        Schema::dropIfExists('order_payment');
     }
 };

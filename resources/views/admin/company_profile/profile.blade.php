@@ -123,7 +123,7 @@
                             <input type="hidden" name="country" id="country_id" value="{{ isset($company->country_id)?$company->country_id:'' }}">
                             <input type="hidden" name="state" id="state_id" value="{{ isset($company->state_id)?$company->state_id:'' }}">
                             <input type="hidden" name="city" id="city_id" value="{{ isset($company->city_id)?$company->city_id:'' }}">
-                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 &&is_edit(12)))
+                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_edit(12)))
                             <button type="button" id="saveBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
                             @endif
                     </form>

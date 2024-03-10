@@ -1,10 +1,10 @@
 @extends('admin.layout.app')
-@section('title', 'Society')
+@section('title', 'Order')
 
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>Society</h4>
+            <h4>Order</h4>
         </div>
     </div>
 @endsection
@@ -18,11 +18,11 @@
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
 
-                            @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_add(7)))
-                                <button type="button" id="AddBtn_Society" class="btn btn-outline-primary" data-toggle="modal"
-                                    data-target="#SocietyModal">Add New</button>
+                            @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_add(10)))
+                                <button type="button" id="AddBtn_Order" class="btn btn-outline-primary" data-toggle="modal"
+                                    data-target="#OrderModal">Add New</button>
                             @endif
-                            @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(7)))
+                            @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(10)))
                                 <button type="button" id="deleteSelected"
                                     class="btn btn-outline-danger sweet-ajax1">Delete</button>
                             @endif
@@ -30,22 +30,34 @@
                     </div>
                     <div class="tab-content">
                         <div class="table-responsive">
-                            <table id="societyTable" class="display" style="width:100%">
+                            <table id="ordertable" class="display" style="width:100%">
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
+                                        <th>Order Id</th>
                                         <th>Society Name</th>
-                                        <th>Street Address</th>
-                                        <th>Status</th>
+                                        <th>Sub Total</th>
+                                        <th>GST Percent</th>
+                                        <th>Total Amount</th>
+                                        <th>Total Paid Amount</th>
+                                        <th>Total Outstanding Amount</th>
+                                        <th>Order Status</th>
+                                        <th>Due Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr>
                                         <th></th>
+                                        <th>Order Id</th>
                                         <th>Society Name</th>
-                                        <th>Street Address</th>
-                                        <th>Status</th>
+                                        <th>Sub Total</th>
+                                        <th>GST Percent</th>
+                                        <th>Total Amount</th>
+                                        <th>Total Paid Amount</th>
+                                        <th>Total Outstanding Amount</th>
+                                        <th>Order Status</th>
+                                        <th>Due Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </tfoot>
@@ -53,7 +65,7 @@
                         </div>
                     </div>
 
-                    @include('admin.society.addoredit')
+                    @include('admin.subscription_order.addoredit')
 
                 </div>
             </div>
@@ -69,15 +81,12 @@
     <script src="{{ asset('/js/plugins-init/datatables.init.js') }}"></script>
 
     <script type="text/javascript">
-        $("#state-dropdown").select2({
-            placeholder: "Select a state"
+        $("#society-dropdown").select2({
+            placeholder: "Select a society"
         });
-        $("#country-dropdown").select2({
-            placeholder: "Select a country"
+        $("#order-status-dropdown").select2({
         });
-        $("#city-dropdown").select2({
-            placeholder: "Select a city"
-        });
+      
 
         $(document).ready(function() {
             getTableData('', 1);
@@ -90,7 +99,7 @@
         });
 
         function getTableData(tab_type = '', is_clearState = false) {
-            $('#societyTable').DataTable({
+            $('#ordertable').DataTable({
                 processing: 1,
                 serverSide: 1,
                 destroy: 1,
@@ -106,7 +115,7 @@
                     }
                 },
                 ajax: {
-                    url: "{{ route('admin.society.listdata') }}",
+                    url: "{{ route('admin.subscriptionorder.listdata') }}",
                     type: "POST",
                     data: function(data) {
                         data.search = $('input[type="search"]').val();
@@ -122,26 +131,46 @@
                         data: 'id',
                         orderable: false,
                         render: function(data, type, row) {
-                            return `<input type="checkbox" class="select-checkbox" data-id="${row.society_id}">`;
+                            return `<input type="checkbox" class="select-checkbox" data-id="${row.subscription_order_id}">`;
                         }
                     },
                     {
                         width: "10%",
-                        data: 'society_name',
+                        data: 'order_id',
                     },
                     {
-                        width: "20%",
-                        data: 'street_address1',
+                        width: "10%",
+                        data: 'society_id',
                     },
                     {
-                        data: 'estatus', // Assume 'status' is the field in your database for the status
+                        width: "10%",
+                        data: 'sub_total_amount',
+                    },
+                    {
+                        width: "10%",
+                        data: 'gst_percent',
+                    },
+                    {
+                        width: "10%",
+                        data: 'total_amount',
+                    },
+                    {
+                        width: "10%",
+                        data: 'total_paid_amount',
+                    },
+                    {
+                        width: "10%",
+                        data: 'total_outstanding_amount',
+                    },
+                    {
+                        data: 'order_status', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(7)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(10)));
                             if (is_edit) {
                                 var estatus = `<label class="switch">
-                                        <input type="checkbox" id="statuscheck_${row.society_id}" onchange="changeStatus(${row.society_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
+                                        <input type="checkbox" id="statuscheck_${row.subscription_order_id}" onchange="changeStatus(${row.subscription_order_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
                                         <span class="slider"></span>
                                 </label>`;
                             } else {
@@ -154,25 +183,29 @@
                         }
                     },
                     {
+                        width: "10%",
+                        data: 'due_date',
+                    },
+                    {
                         data: 'id',
                         width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_view = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_view(8)));
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(7)));
-                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(7)));
+                            var is_view = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_view(11)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(10)));
+                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(10)));
                             var action = `<span>`;
                             if (is_view) {
                                 action +=
-                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Blog" id="viewBlock"  data-id="${row.society_id}"><i class="fa fa-list color-muted"></i> </a>`;
+                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Order Payment" id="viewOrderPayment"  data-id="${row.subscription_order_id}"><i class="fa fa-list color-muted"></i> </a>`;
                                 }    
                             if (is_edit) {
                                 action +=
-                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.society_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
+                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.subscription_order_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
                             }
                             if (is_delete) {
                                 action +=
-                                    `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.society_id}"><i class="fa fa-close color-danger"></i></a>`;
+                                    `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.subscription_order_id}"><i class="fa fa-close color-danger"></i></a>`;
                             }
                             action += `</span>`;
                             return action;
@@ -189,7 +222,7 @@
                         }
                     });
 
-                    $('#societyTable tbody').on('change', '.select-checkbox', function() {
+                    $('#ordertable tbody').on('change', '.select-checkbox', function() {
                         // Check if all checkboxes are checked
                         var allChecked = $('.select-checkbox:checked').length === $('.select-checkbox')
                             .length;
@@ -225,7 +258,7 @@
 
                                     // Perform AJAX request to delete selected rows
                                     $.ajax({
-                                        url: "{{ route('admin.society.multipledelete') }}",
+                                        url: "{{ route('admin.subscriptionorder.multipledelete') }}",
                                         type: "POST",
                                         data: {
                                             ids: selectedIds
@@ -234,7 +267,7 @@
                                             // Handle success response
                                             console.log(response);
                                             toastr.success(
-                                                "Society deleted successfully!",
+                                                "Order deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
@@ -255,9 +288,9 @@
         }
 
 
-        $('body').on('click', '#AddBtn_Society', function() {
-            $('#SocietyModal').find('.modal-title').html("Add Society");
-            $("#SocietyModal").find('form').trigger('reset');
+        $('body').on('click', '#AddBtn_Order', function() {
+            $('#OrderModal').find('.modal-title').html("Add Society");
+            $("#OrderModal").find('form').trigger('reset');
             $('#id').val("");
             $('#society_name-error').html("");
             $('#street_address1-error').html("");
@@ -269,29 +302,29 @@
             $('#country-dropdown').trigger('change');
             $('#state-dropdown').trigger('change');
             $('#city-dropdown').trigger('change');
-            $("#SocietyModal").find("#save_newBtn").removeAttr('data-action');
-            $("#SocietyModal").find("#save_closeBtn").removeAttr('data-action');
-            $("#SocietyModal").find("#save_newBtn").removeAttr('data-id');
-            $("#SocietyModal").find("#save_closeBtn").removeAttr('data-id');
+            $("#OrderModal").find("#save_newBtn").removeAttr('data-action');
+            $("#OrderModal").find("#save_closeBtn").removeAttr('data-action');
+            $("#OrderModal").find("#save_newBtn").removeAttr('data-id');
+            $("#OrderModal").find("#save_closeBtn").removeAttr('data-id');
             $("#society_name").focus();
         });
 
         $('body').on('click', '#save_newBtn', function() {
-            save_society($(this), 'save_new');
+            save_order($(this), 'save_new');
         });
 
         $('body').on('click', '#save_closeBtn', function() {
-            save_society($(this), 'save_close');
+            save_order($(this), 'save_close');
         });
 
-        function save_society(btn, btn_type) {
+        function save_order(btn, btn_type) {
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
-            var formData = new FormData($("#societyform")[0]);
+            var formData = new FormData($("#orderform")[0]);
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/society/addorupdate') }}",
+                url: "{{ url('admin/subscriptionorder/addorupdate') }}",
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -300,57 +333,60 @@
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
                         
-                        if (res.errors.society_name) {
-                            $('#society_name-error').show().text(res.errors.society_name);
+                        if (res.errors.total_flat) {
+                            $('#total_flat-error').show().text(res.errors.total_flat);
                         } else {
-                            $('#society_name-error').hide();
+                            $('#total_flat-error').hide();
                         }
-                        if (res.errors.street_address1) {
-                            $('#street_address1-error').show().text(res.errors.street_address1);
+                        if (res.errors.amount_per_flat) {
+                            $('#amount_per_flat-error').show().text(res.errors.amount_per_flat);
                         } else {
-                            $('#street_address1-error').hide();
+                            $('#amount_per_flat-error').hide();
                         }
-                        if (res.errors.landmark) {
-                            $('#landmark-error').show().text(res.errors.landmark);
+                        if (res.errors.sub_total_amount) {
+                            $('#sub_total_amount-error').show().text(res.errors.sub_total_amount);
                         } else {
-                            $('#landmark-error').hide();
+                            $('#sub_total_amount-error').hide();
                         }
-                        if (res.errors.pin_code) {
-                            $('#pin_code-error').show().text(res.errors.pin_code);
+                        if (res.errors.gst_percent) {
+                            $('#gst_percent-error').show().text(res.errors.gst_percent);
                         } else {
-                            $('#pin_code-error').hide();
+                            $('#gst_percent-error').hide();
                         }
-                        if (res.errors.city_id) {
-                            $('#city_id-error').show().text(res.errors.city_id);
+                        if (res.errors.gst_amount) {
+                            $('#gst_amount-error').show().text(res.errors.gst_amount);
                         } else {
-                            $('#city_id-error').hide();
+                            $('#gst_amount-error').hide();
                         }
-                        if (res.errors.state_id) {
-                            $('#state_id-error').show().text(res.errors.state_id);
+                        if (res.errors.total_paid_amount) {
+                            $('#total_paid_amount-error').show().text(res.errors.total_paid_amount);
                         } else {
-                            $('#state_id-error').hide();
+                            $('#total_paid_amount-error').hide();
                         }
-                        if (res.errors.country_id) {
-                            $('#country_id-error').show().text(res.errors.country_id);
+                        if (res.errors.total_outstanding_amount) {
+                            $('#total_outstanding_amount-error').show().text(res.errors.total_outstanding_amount);
                         } else {
-                            $('#country_id-error').hide();
+                            $('#total_outstanding_amount-error').hide();
                         }
-
-
+                        if (res.errors.due_date) {
+                            $('#due_date-error').show().text(res.errors.due_date);
+                        } else {
+                            $('#due_date-error').hide();
+                        }
                     }
 
                     if (res.status == 200) {
                         if (btn_type == 'save_close') {
-                            $("#SocietyModal").modal('hide');
+                            $("#OrderModal").modal('hide');
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
                             if (res.action == 'add') {
-                                toastr.success("Society added successfully!", 'Success', {
+                                toastr.success("order added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("Society updated successfully!", 'Success', {
+                                toastr.success("order updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -359,23 +395,14 @@
                         if (btn_type == 'save_new') {
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
-                            $("#SocietyModal").find('form').trigger('reset');
+                            $("#OrderModal").find('form').trigger('reset');
                             $('#id').val("");
-                            $('#society_name-error').html("");
-                            $('#street_address1-error').html("");
-                            $('#landmark-error').html("");
-                            $('#pin_code-error').html("");
-                            $('#city_id-error').html("");
-                            $('#state_id-error').html("");
-                            $('#country_id-error').html("");
-                            $('#country-dropdown').trigger('change');
-                            $('#state-dropdown').trigger('change');
-                            $('#city-dropdown').trigger('change');
-                            $("#SocietyModal").find("#save_newBtn").removeAttr('data-action');
-                            $("#SocietyModal").find("#save_closeBtn").removeAttr('data-action');
-                            $("#SocietyModal").find("#save_newBtn").removeAttr('data-id');
-                            $("#SocietyModal").find("#save_closeBtn").removeAttr('data-id');
-                            $("#society_name").focus();
+                            $('#total_flat-error').html("");
+                            $('#society-dropdown').trigger('change');
+                            $("#OrderModal").find("#save_newBtn").removeAttr('data-action');
+                            $("#OrderModal").find("#save_closeBtn").removeAttr('data-action');
+                            $("#OrderModal").find("#save_newBtn").removeAttr('data-id');
+                            $("#OrderModal").find("#save_closeBtn").removeAttr('data-id');
                             if (res.action == 'add') {
                                 toastr.success("Society Added successfully!", 'Success', {
                                     timeOut: 5000
@@ -391,7 +418,7 @@
                     }
 
                     if (res.status == 400) {
-                        $("#SocietyModal").modal('hide');
+                        $("#OrderModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
                         toastr.error("Please try again", 'Error', {
@@ -400,7 +427,7 @@
                     }
                 },
                 error: function(data) {
-                    $("#SocietyModal").modal('hide');
+                    $("#OrderModal").modal('hide');
                     $(btn).find('.loadericonfa').hide();
                     $(btn).prop('disabled', false);
                     toastr.error("Please try again", 'Error', {
@@ -413,7 +440,7 @@
 
         $('body').on('click', '#editBtn', function() {
             var edit_id = $(this).attr('data-id');
-            $('#SocietyModal').find('.modal-title').html("Edit Society");
+            $('#OrderModal').find('.modal-title').html("Edit Order");
             $('#society_name-error').html("");
             $('#street_address1-error').html("");
             $('#landmark-error').html("");
@@ -422,12 +449,12 @@
             $('#state_id-error').html("");
             $('#country_id-error').html("");
          
-            $.get("{{ url('admin/society') }}" + '/' + edit_id + '/edit', function(data) {
-                $('#SocietyModal').find('#save_newBtn').attr("data-action", "update");
-                $('#SocietyModal').find('#save_closeBtn').attr("data-action", "update");
-                $('#SocietyModal').find('#save_newBtn').attr("data-id", edit_id);
-                $('#SocietyModal').find('#save_closeBtn').attr("data-id", edit_id);
-                $('#id').val(data.society_id);
+            $.get("{{ url('admin/subscriptionorder') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#OrderModal').find('#save_newBtn').attr("data-action", "update");
+                $('#OrderModal').find('#save_closeBtn').attr("data-action", "update");
+                $('#OrderModal').find('#save_newBtn').attr("data-id", edit_id);
+                $('#OrderModal').find('#save_closeBtn').attr("data-id", edit_id);
+                $('#id').val(data.subscription_order_id);
                 $('#society_name').val(data.society_name);
                 $('#street_address1').val(data.street_address1);
                 $('#street_address2').val(data.street_address2);
@@ -476,7 +503,7 @@
                         });
                     }
                 });
-                $("#SocietyModal").modal('show');
+                $("#OrderModal").modal('show');
             });
         });
 

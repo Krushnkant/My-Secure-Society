@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SubscriptionOrder', function (Blueprint $table) {
-            $table->bigIncrements('SubscriptionOrderId')->index();
+        Schema::create('subscription_order', function (Blueprint $table) {
+            $table->bigIncrements('subscription_order_id')->index();
             $table->integer('society_id')->index();
-            $table->string('OrderId');
-            $table->integer('TotalFlat');
-            $table->decimal('AmountPerFlat', 10, 2);
-            $table->decimal('SubTotalAmount', 10, 2);
-            $table->decimal('GstPercent', 10, 2);
-            $table->decimal('GstAmount', 10, 2);
-            $table->decimal('TotalAmount', 10, 2);
-            $table->decimal('TotalPaidAmount', 10, 2);
-            $table->decimal('TotalOutstandingAmount', 10, 2);
-            $table->integer('OrderStatus')->enum([1, 2, 3])->default(1)->comment('1 - Pending, 2 - In Progress, 3 - Completed, 4 - Cancelled')->index();
+            $table->string('order_id');
+            $table->integer('total_flat');
+            $table->decimal('amount_per_flat', 10, 2);
+            $table->decimal('sub_total_amount', 10, 2);
+            $table->decimal('gst_percent', 10, 2);
+            $table->decimal('gst_amount', 10, 2);
+            $table->decimal('total_amount', 10, 2);
+            $table->decimal('total_paid_amount', 10, 2);
+            $table->decimal('total_outstanding_amount', 10, 2);
+            $table->integer('order_status')->enum([1, 2, 3])->default(1)->comment('1 - Pending, 2 - In Progress, 3 - Completed, 4 - Cancelled')->index();
             $table->dateTime('DueDate')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
@@ -38,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SubscriptionOrder');
+        Schema::dropIfExists('subscription_order');
     }
 };
