@@ -61,24 +61,20 @@ class BlockController extends Controller
         if(!isset($request->id)){
             $block = new Block();
             $block->society_id = $request->society_id;
-            $block->block_name = $request->block_name;
-            $block->created_by = Auth::user()->user_id;
-            $block->updated_by = Auth::user()->user_id;
-            $block->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            $block->save();
-            
-            return response()->json(['status' => '200', 'action' => 'add']);
         }
         else{
             $block = Block::find($request->id);
-            if ($block) {
-                $block->block_name = $request->block_name;
-                $block->updated_by = Auth::user()->user_id;
-                $block->save();
-                return response()->json(['status' => '200', 'action' => 'update']);
+            if (!$block) {
+                return response()->json(['status' => '400']);
             }
-            return response()->json(['status' => '400']);
         }
+        $block->block_name = $request->block_name;
+        $block->created_by = Auth::user()->user_id;
+        $block->updated_by = Auth::user()->user_id;
+        $block->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+        $block->save();
+        
+        return response()->json(['status' => '200', 'action' => 'add']);
     }
 
     public function edit($id){

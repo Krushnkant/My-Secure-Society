@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Flat;
 use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -26,16 +27,16 @@ class FlatController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'desc';
 
         // get data from products table
-        $query = Block::select('*');
+        $query = Flat::select('*');
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
-            $query->orWhere('block_name', 'like', "%".$search."%");
+            $query->orWhere('flat_no', 'like', "%".$search."%");
         });
 
-        $orderByName = 'block_name';
+        $orderByName = 'flat_no';
         switch($orderColumnIndex){
             case '0':
-                $orderByName = 'block_name';
+                $orderByName = 'flat_no';
                 break;  
         }
         $query = $query->orderBy($orderByName, $orderBy);
@@ -47,65 +48,61 @@ class FlatController extends Controller
 
     public function addorupdate(Request $request){
         $messages = [
-            'block_name.required' =>'Please provide a block name',
+            'flat_no.required' =>'Please provide a flat no',
         ];
 
         $validator = Validator::make($request->all(), [
-            'block_name' => 'required',
+            'flat_no' => 'required',
         ], $messages);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }
         if(!isset($request->id)){
-            $block = new Block();
-            $block->society_id = $request->society_id;
-            $block->block_name = $request->block_name;
-            $block->created_by = Auth::user()->user_id;
-            $block->updated_by = Auth::user()->user_id;
-            $block->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            $block->save();
-            
-            return response()->json(['status' => '200', 'action' => 'add']);
+            $flat = new Flat();
         }
         else{
-            $block = Block::find($request->id);
-            if ($block) {
-                $block->block_name = $request->block_name;
-                $block->updated_by = Auth::user()->user_id;
-                $block->save();
-                return response()->json(['status' => '200', 'action' => 'update']);
+            $flat = Flat::find($request->id);
+            if (!$flat) {
+                return response()->json(['status' => '400']);
             }
-            return response()->json(['status' => '400']);
         }
+        $flat->society_block_id = $request->society_block_id;
+        $flat->flat_no = $request->flat_no;
+        $flat->is_empty = $request->is_empty;
+        $flat->created_by = Auth::user()->user_id;
+        $flat->updated_by = Auth::user()->user_id;
+        $flat->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+        $flat->save(); 
+        return response()->json(['status' => '200', 'action' => 'add']);
     }
 
     public function edit($id){
-        $block = Block::find($id);
-        return response()->json($block);
+        $flat = Flat::find($id);
+        return response()->json($flat);
     }
 
     public function delete($id){
-        $block = Block::find($id);
-        if ($block){
-            $block->estatus = 3;
-            $block->save();
-            $block->delete();
+        $flat = Flat::find($id);
+        if ($flat){
+            $flat->estatus = 3;
+            $flat->save();
+            $flat->delete();
             return response()->json(['status' => '200']);
         }
         return response()->json(['status' => '400']);
     }
 
     public function changestatus($id){
-        $block = Block::find($id);
-        if ($block->estatus==1){
-            $block->estatus = 2;
-            $block->save();
+        $flat = Flat::find($id);
+        if ($flat->estatus==1){
+            $flat->estatus = 2;
+            $flat->save();
             return response()->json(['status' => '200','action' =>'deactive']);
         }
-        if ($block->estatus==2){
-            $block->estatus = 1;
-            $block->save();
+        if ($flat->estatus==2){
+            $flat->estatus = 1;
+            $flat->save();
             return response()->json(['status' => '200','action' =>'active']);
         }
     }
@@ -113,7 +110,7 @@ class FlatController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        Block::whereIn('society_block_id', $ids)->delete();
+        Flat::whereIn('block_flat_id', $ids)->delete();
 
         return response()->json(['status' => '200']);
     }

@@ -59,24 +59,20 @@ class BusinessCategoryController extends Controller
         }
         if(!isset($request->id)){
             $category = new BusinessCategory();
-            $category->business_category_name = $request->business_category_name;
-            $category->created_by = Auth::user()->user_id;
-            $category->updated_by = Auth::user()->user_id;
-            $category->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            $category->save();
-            
-            return response()->json(['status' => '200', 'action' => 'add']);
         }
         else{
             $category = BusinessCategory::find($request->id);
-            if ($category) {
-                $category->business_category_name = $request->business_category_name;
-                $category->updated_by = Auth::user()->user_id;
-                $category->save();
-                return response()->json(['status' => '200', 'action' => 'update']);
+            if (!$category) {
+                return response()->json(['status' => '400']);
             }
-            return response()->json(['status' => '400']);
         }
+        $category->business_category_name = $request->business_category_name;
+        $category->created_by = Auth::user()->user_id;
+        $category->updated_by = Auth::user()->user_id;
+        $category->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+        $category->save();
+        
+        return response()->json(['status' => '200', 'action' => 'add']);
     }
 
     public function edit($id){

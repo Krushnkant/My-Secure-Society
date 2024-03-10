@@ -18,9 +18,9 @@ class UserController extends Controller
         $designations = Designation::where('estatus',1)->get();
         return view('admin.users.list',compact('designations'));
     }
-    
+
     public function listdata(Request $request){
-      
+
         // Page Length
         $pageNumber = ( $request->start / $request->length )+1;
         $pageLength = $request->length;
@@ -44,14 +44,14 @@ class UserController extends Controller
         switch($orderColumnIndex){
             case '0':
                 $orderByName = 'full_name';
-                break;  
+                break;
         }
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();
         $data = $query->skip($skip)->take($pageLength)->get();
 
         $formattedData = $data->map(function ($item) {
-            
+
             return [
                 'user_id' => $item->user_id,
                 'full_name' => $item->full_name,
@@ -110,11 +110,11 @@ class UserController extends Controller
             $user->created_by = Auth::user()->user_id;
             $user->updated_by = Auth::user()->user_id;
             $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            if ($request->hasFile('profile_pic')) { 
+            if ($request->hasFile('profile_pic')) {
                 $user->profile_pic_url = $this->uploadProfileImage($request);
             }
             $user->save();
-           
+
             $this->addUserDesignation($user,$request);
             return response()->json(['status' => '200', 'action' => 'add']);
         }else{
@@ -129,15 +129,15 @@ class UserController extends Controller
                 $user->blood_group = $request->blood_group;
                 $user->updated_by = Auth::user()->user_id;
                 $user->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-                if ($request->hasFile('profile_pic')) { 
+                if ($request->hasFile('profile_pic')) {
                     $user->profile_pic_url = $this->uploadProfileImage($request,$old_image);
                 }
                 $user->save();
-                
+
                 $this->addUserDesignation($user,$request);
                 return response()->json(['status' => '200', 'action' => 'update']);
             }
-           
+
             return response()->json(['status' => '400']);
         }
 
@@ -154,7 +154,7 @@ class UserController extends Controller
                 unlink($old_image);
             }
         }
-        return  'images/profile_pic/'.$image_name;           
+        return  'images/profile_pic/'.$image_name;
     }
 
     public function addUserDesignation($user,$request){
@@ -172,7 +172,7 @@ class UserController extends Controller
         }
         $user_designation->save();
     }
-    
+
 
     public function edit($id){
         $user = User::with('userdesignation')->find($id);

@@ -33,7 +33,8 @@
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
-                                        <th>Flat Name</th>
+                                        <th>Flat No</th>
+                                        <th>Empty</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -41,7 +42,8 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th>Flat Name</th>
+                                        <th>Flat No</th>
+                                        <th>Empty</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -66,6 +68,7 @@
     <script src="{{ asset('/js/plugins-init/datatables.init.js') }}"></script>
 
     <script type="text/javascript">
+    $(".single-select-placeholder").select2();
         $(document).ready(function() {
             getTableData('', 1);
         });
@@ -93,7 +96,7 @@
                     }
                 },
                 ajax: {
-                    url: "{{ route('admin.block.listdata') }}",
+                    url: "{{ route('admin.flat.listdata') }}",
                     type: "POST",
                     data: function(data) {
                         data.search = $('input[type="search"]').val();
@@ -108,22 +111,33 @@
                         data: 'id',
                         orderable: false,
                         render: function(data, type, row) {
-                            return `<input type="checkbox" class="select-checkbox" data-id="${row.society_block_id}">`;
+                            return `<input type="checkbox" class="select-checkbox" data-id="${row.block_flat_id}">`;
                         }
                     },
                     {
                         width: "20%",
-                        data: 'block_name',
+                        data: 'flat_no',
+                    },
+                    {
+                        width: "20%",
+                        data: 'is_empty',
+                        orderable: false,
+                        render: function(data, type, row) {
+                            if(data == 1){
+                             return  `<span class="badge badge-success">Yes</span>`;
+                            }
+                            return  `<span class="badge badge-danger">No</span>`;;
+                        }
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(5)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(9)));
                             if (is_edit) {
                                 var estatus = `<label class="switch">
-                                        <input type="checkbox" id="statuscheck_${row.society_block_id}" onchange="changeStatus(${row.society_block_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
+                                        <input type="checkbox" id="statuscheck_${row.block_flat_id}" onchange="changeStatus(${row.block_flat_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
                                         <span class="slider"></span>
                                 </label>`;
                             } else {
@@ -140,21 +154,17 @@
                         width: "5%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_view = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_view(9)));
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(8)));
-                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(8)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(9)));
+                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(9)));
                             var action = `<span>`;
-                            if (is_view) {
-                                action +=
-                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Blog" id="viewFlat"  data-id="${row.society_block_id}"><i class="fa fa-list color-muted"></i> </a>`;
-                                } 
+                           
                             if (is_edit) {
                                 action +=
-                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.society_block_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
+                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.block_flat_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
                             }
                             if (is_delete) {
                                 action +=
-                                    `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.society_block_id}"><i class="fa fa-close color-danger"></i></a>`;
+                                    `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.block_flat_id}"><i class="fa fa-close color-danger"></i></a>`;
                             }
                             action += `</span>`;
                             return action;
@@ -208,7 +218,7 @@
 
                                     // Perform AJAX request to delete selected rows
                                     $.ajax({
-                                        url: "{{ route('admin.block.multipledelete') }}",
+                                        url: "{{ route('admin.flat.multipledelete') }}",
                                         type: "POST",
                                         data: {
                                             ids: selectedIds
@@ -217,7 +227,7 @@
                                             // Handle success response
                                             console.log(response);
                                             toastr.success(
-                                                "Block deleted successfully!",
+                                                "Flat deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
@@ -240,42 +250,43 @@
         $('body').on('click', '#AddBtn_Flat', function() {
             $('#FlatModel').find('.modal-title').html("Add Block");
             $("#FlatModel").find('form').trigger('reset');
+            $('.single-select-placeholder').trigger('change');
             $('#id').val("");
-            $('#block_name-error').html("");
+            $('#flat_no-error').html("");
             $("#FlatModel").find("#save_newBtn").removeAttr('data-action');
             $("#FlatModel").find("#save_closeBtn").removeAttr('data-action');
             $("#FlatModel").find("#save_newBtn").removeAttr('data-id');
             $("#FlatModel").find("#save_closeBtn").removeAttr('data-id');
-            $("#block_name").focus();
+            $("#flat_no").focus();
         });
 
 
 
         $('body').on('click', '#save_newBtn', function() {
-            save_block($(this), 'save_new');
+            save_flat($(this), 'save_new');
         });
 
         $('body').on('click', '#save_closeBtn', function() {
-            save_block($(this), 'save_close');
+            save_flat($(this), 'save_close');
         });
 
-        function save_block(btn, btn_type) {
+        function save_flat(btn, btn_type) {
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
-            var formData = $("#blockform").serializeArray();
+            var formData = $("#flatform").serializeArray();
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/block/addorupdate') }}",
+                url: "{{ url('admin/flat/addorupdate') }}",
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
-                        if (res.errors.block_name) {
-                            $('#block_name-error').show().text(res.errors.block_name);
+                        if (res.errors.flat_no) {
+                            $('#flat_no-error').show().text(res.errors.flat_no);
                         } else {
-                            $('#block_name-error').hide();
+                            $('#flat_no-error').hide();
                         }
                     }
 
@@ -285,12 +296,12 @@
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
                             if (res.action == 'add') {
-                                toastr.success("Block added successfully!", 'Success', {
+                                toastr.success("Flat added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("Block updated successfully!", 'Success', {
+                                toastr.success("Flat updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -300,20 +311,21 @@
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
                             $("#FlatModel").find('form').trigger('reset');
+                            $('.single-select-placeholder').trigger('change');
                             $('#id').val("");
-                            $('#block_name-error').html("");
+                            $('#flat_no-error').html("");
                             $("#FlatModel").find("#save_newBtn").removeAttr('data-action');
                             $("#FlatModel").find("#save_closeBtn").removeAttr('data-action');
                             $("#FlatModel").find("#save_newBtn").removeAttr('data-id');
                             $("#FlatModel").find("#save_closeBtn").removeAttr('data-id');
-                            $("#block_name").focus();
+                            $("#flat_no").focus();
                             if (res.action == 'add') {
-                                toastr.success("Block added successfully!", 'Success', {
+                                toastr.success("Flat added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("Block updated successfully!", 'Success', {
+                                toastr.success("Flat updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -345,16 +357,17 @@
 
         $('body').on('click', '#editBtn', function() {
             var edit_id = $(this).attr('data-id');
-
-            $('#FlatModel').find('.modal-title').html("Edit Block");
-            $('#block_name-error').html("");
-            $.get("{{ url('admin/block') }}" + '/' + edit_id + '/edit', function(data) {
+            $('.single-select-placeholder').trigger('change');
+            $('#FlatModel').find('.modal-title').html("Edit Flat");
+            $('#flat_no-error').html("");
+            $.get("{{ url('admin/flat') }}" + '/' + edit_id + '/edit', function(data) {
                 $('#FlatModel').find('#save_newBtn').attr("data-action", "update");
                 $('#FlatModel').find('#save_closeBtn').attr("data-action", "update");
                 $('#FlatModel').find('#save_newBtn').attr("data-id", edit_id);
                 $('#FlatModel').find('#save_closeBtn').attr("data-id", edit_id);
-                $('#id').val(data.society_block_id);
-                $('#block_name').val(data.block_name);
+                $('#id').val(data.block_flat_id);
+                $('#flat_no').val(data.flat_no);
+                $('select[name="is_empty"]').val(data.is_empty).trigger('change');
                 $("#FlatModel").modal('show');
             });
         });

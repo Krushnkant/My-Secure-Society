@@ -28,6 +28,11 @@
                         <a href="{{ route('admin.society.list') }}"><i class="ti-align-justify"></i><span class="nav-text">Society</span></a>
                     </li>
                     @endif
+                    @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 &&is_view(12)))
+                    <li>
+                        <a href="{{ route('admin.company.profile') }}"><i class="ti-align-justify"></i><span class="nav-text">Company Profile</span></a>
+                    </li>
+                    @endif
                 </ul>
             </div>
         </div>

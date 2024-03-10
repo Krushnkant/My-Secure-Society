@@ -1,11 +1,11 @@
-<div class="modal modal-right fade" id="BlockModal" tabindex="-1" role="dialog" aria-labelledby="BlockModal">
+<div class="modal modal-right fade" id="FlatModel" tabindex="-1" role="dialog" aria-labelledby="FlatModel">
     <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="blockform" action="#" method="post">
-            <input type="hidden" name="society_id" id="society_id" value="{{ $id }}">
+            <form class="form-valide" id="flatform" action="#" method="post">
+            <input type="hidden" name="society_block_id" id="society_block_id" value="{{ $id }}">
             {{ csrf_field() }}
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Block</h5>
+                    <h5 class="modal-title">Add Flat</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="1">&times;</span>
                     </button>
@@ -14,9 +14,18 @@
                     <div class="row">
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Block Name <span class="text-danger">*</span></label>
-                                <input type="text" name="block_name" id="block_name" class="form-control" placeholder="Block Name">
-                                <div id="block_name-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
+                                <label class="text-label">Flat No <span class="text-danger">*</span></label>
+                                <input type="text" name="flat_no" id="flat_no" class="form-control" placeholder="Flat No">
+                                <div id="flat_no-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mb-2">
+                            <div class="form-group">
+                                <label class="text-label">Empty <span class="text-danger">*</span></label>
+                                <select class="single-select-placeholder js-states" name="is_empty">
+                                    <option value="1">Yes</option>
+                                    <option value="2">No</option>
+                                </select>
                             </div>
                         </div>
                     </div>

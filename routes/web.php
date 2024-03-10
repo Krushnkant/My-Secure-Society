@@ -11,6 +11,7 @@ use App\Http\Controllers\admin\FlatController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\admin\SocietyController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CompanyProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +55,7 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
     Route::get('businesscategory/{id}/delete',[BusinessCategoryController::class,'delete'])->name('businesscategory.delete');
     Route::get('businesscategory/changestatus/{id}',[BusinessCategoryController::class,'changestatus'])->name('businesscategory.changestatus');
     Route::post('businesscategory/multipledelete', [BusinessCategoryController::class,'multipledelete'])->name('businesscategory.multipledelete');
-    
+
     // Designation
     Route::get('designation',[DesignationController::class,'index'])->name('designation.list');
     Route::post('designation/listdata',[DesignationController::class,'listdata'])->name('designation.listdata');
@@ -104,5 +105,7 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
     Route::get('flat/changestatus/{id}',[FlatController::class,'changestatus'])->name('flat.changestatus');
     Route::post('flat/multipledelete', [FlatController::class,'multipledelete'])->name('flat.multipledelete');
 
-
+     // Designation Permission
+     Route::get('company/profile',[CompanyProfileController::class,'profile'])->name('company.profile');
+     Route::post('company/profile/update',[CompanyProfileController::class,'update'])->name('company.profile.update');
 });
