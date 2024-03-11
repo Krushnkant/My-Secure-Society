@@ -394,12 +394,12 @@
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
                             if (res.action == 'add') {
-                                toastr.success("order added successfully!", 'Success', {
+                                toastr.success("Order added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("order updated successfully!", 'Success', {
+                                toastr.success("Order updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -426,12 +426,12 @@
                             $("#OrderModal").find("#save_newBtn").removeAttr('data-id');
                             $("#OrderModal").find("#save_closeBtn").removeAttr('data-id');
                             if (res.action == 'add') {
-                                toastr.success("Society Added successfully!", 'Success', {
+                                toastr.success("Order Added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("Society Updated successfully!", 'Success', {
+                                toastr.success("Order Updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -481,21 +481,20 @@
                 $('#OrderModal').find('#save_newBtn').attr("data-id", edit_id);
                 $('#OrderModal').find('#save_closeBtn').attr("data-id", edit_id);
                 $('#id').val(data.subscription_order_id);
-                $('#total_flat').val(data.total_flat);
-                $('#amount_per_flat').val(data.amount_per_flat);
-                $('#sub_total_amount').val(data.sub_total_amount);
-                $('#gst_percent').val(data.gst_percent);
-                $('#gst_amount').val(data.gst_amount);
-                $('#total_amount').val(data.total_amount);
-                $('#total_paid_amount').val(data.total_paid_amount);
-                    var formattedDueDate = new Date(data.due_date).toLocaleDateString('en-GB'); // Adjust the locale as needed
-
-                // Set the formatted date to the input
-                $('#due_date').val(formattedDueDate);
-                $('#total_outstanding_amount').val(data.total_outstanding_amount);
+                $('#total_flat').val(data.total_flat).prop("readonly", true);
+                $('#amount_per_flat').val(data.amount_per_flat).prop("readonly", true);
+                $('#sub_total_amount').val(data.sub_total_amount).prop("readonly", true);
+                $('#gst_percent').val(data.gst_percent).prop("readonly", true);
+                $('#gst_amount').val(data.gst_amount).prop("readonly", true);
+                $('#total_amount').val(data.total_amount).prop("readonly", true);
+                $('#total_paid_amount').val(data.total_paid_amount).prop("readonly", true);
+                $('#due_date').val(data.due_date);
+                $('#payment_date').val(data.payment_order.payment_date).prop("readonly", true);
+                $('#payment_note').val(data.payment_order.payment_note).prop("readonly", true);
+                $('#total_outstanding_amount').val(data.total_outstanding_amount).prop("readonly", true);
                 $('select[name="order_status"]').val(data.order_status).trigger('change');
-                $('select[name="society_id"]').val(data.society_id).trigger('change');
-
+                $('select[name="society_id"]').val(data.society_id).trigger('change').prop("disabled", true);
+                $('select[name="payment_type"]').val(data.payment_order.payment_type).trigger('change').prop("disabled", true);
                 $("#OrderModal").modal('show');
             });
         });

@@ -68,72 +68,85 @@ class SubscriptionOrderController extends Controller
             'payment_date.required' => 'Please provide a payment date',
             'total_paid_amount.max' => 'Total paid amount cannot exceed total amount.',
         ];
-        $validator = Validator::make($request->all(), [
-            'society_id' => 'required',
-            'total_flat' => 'required|numeric',
-            'amount_per_flat' => 'required|numeric',
-            'sub_total_amount' => 'required|numeric',
-            'total_amount' => 'required|numeric',
-            'gst_percent' => 'required|numeric',
-            'gst_amount' => 'required|numeric',
-            'total_paid_amount' => [
-                'required',
-                'numeric',
-                function ($attribute, $value, $fail) use ($request) {
-                    // Custom validation callback to check if total_paid_amount is not greater than total_amount
-                    if ($value > $request->total_amount) {
-                        $fail('Total paid amount cannot exceed total amount.');
-                    }
-                },
-            ],
-            'total_outstanding_amount' => 'required|numeric',
-            'order_status' => 'required',
-            'due_date' => 'required',
-            'payment_date' => 'required',
-        ], $messages);
+        if (!isset($request->id)) {
+            $validator = Validator::make($request->all(), [
+                'society_id' => 'required',
+                'total_flat' => 'required|numeric',
+                'amount_per_flat' => 'required|numeric',
+                'sub_total_amount' => 'required|numeric',
+                'total_amount' => 'required|numeric',
+                'gst_percent' => 'required|numeric',
+                'gst_amount' => 'required|numeric',
+                'total_paid_amount' => [
+                    'required',
+                    'numeric',
+                    function ($attribute, $value, $fail) use ($request) {
+                        // Custom validation callback to check if total_paid_amount is not greater than total_amount
+                        if ($value > $request->total_amount) {
+                            $fail('Total paid amount cannot exceed total amount.');
+                        }
+                    },
+                ],
+                'total_outstanding_amount' => 'required|numeric',
+                'order_status' => 'required',
+                'due_date' => 'required',
+                'payment_date' => 'required',
+            ], $messages);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'order_status' => 'required',
+                'due_date' => 'required',
+            ], $messages);
+        }
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(), 'status' => 'failed']);
         }
         if (!isset($request->id)) {
             $subscriptionorder = new SubscriptionOrder();
             $subscriptionorder->created_by = Auth::user()->user_id;
+            $subscriptionorder->society_id = $request->society_id;
+            $subscriptionorder->order_id = 'ORD-' . Str::random(6);
+            $subscriptionorder->total_flat = $request->total_flat;
+            $subscriptionorder->amount_per_flat = $request->amount_per_flat;
+            $subscriptionorder->sub_total_amount = $request->sub_total_amount;
+            $subscriptionorder->gst_percent = $request->gst_percent;
+            $subscriptionorder->gst_amount = $request->gst_amount;
+            $subscriptionorder->total_amount = $request->total_amount;
+            $subscriptionorder->total_paid_amount = $request->total_paid_amount;
+            $subscriptionorder->total_outstanding_amount = $request->total_outstanding_amount;
+            $subscriptionorder->order_status = $request->order_status;
+            $subscriptionorder->due_date = $request->due_date;
+            $subscriptionorder->updated_by = Auth::user()->user_id;
+            $subscriptionorder->save();
+    
+            if($subscriptionorder){
+                $order_payment = New OrderPayment();
+                $order_payment->subscription_order_id = $subscriptionorder->subscription_order_id;
+                $order_payment->payment_type = $request->payment_type;
+                $order_payment->amount_paid = $request->total_paid_amount;
+                $order_payment->payment_note = $request->payment_note;
+                $order_payment->payment_date = $request->payment_date;
+                $order_payment->created_by = Auth::user()->user_id;
+                $order_payment->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+                $order_payment->save();
+            }
+            return response()->json(['status' => '200', 'action' => 'add']);
         } else {
             $subscriptionorder = SubscriptionOrder::find($request->id);
             if (!$subscriptionorder) {
                 return response()->json(['status' => '400']);
             }
+            $subscriptionorder->order_status = $request->order_status;
+            $subscriptionorder->due_date = $request->due_date;
+            $subscriptionorder->updated_by = Auth::user()->user_id;
+            $subscriptionorder->save();
+            return response()->json(['status' => '200', 'action' => 'update']);
         }
-        $subscriptionorder->society_id = $request->society_id;
-        $subscriptionorder->order_id = 'ORD-' . Str::random(6);
-        $subscriptionorder->total_flat = $request->total_flat;
-        $subscriptionorder->amount_per_flat = $request->amount_per_flat;
-        $subscriptionorder->sub_total_amount = $request->sub_total_amount;
-        $subscriptionorder->gst_percent = $request->gst_percent;
-        $subscriptionorder->gst_amount = $request->gst_amount;
-        $subscriptionorder->total_amount = $request->total_amount;
-        $subscriptionorder->total_paid_amount = $request->total_paid_amount;
-        $subscriptionorder->total_outstanding_amount = $request->total_outstanding_amount;
-        $subscriptionorder->order_status = $request->order_status;
-        $subscriptionorder->due_date = $request->due_date;
-        $subscriptionorder->updated_by = Auth::user()->user_id;
-        $subscriptionorder->save();
-
-        if($subscriptionorder){
-            $order_payment = New OrderPayment();
-            $order_payment->subscription_order_id = $subscriptionorder->subscription_order_id;
-            $order_payment->payment_type = $request->payment_type;
-            $order_payment->amount_paid = $request->total_paid_amount;
-            $order_payment->payment_note = $request->payment_note;
-            $order_payment->payment_date = $request->payment_date;
-            $order_payment->created_by = Auth::user()->user_id;
-            $order_payment->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            $order_payment->save();
-        }
-        return response()->json(['status' => '200', 'action' => 'add']);
     }
     public function edit($id)
     {
-        $subscriptionorder = SubscriptionOrder::find($id);
+        $subscriptionorder = SubscriptionOrder::with('payment_order')->find($id);
+     
         return response()->json($subscriptionorder);
     }
     public function delete($id)

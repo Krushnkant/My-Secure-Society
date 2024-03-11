@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('payment_type')->enum([1, 2])->default(1)->comment('1 - Offline, 2 - Online, 3 - Cheque')->index();
             $table->decimal('amount_paid', 10, 2);
             $table->string('payment_note')->nullable();
-            $table->dateTime('payment_date')->index();
+            $table->date('payment_date')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
         });
