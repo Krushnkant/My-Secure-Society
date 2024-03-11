@@ -18,4 +18,9 @@ class SubscriptionOrder extends Model
     {
         return $this->hasOne(Society::class,'society_id', 'society_id');
     }
+
+    public function payment_order()
+    {
+        return $this->hasOne(OrderPayment::class,'subscription_order_id', 'subscription_order_id');
+    }
 }
