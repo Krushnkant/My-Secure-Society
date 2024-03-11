@@ -33,9 +33,19 @@
                         <a href="{{ route('admin.company.profile') }}"><i class="ti-align-justify"></i><span class="nav-text">Company Profile</span></a>
                     </li>
                     @endif
-                    @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(12)))
+                    @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(11)))
                     <li>
                         <a href="{{ route('admin.subscriptionorder.list') }}"><i class="ti-align-justify"></i><span class="nav-text">Order</span></a>
+                    </li>
+                    @endif
+                    @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(4)))
+                    <li>
+                        <a href="{{ route('admin.emergencycontact.list') }}"><i class="ti-align-justify"></i><span class="nav-text">Emergency Contact</span></a>
+                    </li>
+                    @endif
+                    @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(13)))
+                    <li>
+                        <a href="{{ route('admin.servicevendor.list') }}"><i class="ti-align-justify"></i><span class="nav-text">Service Vendor</span></a>
                     </li>
                     @endif
                 </ul>

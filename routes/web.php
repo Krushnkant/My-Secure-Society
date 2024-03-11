@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\admin\SubscriptionOrderController;
 use App\Http\Controllers\admin\OrderPaymentController;
+use App\Http\Controllers\admin\EmergencyContactController;
+use App\Http\Controllers\admin\ServiceVendorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,4 +136,24 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
     Route::get('orderpayment/{id}/delete',[OrderPaymentController::class,'delete'])->name('orderpayment.delete');
     Route::get('orderpayment/changestatus/{id}',[OrderPaymentController::class,'changestatus'])->name('orderpayment.changestatus');
     Route::post('orderpayment/multipledelete', [OrderPaymentController::class,'multipledelete'])->name('orderpayment.multipledelete');
+
+    // Emergency Contact
+    Route::get('emergencycontact',[EmergencyContactController::class,'index'])->name('emergencycontact.list');
+    Route::post('emergencycontact/listdata',[EmergencyContactController::class,'listdata'])->name('emergencycontact.listdata');
+    Route::post('emergencycontact/addorupdate',[EmergencyContactController::class,'addorupdate'])->name('emergencycontact.addorupdate');
+    Route::get('emergencycontact/{id}/edit',[EmergencyContactController::class,'edit'])->name('emergencycontact.edit');
+    Route::get('emergencycontact/{id}/delete',[EmergencyContactController::class,'delete'])->name('emergencycontact.delete');
+    Route::get('emergencycontact/changestatus/{id}',[EmergencyContactController::class,'changestatus'])->name('emergencycontact.changestatus');
+    Route::post('emergencycontact/multipledelete', [EmergencyContactController::class,'multipledelete'])->name('emergencycontact.multipledelete');
+
+     // service vendor
+    Route::get('servicevendor',[ServiceVendorController::class,'index'])->name('servicevendor.list');
+    Route::post('servicevendor/listdata',[ServiceVendorController::class,'listdata'])->name('servicevendor.listdata');
+    Route::post('servicevendor/addorupdate',[ServiceVendorController::class,'addorupdate'])->name('servicevendor.addorupdate');
+    Route::get('servicevendor/{id}/edit',[ServiceVendorController::class,'edit'])->name('servicevendor.edit');
+    Route::get('servicevendor/{id}/delete',[ServiceVendorController::class,'delete'])->name('servicevendor.delete');
+    Route::get('servicevendor/changestatus/{id}',[ServiceVendorController::class,'changestatus'])->name('servicevendor.changestatus');
+    Route::post('servicevendor/multipledelete', [ServiceVendorController::class,'multipledelete'])->name('servicevendor.multipledelete');
+
+
 });

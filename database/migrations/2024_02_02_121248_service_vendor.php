@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ServiceVendor', function (Blueprint $table) {
-            $table->bigIncrements('ServiceVendorId')->index();
-            $table->integer('ServiceType')->index()->enum([1, 2, 3])->comment('1 - Delivery, 2 - Cab, 3 - Other')->index();
-            $table->string('VendorCompanyName', 50);
+        Schema::create('service_vendor', function (Blueprint $table) {
+            $table->bigIncrements('service_vendor_id')->index();
+            $table->integer('service_type')->index()->enum([1, 2, 3])->comment('1 - Delivery, 2 - Cab, 3 - Other')->index();
+            $table->string('vendor_company_name', 50);
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
