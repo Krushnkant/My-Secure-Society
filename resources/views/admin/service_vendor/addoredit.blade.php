@@ -20,28 +20,8 @@
                                     style="display: none;"></div>
                             </div>
                         </div>
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">Email Address <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        placeholder="Email Address">
-                                    <div id="email-error" class="invalid-feedback animated fadeInDown"
-                                        style="display: none;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">Designation <span class="text-danger">*</span></label>
-                                <select class="single-select-placeholder js-states" name="designation">
-                                    @foreach ($designations as $designation)
-                                        <option value="{{ $designation->company_designation_id }}">
-                                            {{ $designation->designation_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+                       
+                      
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
                                 <label class="text-label">User Type <span class="text-danger">*</span></label>
@@ -56,59 +36,8 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">Mobile Number <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="number" name="mobile_no" id="mobile_no" class="form-control"
-                                        placeholder="Mobile Number">
-                                    <div id="mobile_no-error" class="invalid-feedback animated fadeInDown"
-                                        style="display: none;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">Password <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="password" name="password"
-                                        placeholder="Password">
-                                    <div id="password-error" class="invalid-feedback animated fadeInDown"
-                                        style="display: none;"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">Blood Group <span class="text-danger">*</span></label>
-                                <select class="single-select-placeholder js-states" name="blood_group">
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">Gender <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <label class="radio-inline">
-                                        <input type="radio" name="gender" value="2" checked> Male
-                                    </label>
-                                    &nbsp;&nbsp;&nbsp;
-                                    <label class="radio-inline">
-                                        <input type="radio" name="gender" value="1"> Female
-                                    </label>
-
-                                </div>
-                            </div>
-                        </div>
+                       
+                    
                         <div class="col-lg-6 mb-2">
                             <div class="form-group ">
                                 <label class="col-form-label" for="profilePic">Profile Image

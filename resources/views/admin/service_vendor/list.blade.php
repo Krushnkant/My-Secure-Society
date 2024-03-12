@@ -1,10 +1,10 @@
 @extends('admin.layout.app')
-@section('title', 'Users')
+@section('title', 'Service Vendor')
 
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>Users</h4>
+            <h4>Service Vendor</h4>
         </div>
     </div>
 @endsection
@@ -18,26 +18,23 @@
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
 
-                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_add(3)) )
-                            <button type="button" id="AddBtn_User" class="btn btn-outline-primary" data-toggle="modal" data-target="#UserModal">Add New</button>
+                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_add(13)) )
+                            <button type="button" id="AddBtn_ServiceVendor" class="btn btn-outline-primary" data-toggle="modal" data-target="#ServiceVendorModal">Add New</button>
                             @endif
-                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_delete(3)) )
+                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_delete(13)) )
                              <button type="button" id="deleteSelected" class="btn btn-outline-danger sweet-ajax1">Delete</button>
                             @endif
                         </div>
                     </div>
                     <div class="tab-content">
                         <div class="table-responsive">
-                            <table id="userTable" class="display" style="width:100%">
+                            <table id="serviceVendorTable" class="display" style="width:100%">
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
-                                        <th>Profile Image</th>
-                                        <th>Full Name</th>
-                                        <th>Designation</th>
-                                        <th>User Type</th>
-                                       <th>Email</th>
-                                        <th>Mobile Number</th>
+                                        <th>Image</th>
+                                        <th>Vendor Company Name</th>
+                                        <th>Service Type </th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -45,12 +42,9 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th>Profile Image</th>
-                                        <th>Full Name</th>
-                                        <th>Designation</th>
-                                        <th>User Type</th>
-                                       <th>Email</th>
-                                        <th>Mobile Number</th>
+                                        <th>Image</th>
+                                        <th>Vendor Company Name</th>
+                                        <th>Service Type </th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -59,7 +53,7 @@
                         </div>
                     </div>
 
-                    @include('admin.users.addoredit')
+                    @include('admin.service_vendor.addoredit')
 
                 </div>
             </div>
@@ -88,7 +82,7 @@
         });
 
         function getTableData(tab_type = '', is_clearState = false) {
-            $('#userTable').DataTable({
+            $('#serviceVendorTable').DataTable({
                 processing: 1,
                 serverSide: 1,
                 destroy: 1,
@@ -104,7 +98,7 @@
                     }
                 },
                 ajax: {
-                    url: "{{ route('admin.users.listdata') }}",
+                    url: "{{ route('admin.servicevendor.listdata') }}",
                     type: "POST",
                     data: function(data) {
                         data.search = $('input[type="search"]').val();
@@ -120,7 +114,7 @@
                         data: 'id',
                         orderable: false,
                         render: function(data, type, row) {
-                            return `<input type="checkbox" class="select-checkbox" data-id="${row.user_id}">`;
+                            return `<input type="checkbox" class="select-checkbox" data-id="${row.service_vendor_id}">`;
                         }
                     },
                     {
@@ -136,24 +130,11 @@
                     },
                     {
                         width: "10%",
-                        data: 'full_name',
-                    },
-                    {
-                        width: "10%",
-                        data: 'designation',
-                    },
+                        data: 'vendor_company_name',
+                    }
                     {
                         width: "10%",
                         data: 'user_type_name',
-                    },
-
-                    {
-                        width: "10%",
-                        data: 'email',
-                    },
-                    {
-                        width: "10%",
-                        data: 'mobile_no',
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
@@ -163,7 +144,7 @@
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
                             if (is_edit) {
                                 var estatus = `<label class="switch">
-                                        <input type="checkbox" id="statuscheck_${row.user_id}" onchange="changeStatus(${row.user_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
+                                        <input type="checkbox" id="statuscheck_${row.service_vendor_id}" onchange="changeStatus(${row.service_vendor_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
                                         <span class="slider"></span>
                                 </label>`;
                             } else {
@@ -183,10 +164,10 @@
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(3)));
                             var action =  `<span>`;
                             if(is_edit) {
-                              action += `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.user_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
+                              action += `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.service_vendor_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
                             }
                             if(is_delete) {
-                              action += `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.user_id}"><i class="fa fa-close color-danger"></i></a>`;
+                              action += `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.service_vendor_id}"><i class="fa fa-close color-danger"></i></a>`;
                             }
                             action += `</span>`;
                             return action;
@@ -203,7 +184,7 @@
                         }
                     });
 
-                    $('#userTable tbody').on('change', '.select-checkbox', function() {
+                    $('#serviceVendorTable tbody').on('change', '.select-checkbox', function() {
                         // Check if all checkboxes are checked
                         var allChecked = $('.select-checkbox:checked').length === $('.select-checkbox')
                             .length;
@@ -239,7 +220,7 @@
 
                                     // Perform AJAX request to delete selected rows
                                     $.ajax({
-                                        url: "{{ route('admin.users.multipledelete') }}",
+                                        url: "{{ route('admin.servicevendor.multipledelete') }}",
                                         type: "POST",
                                         data: {
                                             ids: selectedIds
@@ -247,7 +228,7 @@
                                         success: function(response) {
                                             // Handle success response
                                             console.log(response);
-                                            toastr.success("User deleted successfully!",
+                                            toastr.success("Vendor deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
@@ -268,20 +249,20 @@
         }
 
 
-        $('body').on('click', '#AddBtn_User', function() {
-            $('#UserModal').find('.modal-title').html("Add User");
-            $("#UserModal").find('form').trigger('reset');
+        $('body').on('click', '#AddBtn_ServiceVendor', function() {
+            $('#ServiceVendorModal').find('.modal-title').html("Add User");
+            $("#ServiceVendorModal").find('form').trigger('reset');
             $('#id').val("");
-            $('#full_name-error').html("");
+            $('#vendor_company_name-error').html("");
             $('#email-error').html("");
             $('#mobile_no-error').html("");
             $('.single-select-placeholder').trigger('change');
             $('#password').prop('disabled', false);
-            $("#UserModal").find("#save_newBtn").removeAttr('data-action');
-            $("#UserModal").find("#save_closeBtn").removeAttr('data-action');
-            $("#UserModal").find("#save_newBtn").removeAttr('data-id');
-            $("#UserModal").find("#save_closeBtn").removeAttr('data-id');
-            $("#full_name").focus();
+            $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-action');
+            $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-action');
+            $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-id');
+            $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
+            $("#vendor_company_name").focus();
             var default_image = "{{ asset('image/avtar.png') }}";
             $('#profilepic_image_show').attr('src', default_image);
         });
@@ -301,7 +282,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/users/addorupdate') }}",
+                url: "{{ url('admin/servicevendor/addorupdate') }}",
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -309,36 +290,27 @@
                     if (res.status == 'failed') {
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
-                        if (res.errors.full_name) {
-                            $('#full_name-error').show().text(res.errors.full_name);
+                        if (res.errors.vendor_company_name) {
+                            $('#vendor_company_name-error').show().text(res.errors.vendor_company_name);
                         } else {
-                            $('#full_name-error').hide();
+                            $('#vendor_company_name-error').hide();
                         }
-                        if (res.errors.email) {
-                            $('#email-error').show().text(res.errors.email);
-                        } else {
-                            $('#email-error').hide();
-                        }
-                        if (res.errors.mobile_no) {
-                            $('#mobile_no-error').show().text(res.errors.mobile_no);
-                        } else {
-                            $('#mobile_no-error').hide();
-                        }
+                       
 
                     }
 
                     if (res.status == 200) {
                         if (btn_type == 'save_close') {
-                            $("#UserModal").modal('hide');
+                            $("#ServiceVendorModal").modal('hide');
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
                             if (res.action == 'add') {
-                                toastr.success("User added successfully!", 'Success', {
+                                toastr.success("Vendor added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("User updated successfully!", 'Success', {
+                                toastr.success("Vendor updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -347,26 +319,24 @@
                         if (btn_type == 'save_new') {
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
-                            $("#UserModal").find('form').trigger('reset');
+                            $("#ServiceVendorModal").find('form').trigger('reset');
                             $('.single-select-placeholder').trigger('change');
                             $('#id').val("");
-                            $('#full_name-error').html("");
-                            $('#email-error').html("");
-                            $('#mobile_no-error').html("");
-                            $("#UserModal").find("#save_newBtn").removeAttr('data-action');
-                            $("#UserModal").find("#save_closeBtn").removeAttr('data-action');
-                            $("#UserModal").find("#save_newBtn").removeAttr('data-id');
-                            $("#UserModal").find("#save_closeBtn").removeAttr('data-id');
+                            $('#vendor_company_name-error').html("");
+                            $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-action');
+                            $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-action');
+                            $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-id');
+                            $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
                             var default_image = "{{ asset('image/avtar.png') }}";
                             $('#profilepic_image_show').attr('src', default_image);
-                            $("#full_name").focus();
+                            $("#vendor_company_name").focus();
                             if (res.action == 'add') {
-                                toastr.success("User Added successfully!", 'Success', {
+                                toastr.success("Vendor Added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("User Updated successfully!", 'Success', {
+                                toastr.success("Vendor Updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -375,7 +345,7 @@
                     }
 
                     if (res.status == 400) {
-                        $("#UserModal").modal('hide');
+                        $("#ServiceVendorModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
                         toastr.error("Please try again", 'Error', {
@@ -384,7 +354,7 @@
                     }
                 },
                 error: function(data) {
-                    $("#UserModal").modal('hide');
+                    $("#ServiceVendorModal").modal('hide');
                     $(btn).find('.loadericonfa').hide();
                     $(btn).prop('disabled', false);
                     toastr.error("Please try again", 'Error', {
@@ -397,26 +367,18 @@
 
         $('body').on('click', '#editBtn', function() {
             var edit_id = $(this).attr('data-id');
-            $('#UserModal').find('.modal-title').html("Edit User");
-            $('#full_name-error').html("");
+            $('#ServiceVendorModal').find('.modal-title').html("Edit Vendor");
+            $('#vendor_company_name-error').html("");
             $('#email-error').html("");
             $('#mobile_no-error').html("");
-            $.get("{{ url('admin/users') }}" + '/' + edit_id + '/edit', function(data) {
-
-                $('#UserModal').find('#save_newBtn').attr("data-action", "update");
-                $('#UserModal').find('#save_closeBtn').attr("data-action", "update");
-                $('#UserModal').find('#save_newBtn').attr("data-id", edit_id);
-                $('#UserModal').find('#save_closeBtn').attr("data-id", edit_id);
-                $('#id').val(data.user_id);
-                $('#full_name').val(data.full_name);
-                $('#email').val(data.email);
-                $('#mobile_no').val(data.mobile_no);
-                $('#password').val(123456);
-                $('#password').prop('disabled', true);
-                $('input[name="gender"][value="' + data.gender + '"]').prop('checked', true);
-                $('select[name="blood_group"]').val(data.blood_group).trigger('change');
+            $.get("{{ url('admin/servicevendor') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#ServiceVendorModal').find('#save_newBtn').attr("data-action", "update");
+                $('#ServiceVendorModal').find('#save_closeBtn').attr("data-action", "update");
+                $('#ServiceVendorModal').find('#save_newBtn').attr("data-id", edit_id);
+                $('#ServiceVendorModal').find('#save_closeBtn').attr("data-id", edit_id);
+                $('#id').val(data.service_vendor_id);
+                $('#vendor_company_name').val(data.vendor_company_name);
                 $('select[name="user_type"]').val(data.user_type).trigger('change');
-                $('select[name="designation"]').val(data.userdesignation.company_designation_id).trigger('change');
                 if(data.profile_pic_url==null){
                     var default_image = "{{ asset('images/default_avatar.jpg') }}";
                     $('#profilepic_image_show').attr('src', default_image);
@@ -425,26 +387,26 @@
                     var profile_pic =  data.profile_pic_url;
                     $('#profilepic_image_show').attr('src', profile_pic);
                 }
-                $("#UserModal").modal('show');
+                $("#ServiceVendorModal").modal('show');
             });
         });
 
         function changeStatus(id) {
             $.ajax({
                 type: 'GET',
-                url: "{{ url('admin/users/changestatus') }}" + '/' + id,
+                url: "{{ url('admin/servicevendor/changestatus') }}" + '/' + id,
                 success: function(res) {
                     if (res.status == 200 && res.action == 'deactive') {
                         $("#statuscheck_" + id).val(2);
                         $("#statuscheck_" + id).prop('checked', false);
-                        toastr.success("User deactivated successfully!", 'Success', {
+                        toastr.success("Vendor deactivated successfully!", 'Success', {
                             timeOut: 5000
                         });
                     }
                     if (res.status == 200 && res.action == 'active') {
                         $("#statuscheck_" + id).val(1);
                         $("#statuscheck_" + id).prop('checked', 1);
-                        toastr.success("User activated successfully!", 'Success', {
+                        toastr.success("Vendor activated successfully!", 'Success', {
                             timeOut: 5000
                         });
                     }
@@ -476,7 +438,7 @@
                             url: "{{ url('admin/users') }}" + '/' + remove_id + '/delete',
                             success: function(res) {
                                 if (res.status == 200) {
-                                    toastr.success("User deleted successfully!", 'Success', {
+                                    toastr.success("Vendor deleted successfully!", 'Success', {
                                         timeOut: 5000
                                     });
                                     getTableData('', 1);
