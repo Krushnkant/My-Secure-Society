@@ -20,7 +20,7 @@
                     @endif
                     @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(5)))
                     <li>
-                        <a href="{{ route('admin.businesscategory.list') }}"><i class="ti-align-justify"></i><span class="nav-text">Business Category</span></a>
+                        <a href="{{ route('admin.businesscategory.list') }}"><i class="ti-view-list-alt"></i><span class="nav-text">Business Category</span></a>
                     </li>
                     @endif
                     @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(7)))

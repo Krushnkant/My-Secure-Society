@@ -1,7 +1,7 @@
-<div class="modal modal-right fade" id="UserModal" tabindex="-1" role="dialog" aria-labelledby="UserModal">
-    <div class="modal-dialog modal-xl" role="document">
+<div class="modal modal-right fade" id="ServiceVendorModal" tabindex="-1" role="dialog" aria-labelledby="ServiceVendorModal">
+    <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="userform" method="post" enctype="multipart/form-data">
+            <form class="form-valide" id="servicevendorform" method="post" enctype="multipart/form-data">
                 {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title">Add User</h5>
@@ -11,43 +11,40 @@
                 </div>
                 <div class="modal-body px-5">
                     <div class="row">
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-lg-12 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Full Name <span class="text-danger">*</span></label>
-                                <input type="text" name="full_name" id="full_name" class="form-control"
-                                    placeholder="Full Name">
-                                <div id="full_name-error" class="invalid-feedback animated fadeInDown"
+                                <label class="text-label">Vendor Company Name <span class="text-danger">*</span></label>
+                                <input type="text" name="vendor_company_name" id="vendor_company_name" class="form-control"
+                                    placeholder="Vendor Company Name">
+                                <div id="vendor_company_name-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
                             </div>
                         </div>
                        
                       
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-lg-12 mb-2">
                             <div class="form-group">
-                                <label class="text-label">User Type <span class="text-danger">*</span></label>
-                                <select class="single-select-placeholder js-states" name="user_type">
-                                    <option value="1">Company Admin User</option>
-                                    <option value="2">Resident App User</option>
-                                    <option value="3">Guard App User</option>
-                                    <option value="4">App User</option>
-                                    <option value="5">Daily Help User</option>
-                                    <option value="6">Staff Member</option>
+                                <label class="text-label">Service Type <span class="text-danger">*</span></label>
+                                <select class="single-select-placeholder js-states" name="service_type">
+                                    <option value="1">Delivery</option>
+                                    <option value="2">Cab</option>
+                                    <option value="3">Other</option>
                                 </select>
                             </div>
                         </div>
 
                        
                     
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-lg-12 mb-2">
                             <div class="form-group ">
-                                <label class="col-form-label" for="profilePic">Profile Image
+                                <label class="col-form-label" for="filePic">File
                                 </label>
-                                <input type="file" class="form-control-file" id="profile_pic" onchange=""
-                                    name="profile_pic">
-                                <div id="profilepic-error" class="invalid-feedback animated fadeInDown"
+                                <input type="file" class="form-control-file" id="file_pic" onchange=""
+                                    name="file_pic">
+                                <div id="filePic-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
                                 <img src="{{ asset('image/avtar.png') }}" class=""
-                                    id="profilepic_image_show" height="100px" width="100px"
+                                    id="filePic_image_show" height="100px" width="100px"
                                     style="margin-top: 10px;">
                             </div>
                         </div>
