@@ -119,22 +119,22 @@
                     },
                     {
                         width: "10%",
-                        data: 'profile_pic_url',
+                        data: 'service_type',
                         orderable: false,
                         render: function(data, type, row) {
-                            var profile_pic = (data != "" && data != null) ? data : '{{ asset("image/avtar.png") }}';
+                            var file_pic = (data != "" && data != null) ? data : '{{ asset("image/avtar.png") }}';
                             return `<div class="media-left">
-                                      <img class="media-object mr-3"  width="50px" height="50px" alt="Profile Pic" src="${profile_pic}" alt="...">
+                                      <img class="media-object mr-3"  width="50px" height="50px" alt="Profile Pic" src="${file_pic}" alt="...">
                                 </div>`;
                         }
                     },
                     {
                         width: "10%",
                         data: 'vendor_company_name',
-                    }
+                    },
                     {
                         width: "10%",
-                        data: 'user_type_name',
+                        data: 'service_type',
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
@@ -250,12 +250,11 @@
 
 
         $('body').on('click', '#AddBtn_ServiceVendor', function() {
-            $('#ServiceVendorModal').find('.modal-title').html("Add User");
+            $('#ServiceVendorModal').find('.modal-title').html("Add vendor");
             $("#ServiceVendorModal").find('form').trigger('reset');
             $('#id').val("");
             $('#vendor_company_name-error').html("");
-            $('#email-error').html("");
-            $('#mobile_no-error').html("");
+         
             $('.single-select-placeholder').trigger('change');
             $('#password').prop('disabled', false);
             $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-action');
@@ -264,21 +263,21 @@
             $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
             $("#vendor_company_name").focus();
             var default_image = "{{ asset('image/avtar.png') }}";
-            $('#profilepic_image_show').attr('src', default_image);
+            $('#filepic_image_show').attr('src', default_image);
         });
 
         $('body').on('click', '#save_newBtn', function() {
-            save_user($(this), 'save_new');
+            save_servicevendor($(this), 'save_new');
         });
 
         $('body').on('click', '#save_closeBtn', function() {
-            save_user($(this), 'save_close');
+            save_servicevendor($(this), 'save_close');
         });
 
-        function save_user(btn, btn_type) {
+        function save_servicevendor(btn, btn_type) {
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
-            var formData = new FormData($("#userform")[0]);
+            var formData = new FormData($("#servicevendorform")[0]);
 
             $.ajax({
                 type: 'POST',
@@ -328,7 +327,7 @@
                             $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-id');
                             $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
                             var default_image = "{{ asset('image/avtar.png') }}";
-                            $('#profilepic_image_show').attr('src', default_image);
+                            $('#filepic_image_show').attr('src', default_image);
                             $("#vendor_company_name").focus();
                             if (res.action == 'add') {
                                 toastr.success("Vendor Added successfully!", 'Success', {
@@ -378,14 +377,14 @@
                 $('#ServiceVendorModal').find('#save_closeBtn').attr("data-id", edit_id);
                 $('#id').val(data.service_vendor_id);
                 $('#vendor_company_name').val(data.vendor_company_name);
-                $('select[name="user_type"]').val(data.user_type).trigger('change');
-                if(data.profile_pic_url==null){
+                $('select[name="service_type"]').val(data.service_type).trigger('change');
+                if(data.file_pic_url==null){
                     var default_image = "{{ asset('images/default_avatar.jpg') }}";
-                    $('#profilepic_image_show').attr('src', default_image);
+                    $('#filepic_image_show').attr('src', default_image);
                 }
                 else{
-                    var profile_pic =  data.profile_pic_url;
-                    $('#profilepic_image_show').attr('src', profile_pic);
+                    var file_pic =  data.file_pic_url;
+                    $('#filepic_image_show').attr('src', file_pic);
                 }
                 $("#ServiceVendorModal").modal('show');
             });
@@ -435,7 +434,7 @@
                         var remove_id = $(this).attr('data-id');
                         $.ajax({
                             type: 'GET',
-                            url: "{{ url('admin/users') }}" + '/' + remove_id + '/delete',
+                            url: "{{ url('admin/servicevendor') }}" + '/' + remove_id + '/delete',
                             success: function(res) {
                                 if (res.status == 200) {
                                     toastr.success("Vendor deleted successfully!", 'Success', {
@@ -460,20 +459,20 @@
                 });
         });
 
-        $('#profile_pic').change(function(){
-            $('#profilepic-error').hide();
+        $('#file_pic').change(function(){
+            $('#filepic-error').hide();
             var file = this.files[0];
             var fileType = file["type"];
             var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
             if ($.inArray(fileType, validImageTypes) < 0) {
-                $('#profilepic-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
+                $('#filepic-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
                 var default_image = "{{ asset('images/default_avatar.jpg') }}";
-                $('#profilepic_image_show').attr('src', default_image);
+                $('#filepic_image_show').attr('src', default_image);
             }
             else {
                 let reader = new FileReader();
                 reader.onload = (e) => {
-                    $('#profilepic_image_show').attr('src', e.target.result);
+                    $('#filepic_image_show').attr('src', e.target.result);
                 }
                 reader.readAsDataURL(this.files[0]);
             }
