@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Auth;
 
 class DesignationController extends Controller
 {
-    
+
     public function index()
     {
         return view('admin.designation.list');
     }
-    
+
     public function listdata(Request $request){
-      
+
         // Page Length
         $pageNumber = ( $request->start / $request->length )+1;
         $pageLength = $request->length;
@@ -40,7 +40,7 @@ class DesignationController extends Controller
         switch($orderColumnIndex){
             case '0':
                 $orderByName = 'designation_name';
-                break;  
+                break;
         }
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();
@@ -70,7 +70,7 @@ class DesignationController extends Controller
             $designation->save();
 
             $this->defalt_permission($designation->company_designation_id);
-            
+
             return response()->json(['status' => '200', 'action' => 'add']);
         }
         else{
@@ -93,11 +93,12 @@ class DesignationController extends Controller
             $user_permission->company_designation_id = $id;
             $user_permission->eAuthority = $key;
             $user_permission->updated_by  = Auth::user()->user_id;
-            
+
             $user_permission->can_view = 2;
             $user_permission->can_add = 2;
             $user_permission->can_edit = 2;
             $user_permission->can_delete = 2;
+            $user_permission->can_print = 2;
             if($key == 2){
                 $user_permission->can_add = 0;
                 $user_permission->can_delete = 0;
@@ -183,7 +184,7 @@ class DesignationController extends Controller
             }
             $designation_permission->updated_by  = Auth::user()->user_id;
             $designation_permission->save();
-           
+
         }
 
         return response()->json(['status' => '200']);

@@ -13,4 +13,9 @@ class ServiceVendor extends Model
     protected $primaryKey = 'service_vendor_id';
 
     protected $dates = ['deleted_at'];
+
+    public function service_vendor_file()
+    {
+        return $this->hasOne(ServiceVendorFile::class,'service_vendor_id', 'service_vendor_id');
+    }
 }

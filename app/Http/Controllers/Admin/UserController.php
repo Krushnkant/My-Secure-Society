@@ -38,6 +38,8 @@ class UserController extends Controller
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('full_name', 'like', "%".$search."%");
+            $query->orWhere('email', 'like', "%".$search."%");
+            $query->orWhere('mobile_no', 'like', "%".$search."%");
         });
 
         $orderByName = 'full_name';

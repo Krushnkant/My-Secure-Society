@@ -28,7 +28,7 @@ class ServiceVendorController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'desc';
 
         // get data from products table
-        $query = ServiceVendor::select('*');
+        $query = ServiceVendor::with('service_vendor_file')->select('*');
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('vendor_company_name', 'like', "%".$search."%");
@@ -50,20 +50,20 @@ class ServiceVendorController extends Controller
 
     public function addorupdate(Request $request){
         $messages = [
-            'profile_pic.image' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
-            'profile_pic.mimes' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
+            'file.image' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
+            'file.mimes' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
             'vendor_company_name.required' => 'Please provide a FullName',
 
         ];
         if(!isset($request->id)){
             $validator = Validator::make($request->all(), [
-                'profile_pic' => 'image|mimes:jpeg,png,jpg',
+                'file' => 'image|mimes:jpeg,png,jpg',
                 'vendor_company_name' => 'required',
 
             ], $messages);
         }else{
             $validator = Validator::make($request->all(), [
-                'profile_pic' => 'image|mimes:jpeg,png,jpg',
+                'file' => 'image|mimes:jpeg,png,jpg',
                 'vendor_company_name' => 'required',
 
             ], $messages);
@@ -82,11 +82,11 @@ class ServiceVendorController extends Controller
             $service->save();
 
             if($service){
-                if ($request->hasFile('file_pic')) {
+                if ($request->hasFile('file')) {
                     $servicefile = new ServiceVendorFile();
                     $servicefile->service_vendor_id = $service->service_vendor_id;
                     $servicefile->file_type  = 1;
-                    $servicefile->file_url = $this->uploadImage($request);
+                    $servicefile->file_url = $this->uploadFile($request);
                     $service->uploaded_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
                     $servicefile->save();
                 }
@@ -95,15 +95,29 @@ class ServiceVendorController extends Controller
         }else{
             $service = ServiceVendor::find($request->id);
             if ($service) {
-                $old_image = $service->profile_pic_url;
+
                 $service->vendor_company_name = $request->vendor_company_name;
                 $service->service_type = $request->service_type;
                 $service->updated_by = Auth::user()->user_id;
                 $service->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-                if ($request->hasFile('profile_pic')) {
-                    $service->profile_pic_url = $this->uploadProfileImage($request,$old_image);
-                }
                 $service->save();
+
+                if($service){
+                    if ($request->hasFile('file')) {
+                        $servicefile = ServiceVendorFile::where('service_vendor_id',$service->service_vendor_id)->first();
+                        if(!$servicefile){
+                            $servicefile = new ServiceVendorFile();
+                            $servicefile->service_vendor_id = $service->service_vendor_id;
+                            $servicefile->file_type  = 1;
+                        }else{
+                            $old_image = $servicefile->file_url;
+                        }
+
+                        $servicefile->file_url = $this->uploadFile($request,$old_image);
+                        $service->uploaded_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+                        $servicefile->save();
+                    }
+                }
                 return response()->json(['status' => '200', 'action' => 'update']);
             }
 
@@ -112,10 +126,10 @@ class ServiceVendorController extends Controller
 
     }
 
-    public function uploadImage($request,$old_image=""){
-        $image = $request->file('file_pic');
+    public function uploadFile($request,$old_image=""){
+        $image = $request->file('file');
         $image_name = 'file_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-        $destinationPath = public_path('images/file_pic');
+        $destinationPath = public_path('images/sercice_vendor_file');
         $image->move($destinationPath, $image_name);
         if(isset($old_image) && $old_image != "") {
             $old_image = public_path($old_image);
@@ -123,12 +137,12 @@ class ServiceVendorController extends Controller
                 unlink($old_image);
             }
         }
-        return  'images/file_pic/'.$image_name;
+        return  'images/sercice_vendor_file/'.$image_name;
     }
 
 
     public function edit($id){
-        $service = ServiceVendor::find($id);
+        $service = ServiceVendor::with('service_vendor_file')->find($id);
         return response()->json($service);
     }
 

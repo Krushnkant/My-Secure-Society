@@ -263,7 +263,7 @@
             $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
             $("#vendor_company_name").focus();
             var default_image = "{{ asset('image/avtar.png') }}";
-            $('#filepic_image_show').attr('src', default_image);
+            $('#file_image_show').attr('src', default_image);
         });
 
         $('body').on('click', '#save_newBtn', function() {
@@ -327,7 +327,7 @@
                             $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-id');
                             $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
                             var default_image = "{{ asset('image/avtar.png') }}";
-                            $('#filepic_image_show').attr('src', default_image);
+                            $('#file_image_show').attr('src', default_image);
                             $("#vendor_company_name").focus();
                             if (res.action == 'add') {
                                 toastr.success("Vendor Added successfully!", 'Success', {
@@ -378,13 +378,13 @@
                 $('#id').val(data.service_vendor_id);
                 $('#vendor_company_name').val(data.vendor_company_name);
                 $('select[name="service_type"]').val(data.service_type).trigger('change');
-                if(data.file_pic_url==null){
+                if(data.service_vendor_file.file_url==null){
                     var default_image = "{{ asset('images/default_avatar.jpg') }}";
-                    $('#filepic_image_show').attr('src', default_image);
+                    $('#file_image_show').attr('src', default_image);
                 }
                 else{
-                    var file_pic =  data.file_pic_url;
-                    $('#filepic_image_show').attr('src', file_pic);
+                    var file_pic =  data.service_vendor_file.file_url;
+                    $('#file_image_show').attr('src', file_pic);
                 }
                 $("#ServiceVendorModal").modal('show');
             });
@@ -459,6 +459,23 @@
                 });
         });
 
-     
+        $('#file').change(function(){
+            $('#file-error').hide();
+            var file = this.files[0];
+            var fileType = file["type"];
+            var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
+            if ($.inArray(fileType, validImageTypes) < 0) {
+                $('#file-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
+                var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                $('#file_image_show').attr('src', default_image);
+            }
+            else {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    $('#file_image_show').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
     </script>
 @endsection

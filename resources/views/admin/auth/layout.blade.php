@@ -109,7 +109,7 @@
                     $('#forgetSubmit').find('.loadericonfa').hide();
                     $('#forgetSubmit').prop('disabled',false);
                     $("#ForgetForm")[0].reset();
-                    toastr.success("Send mail Successfully",'Success',{timeOut: 5000});
+                    toastr.success("A mail has been sent to your registered email",'Success',{timeOut: 5000});
                    // location.href ="{{ url('/messagebox') }}";
                     //return redirect()->back();
                 }
@@ -145,7 +145,7 @@
                 if(res.status == 'failed'){
                     $('#resetSubmit').find('.loadericonfa').hide();
                     $('#resetSubmit').prop('disabled',false);
-                   
+
                     if (res.errors.password) {
                         $('#password-error').show().text(res.errors.password);
                     } else {
