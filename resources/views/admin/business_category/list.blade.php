@@ -36,6 +36,7 @@
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
                                         <th>Category Name</th>
+                                        <th>Parent Category</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -44,6 +45,7 @@
                                     <tr>
                                         <th></th>
                                         <th>Category Name</th>
+                                        <th>Parent Category</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -116,6 +118,13 @@
                     {
                         width: "20%",
                         data: 'business_category_name',
+                    },
+                    {
+                        width: "20%",
+                        data: 'parent_category',
+                        render: function(data, type, row) {
+                            return data ? data.business_category_name : '-';
+                        }
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
@@ -238,6 +247,7 @@
         $('body').on('click', '#AddBtn_BusinessCategory', function() {
             $('#BusinessCategoryModal').find('.modal-title').html("Add Business Category");
             $("#BusinessCategoryModal").find('form').trigger('reset');
+            $('.single-select-placeholder').trigger('change');
             $('#id').val("");
             $('#business_category_name-error').html("");
             $("#BusinessCategoryModal").find("#save_newBtn").removeAttr('data-action');
@@ -245,6 +255,15 @@
             $("#BusinessCategoryModal").find("#save_newBtn").removeAttr('data-id');
             $("#BusinessCategoryModal").find("#save_closeBtn").removeAttr('data-id');
             $("#business_category_name").focus();
+
+            $.get("{{ route('admin.businesscategory.ajaxlist') }}", function(data) {
+                var categories = data.categories;
+                var dropdown = $('select[name="parent_business_category_id"]');
+                dropdown.empty().append('<option value=""></option>');
+                $.each(categories, function(index, category) {
+                    dropdown.append('<option value="' + category.business_category_id + '">' + category.business_category_name + '</option>');
+                });
+            });
         });
 
 
@@ -298,14 +317,17 @@
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
                             $("#BusinessCategoryModal").find('form').trigger('reset');
+                            $('.single-select-placeholder').trigger('change');
                             $('#id').val("");
                             $('#business_category_name-error').html("");
                             $("#BusinessCategoryModal").find("#save_newBtn").removeAttr('data-action');
                             $("#BusinessCategoryModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#BusinessCategoryModal").find("#save_newBtn").removeAttr('data-id');
                             $("#BusinessCategoryModal").find("#save_closeBtn").removeAttr('data-id');
+                            
                             $("#business_category_name").focus();
                             if (res.action == 'add') {
+                                $('select[name="parent_business_category_id"]').append('<option value="' + res.newCategoryId + '">' + res.newCategoryName + '</option>');
                                 toastr.success("Category added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
@@ -353,6 +375,18 @@
                 $('#BusinessCategoryModal').find('#save_closeBtn').attr("data-id", edit_id);
                 $('#id').val(data.business_category_id);
                 $('#business_category_name').val(data.business_category_name);
+                $.get("{{ route('admin.businesscategory.ajaxlist') }}" + '/' + data.business_category_id, function(datacat) {
+                    var categories = datacat.categories;
+                    var dropdown = $('select[name="parent_business_category_id"]');
+                    dropdown.empty().append('<option value=""></option>');
+                    $.each(categories, function(index, category) {
+                        dropdown.append('<option value="' + category.business_category_id + '">' + category.business_category_name + '</option>');
+                    });
+                    dropdown.val(data.parent_business_category_id).trigger('change');
+                  
+                });
+
+                
                 $("#BusinessCategoryModal").modal('show');
             });
         });
@@ -424,5 +458,10 @@
                     }
                 });
         });
+
+        $(".single-select-placeholder").select2({
+            placeholder: "Select a parent category",
+        });
+        
     </script>
 @endsection

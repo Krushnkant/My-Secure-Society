@@ -13,6 +13,14 @@
                     <div class="row">
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
+                                <label class="text-label">Bussiness Category</label>
+                                <select class="single-select-placeholder js-states" name="parent_business_category_id">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mb-2">
+                            <div class="form-group">
                                 <label class="text-label">Bussiness Category Name <span class="text-danger">*</span></label>
                                 <input type="text" name="business_category_name" id="business_category_name" class="form-control" placeholder="Business Category Name">
                                 <div id="business_category_name-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>

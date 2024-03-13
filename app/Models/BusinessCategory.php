@@ -13,4 +13,9 @@ class BusinessCategory extends Model
     protected $table = 'business_category';
     protected $primaryKey = 'business_category_id';
     protected $dates = ['deleted_at'];
+
+    public function parent_category()
+    {
+        return $this->hasOne(BusinessCategory::class,'business_category_id', 'parent_business_category_id');
+    }
 }

@@ -12,7 +12,7 @@ class DailyHelpServiceController extends Controller
 {
     public function index()
     {
-        return view('admin.service_vendor.list');
+        return view('admin.daily_help_service.list');
     }
 
     public function listdata(Request $request){
@@ -49,18 +49,17 @@ class DailyHelpServiceController extends Controller
 
     public function addorupdate(Request $request){
         $messages = [
-            'service_name.required' => 'Please provide a FullName',
-
+            'service_name.required' => 'Please provide a service name',
         ];
         if(!isset($request->id)){
             $validator = Validator::make($request->all(), [
                 'service_name' => 'required',
-
+                'icon' => 'required|image|mimes:jpeg,png,jpg,gif',
             ], $messages);
         }else{
             $validator = Validator::make($request->all(), [
                 'service_name' => 'required',
-
+                'icon' => 'image|mimes:jpeg,png,jpg,gif',
             ], $messages);
         }
 
@@ -70,6 +69,9 @@ class DailyHelpServiceController extends Controller
         if(!isset($request->id)){
             $help = new DailyHelpService();
             $help->service_name = $request->service_name;
+            if ($request->hasFile('icon')) {
+                $help->service_icon = $this->uploadIcon($request);
+            }
             $help->created_by = Auth::user()->user_id;
             $help->updated_by = Auth::user()->user_id;
             $help->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
@@ -80,7 +82,11 @@ class DailyHelpServiceController extends Controller
         }else{
             $help = DailyHelpService::find($request->id);
             if ($help) {
+                $old_image = $help->service_icon;
                 $help->service_name = $request->service_name;
+                if ($request->hasFile('icon')) {
+                    $help->service_icon = $this->uploadIcon($request,$old_image);
+                }
                 $help->updated_by = Auth::user()->user_id;
                 $help->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
                 $help->save();
@@ -93,7 +99,19 @@ class DailyHelpServiceController extends Controller
     }
 
 
-
+    public function uploadIcon($request,$old_image=""){
+        $image = $request->file('icon');
+        $image_name = 'icon_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+        $destinationPath = public_path('images/service_icon');
+        $image->move($destinationPath, $image_name);
+        if(isset($old_image) && $old_image != "") {
+            $old_image = public_path($old_image);
+            if (file_exists($old_image)) {
+                unlink($old_image);
+            }
+        }
+        return  'images/service_icon/'.$image_name;
+    }
 
     public function edit($id){
         $help = DailyHelpService::find($id);

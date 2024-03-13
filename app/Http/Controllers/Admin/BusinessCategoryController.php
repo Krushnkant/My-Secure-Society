@@ -12,7 +12,8 @@ class BusinessCategoryController extends Controller
 {
     
     public function index() {
-        return view('admin.business_category.list');
+        $categories = BusinessCategory::where('estatus',1)->get();
+        return view('admin.business_category.list',compact('categories'));
     }
 
     public function listdata(Request $request){
@@ -26,7 +27,7 @@ class BusinessCategoryController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'desc';
 
         // get data from products table
-        $query = BusinessCategory::select('*');
+        $query = BusinessCategory::with('parent_category')->select('*');
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('business_category_name', 'like', "%".$search."%");
@@ -41,7 +42,6 @@ class BusinessCategoryController extends Controller
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();
         $data = $query->skip($skip)->take($pageLength)->get();
-
         return response()->json(["draw"=> $request->draw, "recordsTotal"=> $recordsTotal, "recordsFiltered" => $recordsFiltered, 'data' => $data], 200);
     }
 
@@ -59,20 +59,42 @@ class BusinessCategoryController extends Controller
         }
         if(!isset($request->id)){
             $category = new BusinessCategory();
+            $action = 'add';
         }
         else{
             $category = BusinessCategory::find($request->id);
             if (!$category) {
                 return response()->json(['status' => '400']);
             }
+            $action = 'update';
+        }
+        $step_no = 0;
+        if(isset($request->parent_business_category_id) && $request->parent_business_category_id != ""){
+            $parentcategory = BusinessCategory::find($request->parent_business_category_id);
+            $step_no = $parentcategory->step_no + 1;
         }
         $category->business_category_name = $request->business_category_name;
+        $category->parent_business_category_id = (isset($request->parent_business_category_id) && $request->parent_business_category_id != "") ? $request->parent_business_category_id : 0 ;
+        $category->step_no = $step_no;
         $category->created_by = Auth::user()->user_id;
         $category->updated_by = Auth::user()->user_id;
         $category->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
         $category->save();
-        
-        return response()->json(['status' => '200', 'action' => 'add']);
+
+
+        $newCategoryId = $category->business_category_id;
+        $newCategoryName = $category->business_category_name;
+        return response()->json(['status' => '200', 'action' =>  $action, 'newCategoryId' => $newCategoryId, 'newCategoryName' => $newCategoryName]);
+    }
+
+    public function ajaxlist(Request $request,$id = null){
+
+        $categories = BusinessCategory::where('estatus',1);
+        if ($id !== null) {
+            $categories = $categories->where('business_category_id','!=',$id);
+        }
+        $categories = $categories->get();
+        return response()->json(['categories' => $categories]);
     }
 
     public function edit($id){

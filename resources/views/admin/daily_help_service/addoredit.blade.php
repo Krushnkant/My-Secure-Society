@@ -1,4 +1,4 @@
-<div class="modal modal-right fade" id="ServiceVendorModal" tabindex="-1" role="dialog" aria-labelledby="ServiceVendorModal">
+<div class="modal modal-right fade" id="DailyHelpModal" tabindex="-1" role="dialog" aria-labelledby="DailyHelpModal">
     <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
             <form class="form-valide" id="servicevendorform" method="post" enctype="multipart/form-data">
@@ -14,10 +14,22 @@
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
                                 <label class="text-label">Vendor Company Name <span class="text-danger">*</span></label>
-                                <input type="text" name="vendor_company_name" id="vendor_company_name" class="form-control"
+                                <input type="text" name="service_name" id="service_name" class="form-control"
                                     placeholder="Vendor Company Name">
-                                <div id="vendor_company_name-error" class="invalid-feedback animated fadeInDown"
+                                <div id="service_name-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mb-2">
+                            <div class="form-group ">
+                                <label class="col-form-label" for="icon">Icon
+                                </label>
+                                <input type="file" class="form-control-file" id="icon" onchange=""
+                                    name="icon">
+                                <div id="icon-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
+                                <img src="{{ asset('image/avtar.png') }}" class=""
+                                    id="icon_image_show" height="100px" width="100px"
+                                    style="margin-top: 10px;">
                             </div>
                         </div>
                     </div>
