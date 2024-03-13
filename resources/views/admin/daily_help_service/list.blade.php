@@ -32,6 +32,7 @@
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
+                                        <th>Service Icon</th>
                                         <th>Service Name</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -40,6 +41,7 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
+                                        <th>Service Icon</th>
                                         <th>Service Name</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -111,6 +113,17 @@
                         orderable: false,
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.daily_help_service_id}">`;
+                        }
+                    },
+                    {
+                        width: "10%",
+                        data: 'service_icon',
+                        orderable: false,
+                        render: function(data, type, row) {
+                            var service_icon = (data != "" && data != null) ? data : '{{ asset("image/avtar.png") }}';
+                            return `<div class="media-left">
+                                      <img class="media-object mr-3"  width="50px" height="50px" alt="service icon" src="${service_icon}" alt="...">
+                                </div>`;
                         }
                     },
                     {
@@ -235,16 +248,13 @@
             $("#DailyHelpModal").find('form').trigger('reset');
             $('#id').val("");
             $('#service_name-error').html("");
-
-            $('.single-select-placeholder').trigger('change');
-            $('#password').prop('disabled', false);
             $("#DailyHelpModal").find("#save_newBtn").removeAttr('data-action');
             $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-action');
             $("#DailyHelpModal").find("#save_newBtn").removeAttr('data-id');
             $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-id');
             $("#service_name").focus();
             var default_image = "{{ asset('image/avtar.png') }}";
-            $('#filepic_image_show').attr('src', default_image);
+            $('#icon_image_show').attr('src', default_image);
         });
 
         $('body').on('click', '#save_newBtn', function() {
@@ -274,6 +284,11 @@
                             $('#service_name-error').show().text(res.errors.service_name);
                         } else {
                             $('#service_name-error').hide();
+                        }
+                        if (res.errors.icon) {
+                            $('#icon-error').show().text(res.errors.icon);
+                        } else {
+                            $('#icon-error').hide();
                         }
 
 
@@ -308,7 +323,7 @@
                             $("#DailyHelpModal").find("#save_newBtn").removeAttr('data-id');
                             $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-id');
                             var default_image = "{{ asset('image/avtar.png') }}";
-                            $('#filepic_image_show').attr('src', default_image);
+                            $('#icon_image_show').attr('src', default_image);
                             $("#service_name").focus();
                             if (res.action == 'add') {
                                 toastr.success("help service Added successfully!", 'Success', {
@@ -358,14 +373,13 @@
                 $('#DailyHelpModal').find('#save_closeBtn').attr("data-id", edit_id);
                 $('#id').val(data.daily_help_service_id);
                 $('#service_name').val(data.service_name);
-                $('select[name="service_type"]').val(data.service_type).trigger('change');
-                if(data.file_pic_url==null){
+                if(data.service_icon==null){
                     var default_image = "{{ asset('images/default_avatar.jpg') }}";
-                    $('#filepic_image_show').attr('src', default_image);
+                    $('#icon_image_show').attr('src', default_image);
                 }
                 else{
-                    var file_pic =  data.file_pic_url;
-                    $('#filepic_image_show').attr('src', file_pic);
+                    var file_pic =  data.service_icon;
+                    $('#icon_image_show').attr('src', file_pic);
                 }
                 $("#DailyHelpModal").modal('show');
             });
@@ -438,6 +452,25 @@
                         });
                     }
                 });
+        });
+
+        $('#icon').change(function(){
+            $('#icon-error').hide();
+            var file = this.files[0];
+            var fileType = file["type"];
+            var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
+            if ($.inArray(fileType, validImageTypes) < 0) {
+                $('#icon-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
+                var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                $('#icon_image_show').attr('src', default_image);
+            }
+            else {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    $('#icon_image_show').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
         });
 
      

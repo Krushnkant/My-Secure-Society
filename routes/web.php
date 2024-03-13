@@ -60,6 +60,7 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
     Route::get('businesscategory/{id}/delete',[BusinessCategoryController::class,'delete'])->name('businesscategory.delete');
     Route::get('businesscategory/changestatus/{id}',[BusinessCategoryController::class,'changestatus'])->name('businesscategory.changestatus');
     Route::post('businesscategory/multipledelete', [BusinessCategoryController::class,'multipledelete'])->name('businesscategory.multipledelete');
+    Route::get('businesscategory/ajaxlist/{id?}',[BusinessCategoryController::class,'ajaxlist'])->name('businesscategory.ajaxlist');
 
     // Designation
     Route::get('designation',[DesignationController::class,'index'])->name('designation.list');

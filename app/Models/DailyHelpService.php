@@ -14,4 +14,12 @@ class DailyHelpService extends Model
     protected $primaryKey = 'daily_help_service_id';
 
     protected $dates = ['deleted_at'];
+
+    public function getServiceIconAttribute(){
+        if($this->attributes['service_icon'] != null){
+            return asset($this->attributes['service_icon']);
+        }else{
+            return null;
+        }
+    }
 }

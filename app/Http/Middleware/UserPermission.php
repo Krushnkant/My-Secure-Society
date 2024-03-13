@@ -49,6 +49,8 @@ class UserPermission
                     return redirect(route('admin.403_page'));
                 }else if ($request->route()->getName()=='admin.servicevendor.list' && is_view(13) == 0){
                     return redirect(route('admin.403_page'));
+                }else if ($request->route()->getName()=='admin.dailyhelpservice.list' && is_view(14) == 0){
+                    return redirect(route('admin.403_page'));
                 }else{
                     return $next($request);
                 }
