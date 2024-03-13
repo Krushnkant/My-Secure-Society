@@ -48,6 +48,11 @@
                         <a href="{{ route('admin.servicevendor.list') }}"><i class="ti-align-justify"></i><span class="nav-text">Service Vendor</span></a>
                     </li>
                     @endif
+                    @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(14)))
+                    <li>
+                        <a href="{{ route('admin.dailyhelpservice.list') }}"><i class="ti-align-justify"></i><span class="nav-text">Daily Help Service</span></a>
+                    </li>
+                    @endif
                 </ul>
             </div>
         </div>
