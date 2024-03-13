@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('service_vendor_file', function (Blueprint $table) {
-            $table->bigIncrements('service_vendor_fileId')->index();
+            $table->bigIncrements('service_vendor_file_id')->index();
             $table->integer('service_vendor_id')->index();
             $table->integer('file_type')->enum([1, 2, 3, 4, 5])->default(1)->comment('1 - Image')->index();
             $table->string('file_url', 500);

@@ -254,7 +254,7 @@
             $("#ServiceVendorModal").find('form').trigger('reset');
             $('#id').val("");
             $('#vendor_company_name-error').html("");
-         
+
             $('.single-select-placeholder').trigger('change');
             $('#password').prop('disabled', false);
             $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-action');
@@ -294,7 +294,7 @@
                         } else {
                             $('#vendor_company_name-error').hide();
                         }
-                       
+
 
                     }
 

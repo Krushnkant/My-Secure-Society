@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServiceVendor;
+use App\Models\ServiceVendorFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -79,6 +80,17 @@ class ServiceVendorController extends Controller
             $service->updated_by = Auth::user()->user_id;
             $service->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
             $service->save();
+
+            if($service){
+                if ($request->hasFile('file_pic')) {
+                    $servicefile = new ServiceVendorFile();
+                    $servicefile->service_vendor_id = $service->service_vendor_id;
+                    $servicefile->file_type  = 1;
+                    $servicefile->file_url = $this->uploadImage($request);
+                    $service->uploaded_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+                    $servicefile->save();
+                }
+            }
             return response()->json(['status' => '200', 'action' => 'add']);
         }else{
             $service = ServiceVendor::find($request->id);
@@ -100,10 +112,10 @@ class ServiceVendorController extends Controller
 
     }
 
-    public function uploadProfileImage($request,$old_image=""){
-        $image = $request->file('profile_pic');
-        $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-        $destinationPath = public_path('images/profile_pic');
+    public function uploadImage($request,$old_image=""){
+        $image = $request->file('file_pic');
+        $image_name = 'file_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+        $destinationPath = public_path('images/file_pic');
         $image->move($destinationPath, $image_name);
         if(isset($old_image) && $old_image != "") {
             $old_image = public_path($old_image);
@@ -111,7 +123,7 @@ class ServiceVendorController extends Controller
                 unlink($old_image);
             }
         }
-        return  'images/profile_pic/'.$image_name;
+        return  'images/file_pic/'.$image_name;
     }
 
 
