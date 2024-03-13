@@ -20,34 +20,6 @@
                                     style="display: none;"></div>
                             </div>
                         </div>
-                       
-                      
-                        <div class="col-lg-12 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">Service Type <span class="text-danger">*</span></label>
-                                <select class="single-select-placeholder js-states" name="service_type">
-                                    <option value="1">Delivery</option>
-                                    <option value="2">Cab</option>
-                                    <option value="3">Other</option>
-                                </select>
-                            </div>
-                        </div>
-
-                       
-                    
-                        <div class="col-lg-12 mb-2">
-                            <div class="form-group ">
-                                <label class="col-form-label" for="filePic">File
-                                </label>
-                                <input type="file" class="form-control-file" id="file_pic" onchange=""
-                                    name="file_pic">
-                                <div id="filePic-error" class="invalid-feedback animated fadeInDown"
-                                    style="display: none;"></div>
-                                {{-- <img src="{{ asset('image/avtar.png') }}" class=""
-                                    id="filePic_image_show" height="100px" width="100px"
-                                    style="margin-top: 10px;"> --}}
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer modal-footer-fixed px-5">

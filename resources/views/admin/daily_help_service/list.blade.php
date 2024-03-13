@@ -1,10 +1,10 @@
 @extends('admin.layout.app')
-@section('title', 'Service Vendor')
+@section('title', 'Daily Help Service')
 
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>Service Vendor</h4>
+            <h4>Daily Help Service</h4>
         </div>
     </div>
 @endsection
@@ -18,22 +18,21 @@
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
 
-                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_add(13)) )
-                            <button type="button" id="AddBtn_ServiceVendor" class="btn btn-outline-primary" data-toggle="modal" data-target="#ServiceVendorModal">Add New</button>
+                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_add(14)) )
+                            <button type="button" id="AddBtn_DailyHelp" class="btn btn-outline-primary" data-toggle="modal" data-target="#DailyHelpModal">Add New</button>
                             @endif
-                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_delete(13)) )
+                            @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_delete(14)) )
                              <button type="button" id="deleteSelected" class="btn btn-outline-danger sweet-ajax1">Delete</button>
                             @endif
                         </div>
                     </div>
                     <div class="tab-content">
                         <div class="table-responsive">
-                            <table id="serviceVendorTable" class="display" style="width:100%">
+                            <table id="dailyHelpTable" class="display" style="width:100%">
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
-                                        <th>Vendor Company Name</th>
-                                        <th>Service Type </th>
+                                        <th>Service Name</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -41,8 +40,7 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th>Vendor Company Name</th>
-                                        <th>Service Type </th>
+                                        <th>Service Name</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -51,7 +49,7 @@
                         </div>
                     </div>
 
-                    @include('admin.service_vendor.addoredit')
+                    @include('admin.daily_help_service.addoredit')
 
                 </div>
             </div>
@@ -80,7 +78,7 @@
         });
 
         function getTableData(tab_type = '', is_clearState = false) {
-            $('#serviceVendorTable').DataTable({
+            $('#dailyHelpTable').DataTable({
                 processing: 1,
                 serverSide: 1,
                 destroy: 1,
@@ -96,7 +94,7 @@
                     }
                 },
                 ajax: {
-                    url: "{{ route('admin.servicevendor.listdata') }}",
+                    url: "{{ route('admin.dailyhelpservice.listdata') }}",
                     type: "POST",
                     data: function(data) {
                         data.search = $('input[type="search"]').val();
@@ -112,39 +110,22 @@
                         data: 'id',
                         orderable: false,
                         render: function(data, type, row) {
-                            return `<input type="checkbox" class="select-checkbox" data-id="${row.service_vendor_id}">`;
+                            return `<input type="checkbox" class="select-checkbox" data-id="${row.daily_help_service_id}">`;
                         }
                     },
                     {
                         width: "10%",
-                        data: 'vendor_company_name',
-                    },
-                    {
-                        width: "10%",
-                        data: 'service_type',
-                        orderable: false,
-                        render: function(data, type, row) {
-                            switch (data) {
-                                case 1:
-                                    return '<span class="badge badge-success">Delivery</span>';
-                                case 2:
-                                    return '<span class="badge badge-success">Cab</span>';
-                                case 3:
-                                    return '<span class="badge badge-success">Other</span>';
-                                default:
-                                    return '';
-                            }
-                        }
+                        data: 'service_name',
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(14)));
                             if (is_edit) {
                                 var estatus = `<label class="switch">
-                                        <input type="checkbox" id="statuscheck_${row.service_vendor_id}" onchange="changeStatus(${row.service_vendor_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
+                                        <input type="checkbox" id="statuscheck_${row.daily_help_service_id}" onchange="changeStatus(${row.daily_help_service_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
                                         <span class="slider"></span>
                                 </label>`;
                             } else {
@@ -160,14 +141,14 @@
                         width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
-                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(3)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(14)));
+                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(14)));
                             var action =  `<span>`;
                             if(is_edit) {
-                              action += `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.service_vendor_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
+                              action += `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.daily_help_service_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
                             }
                             if(is_delete) {
-                              action += `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.service_vendor_id}"><i class="fa fa-close color-danger"></i></a>`;
+                              action += `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.daily_help_service_id}"><i class="fa fa-close color-danger"></i></a>`;
                             }
                             action += `</span>`;
                             return action;
@@ -184,7 +165,7 @@
                         }
                     });
 
-                    $('#serviceVendorTable tbody').on('change', '.select-checkbox', function() {
+                    $('#dailyHelpTable tbody').on('change', '.select-checkbox', function() {
                         // Check if all checkboxes are checked
                         var allChecked = $('.select-checkbox:checked').length === $('.select-checkbox')
                             .length;
@@ -220,7 +201,7 @@
 
                                     // Perform AJAX request to delete selected rows
                                     $.ajax({
-                                        url: "{{ route('admin.servicevendor.multipledelete') }}",
+                                        url: "{{ route('admin.dailyhelpservice.multipledelete') }}",
                                         type: "POST",
                                         data: {
                                             ids: selectedIds
@@ -228,7 +209,7 @@
                                         success: function(response) {
                                             // Handle success response
                                             console.log(response);
-                                            toastr.success("Vendor deleted successfully!",
+                                            toastr.success("help service deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
@@ -249,39 +230,39 @@
         }
 
 
-        $('body').on('click', '#AddBtn_ServiceVendor', function() {
-            $('#ServiceVendorModal').find('.modal-title').html("Add vendor");
-            $("#ServiceVendorModal").find('form').trigger('reset');
+        $('body').on('click', '#AddBtn_DailyHelp', function() {
+            $('#DailyHelpModal').find('.modal-title').html("Add help service");
+            $("#DailyHelpModal").find('form').trigger('reset');
             $('#id').val("");
-            $('#vendor_company_name-error').html("");
+            $('#service_name-error').html("");
 
             $('.single-select-placeholder').trigger('change');
             $('#password').prop('disabled', false);
-            $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-action');
-            $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-action');
-            $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-id');
-            $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
-            $("#vendor_company_name").focus();
+            $("#DailyHelpModal").find("#save_newBtn").removeAttr('data-action');
+            $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-action');
+            $("#DailyHelpModal").find("#save_newBtn").removeAttr('data-id');
+            $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-id');
+            $("#service_name").focus();
             var default_image = "{{ asset('image/avtar.png') }}";
             $('#filepic_image_show').attr('src', default_image);
         });
 
         $('body').on('click', '#save_newBtn', function() {
-            save_servicevendor($(this), 'save_new');
+            save_dailyhelpservice($(this), 'save_new');
         });
 
         $('body').on('click', '#save_closeBtn', function() {
-            save_servicevendor($(this), 'save_close');
+            save_dailyhelpservice($(this), 'save_close');
         });
 
-        function save_servicevendor(btn, btn_type) {
+        function save_dailyhelpservice(btn, btn_type) {
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = new FormData($("#servicevendorform")[0]);
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/servicevendor/addorupdate') }}",
+                url: "{{ url('admin/dailyhelpservice/addorupdate') }}",
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -289,10 +270,10 @@
                     if (res.status == 'failed') {
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
-                        if (res.errors.vendor_company_name) {
-                            $('#vendor_company_name-error').show().text(res.errors.vendor_company_name);
+                        if (res.errors.service_name) {
+                            $('#service_name-error').show().text(res.errors.service_name);
                         } else {
-                            $('#vendor_company_name-error').hide();
+                            $('#service_name-error').hide();
                         }
 
 
@@ -300,16 +281,16 @@
 
                     if (res.status == 200) {
                         if (btn_type == 'save_close') {
-                            $("#ServiceVendorModal").modal('hide');
+                            $("#DailyHelpModal").modal('hide');
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
                             if (res.action == 'add') {
-                                toastr.success("Vendor added successfully!", 'Success', {
+                                toastr.success("help service added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("Vendor updated successfully!", 'Success', {
+                                toastr.success("help service updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -318,24 +299,24 @@
                         if (btn_type == 'save_new') {
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
-                            $("#ServiceVendorModal").find('form').trigger('reset');
+                            $("#DailyHelpModal").find('form').trigger('reset');
                             $('.single-select-placeholder').trigger('change');
                             $('#id').val("");
-                            $('#vendor_company_name-error').html("");
-                            $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-action');
-                            $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-action');
-                            $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-id');
-                            $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
+                            $('#service_name-error').html("");
+                            $("#DailyHelpModal").find("#save_newBtn").removeAttr('data-action');
+                            $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-action');
+                            $("#DailyHelpModal").find("#save_newBtn").removeAttr('data-id');
+                            $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-id');
                             var default_image = "{{ asset('image/avtar.png') }}";
                             $('#filepic_image_show').attr('src', default_image);
-                            $("#vendor_company_name").focus();
+                            $("#service_name").focus();
                             if (res.action == 'add') {
-                                toastr.success("Vendor Added successfully!", 'Success', {
+                                toastr.success("help service Added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("Vendor Updated successfully!", 'Success', {
+                                toastr.success("help service Updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -344,7 +325,7 @@
                     }
 
                     if (res.status == 400) {
-                        $("#ServiceVendorModal").modal('hide');
+                        $("#DailyHelpModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
                         toastr.error("Please try again", 'Error', {
@@ -353,7 +334,7 @@
                     }
                 },
                 error: function(data) {
-                    $("#ServiceVendorModal").modal('hide');
+                    $("#DailyHelpModal").modal('hide');
                     $(btn).find('.loadericonfa').hide();
                     $(btn).prop('disabled', false);
                     toastr.error("Please try again", 'Error', {
@@ -366,17 +347,17 @@
 
         $('body').on('click', '#editBtn', function() {
             var edit_id = $(this).attr('data-id');
-            $('#ServiceVendorModal').find('.modal-title').html("Edit Vendor");
-            $('#vendor_company_name-error').html("");
+            $('#DailyHelpModal').find('.modal-title').html("Edit help service");
+            $('#service_name-error').html("");
             $('#email-error').html("");
             $('#mobile_no-error').html("");
-            $.get("{{ url('admin/servicevendor') }}" + '/' + edit_id + '/edit', function(data) {
-                $('#ServiceVendorModal').find('#save_newBtn').attr("data-action", "update");
-                $('#ServiceVendorModal').find('#save_closeBtn').attr("data-action", "update");
-                $('#ServiceVendorModal').find('#save_newBtn').attr("data-id", edit_id);
-                $('#ServiceVendorModal').find('#save_closeBtn').attr("data-id", edit_id);
-                $('#id').val(data.service_vendor_id);
-                $('#vendor_company_name').val(data.vendor_company_name);
+            $.get("{{ url('admin/dailyhelpservice') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#DailyHelpModal').find('#save_newBtn').attr("data-action", "update");
+                $('#DailyHelpModal').find('#save_closeBtn').attr("data-action", "update");
+                $('#DailyHelpModal').find('#save_newBtn').attr("data-id", edit_id);
+                $('#DailyHelpModal').find('#save_closeBtn').attr("data-id", edit_id);
+                $('#id').val(data.daily_help_service_id);
+                $('#service_name').val(data.service_name);
                 $('select[name="service_type"]').val(data.service_type).trigger('change');
                 if(data.file_pic_url==null){
                     var default_image = "{{ asset('images/default_avatar.jpg') }}";
@@ -386,26 +367,26 @@
                     var file_pic =  data.file_pic_url;
                     $('#filepic_image_show').attr('src', file_pic);
                 }
-                $("#ServiceVendorModal").modal('show');
+                $("#DailyHelpModal").modal('show');
             });
         });
 
         function changeStatus(id) {
             $.ajax({
                 type: 'GET',
-                url: "{{ url('admin/servicevendor/changestatus') }}" + '/' + id,
+                url: "{{ url('admin/dailyhelpservice/changestatus') }}" + '/' + id,
                 success: function(res) {
                     if (res.status == 200 && res.action == 'deactive') {
                         $("#statuscheck_" + id).val(2);
                         $("#statuscheck_" + id).prop('checked', false);
-                        toastr.success("Vendor deactivated successfully!", 'Success', {
+                        toastr.success("help service deactivated successfully!", 'Success', {
                             timeOut: 5000
                         });
                     }
                     if (res.status == 200 && res.action == 'active') {
                         $("#statuscheck_" + id).val(1);
                         $("#statuscheck_" + id).prop('checked', 1);
-                        toastr.success("Vendor activated successfully!", 'Success', {
+                        toastr.success("help service activated successfully!", 'Success', {
                             timeOut: 5000
                         });
                     }
@@ -434,10 +415,10 @@
                         var remove_id = $(this).attr('data-id');
                         $.ajax({
                             type: 'GET',
-                            url: "{{ url('admin/servicevendor') }}" + '/' + remove_id + '/delete',
+                            url: "{{ url('admin/dailyhelpservice') }}" + '/' + remove_id + '/delete',
                             success: function(res) {
                                 if (res.status == 200) {
-                                    toastr.success("Vendor deleted successfully!", 'Success', {
+                                    toastr.success("help service deleted successfully!", 'Success', {
                                         timeOut: 5000
                                     });
                                     getTableData('', 1);

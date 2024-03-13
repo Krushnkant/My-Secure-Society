@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\admin\SocietyController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CompanyProfileController;
+use App\Http\Controllers\admin\DailyHelpServiceController;
 use App\Http\Controllers\admin\SubscriptionOrderController;
 use App\Http\Controllers\admin\OrderPaymentController;
 use App\Http\Controllers\admin\EmergencyContactController;
@@ -154,6 +155,15 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
     Route::get('servicevendor/{id}/delete',[ServiceVendorController::class,'delete'])->name('servicevendor.delete');
     Route::get('servicevendor/changestatus/{id}',[ServiceVendorController::class,'changestatus'])->name('servicevendor.changestatus');
     Route::post('servicevendor/multipledelete', [ServiceVendorController::class,'multipledelete'])->name('servicevendor.multipledelete');
+
+     // Daily Help Service
+     Route::get('dailyhelpservice',[DailyHelpServiceController::class,'index'])->name('dailyhelpservice.list');
+     Route::post('dailyhelpservice/listdata',[DailyHelpServiceController::class,'listdata'])->name('dailyhelpservice.listdata');
+     Route::post('dailyhelpservice/addorupdate',[DailyHelpServiceController::class,'addorupdate'])->name('dailyhelpservice.addorupdate');
+     Route::get('dailyhelpservice/{id}/edit',[DailyHelpServiceController::class,'edit'])->name('dailyhelpservice.edit');
+     Route::get('dailyhelpservice/{id}/delete',[DailyHelpServiceController::class,'delete'])->name('dailyhelpservice.delete');
+     Route::get('dailyhelpservice/changestatus/{id}',[DailyHelpServiceController::class,'changestatus'])->name('dailyhelpservice.changestatus');
+     Route::post('dailyhelpservice/multipledelete', [DailyHelpServiceController::class,'multipledelete'])->name('dailyhelpservice.multipledelete');
 
 
 });

@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('DailyHelpService', function (Blueprint $table) {
-            $table->bigIncrements('DailyHelpServiceId')->index();
-            $table->string('ServiceName', 100);
-            $table->string('ServiceIcon', 100);
+        Schema::create('daily_help_service', function (Blueprint $table) {
+            $table->bigIncrements('daily_help_service_id')->index();
+            $table->string('service_name', 100);
+            $table->string('service_icon', 100);
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('DailyHelpService');
+        Schema::dropIfExists('daily_help_service');
     }
 };
