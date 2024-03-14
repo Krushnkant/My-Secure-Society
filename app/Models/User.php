@@ -35,5 +35,17 @@ class User extends Authenticatable
         'password',
     ];
 
-   
+    public function getProfilePicUrlAttribute(){
+        if($this->attributes['profile_pic_url'] != null){
+            return asset($this->attributes['profile_pic_url']);
+        }else{
+            return null;
+        }
+    }
+
+    public function userdesignation()
+    {
+        return $this->hasOne(UserDesignation::class,'user_id', 'user_id');
+    }
+
 }

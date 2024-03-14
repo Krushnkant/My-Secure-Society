@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
-    
+
     <title>@yield('title') - My Secure Society </title>
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('image/favicon.png') }}">
     <!-- <link rel="stylesheet" href="./vendor/owl-carousel/css/owl.carousel.min.css">
     <link rel="stylesheet" href="./vendor/owl-carousel/css/owl.theme.default.min.css"> -->
     <!-- <link href="./vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet"> -->
@@ -48,7 +48,7 @@
             Nav header start
         ***********************************-->
         <div class="nav-header">
-            <a href="#" class="brand-logo justify-content-center p-0">
+            <a href="{{ url('admin/dashboard') }}" class="brand-logo justify-content-center p-0">
                 <!-- <img class="logo-abbr" src="./images/logo.png" alt="">
                 <img class="logo-compact" src="./images/logo-text.png" alt="">
                 <img class="brand-title" src="./images/logo-text.png" alt=""> -->
@@ -136,18 +136,16 @@
                             </li> -->
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                                    <img class="" src="{{ asset('/image/avtar.png') }}" alt="">
+                                    <img class=""
+                                        src="{{ isset(Auth::user()->profile_pic_url) ? asset(Auth::user()->profile_pic_url) : asset('image/avtar.png') }}"
+                                        alt="">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a href="#" class="dropdown-item">
+                                    <a href="{{ route('admin.user.profile') }}" class="dropdown-item">
                                         <i class="icon-user"></i>
                                         <span class="ml-2">Profile </span>
                                     </a>
-                                    <a href="#" class="dropdown-item">
-                                        <i class="icon-envelope-open"></i>
-                                        <span class="ml-2">Inbox </span>
-                                    </a>
-                                    <a href="{{ URL('logout') }}" class="dropdown-item">
+                                    <a href="{{ route('admin.logout') }}" class="dropdown-item">
                                         <i class="icon-key"></i>
                                         <span class="ml-2">Logout </span>
                                     </a>
@@ -162,43 +160,7 @@
             Header end ti-comment-alt
         ***********************************-->
 
-        <!--**********************************
-            Sidebar start
-        ***********************************-->
-        <div class="quixnav">
-            <div class="quixnav-scroll">
-                <ul class="metismenu" id="menu">
-                    <li class="nav-label first">Menu</li>
-                    <li>
-                        <a href="{{ route('admin.dashboard') }}"><i class="icon icon-single-04"></i><span class="nav-text">Dashboard</span></a>
-                    </li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false"><i class="icon icon-app-store"></i><span class="nav-text">Pages</span></a>
-                        <ul aria-expanded="false">
-                            <li><a href="{{ route('admin.products') }}">Product</a></li>
-                            <li><a href="{{ route('admin.login') }}">Login</a></li>
-                            <li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Email</a>
-                                <ul aria-expanded="false">
-                                    <li><a href="./email-compose.html">Compose</a></li>
-                                    <li><a href="./email-inbox.html">Inbox</a></li>
-                                    <li><a href="./email-read.html">Read</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="./app-calender.html">Calendar</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.business_category.list') }}"><i class="icon icon-single-04"></i><span class="nav-text">Business Category</span></a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.designation.list') }}"><i class="icon icon-single-04"></i><span class="nav-text">Designation</span></a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <!--**********************************
-            Sidebar end
-        ***********************************-->
+        @include('admin.layout.sidebar')
 
         <!--**********************************
             Content body start
@@ -222,7 +184,8 @@
         ***********************************-->
         <div class="footer">
             <div class="copyright">
-                <p>Copyright © Designed &amp; Developed by <a href="#" target="_blank">Web Vedant Technology</a> 2019</p>
+                <p>Copyright © Designed &amp; Developed by <a href="#" target="_blank">Web Vedant Technology</a>
+                    2024</p>
             </div>
         </div>
         <!--**********************************
@@ -284,4 +247,5 @@
     <script src="{{ asset('/js/dashboard/dashboard-1.js') }}"></script>
     @yield('js')
 </body>
+
 </html>

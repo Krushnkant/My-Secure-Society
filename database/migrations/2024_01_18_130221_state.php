@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('state', function (Blueprint $table) {
             $table->bigIncrements('state_id')->index();
-            $table->integer('counrty_id')->index();
+            $table->integer('country_id')->index();
             $table->string('state_name', 60);
         });
     }

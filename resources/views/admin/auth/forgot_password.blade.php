@@ -29,5 +29,29 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="successMailModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header justify-content-end">
+              <span type="button" class="close-modal-icon" data-dismiss="modal">
+                  <i class="tio-clear"></i>
+              </span>
+            </div>
+            <div class="modal-body">
+              <div class="forget-pass-content">
+                  <!-- After Succeed -->
+                  <img src="{{asset('image/sent-mail.svg')}}" alt="">
+                  <h4>
+                    A mail has been sent to your registered email!
+                  </h4>
+                  <p>
+                    Click the link in the mail description to change password
+                  </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 @endsection
   

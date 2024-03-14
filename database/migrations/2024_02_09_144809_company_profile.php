@@ -11,20 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('CompanyProfile', function (Blueprint $table) {
-            $table->bigIncrements('CompanyProfileId')->index();
-            $table->string('CompanyName');
-            $table->string('LogoUrl');
-            $table->string('GstInNumber');
-            $table->string('StreetAddress1');
-            $table->string('StreetAddress2')->nullable();
-            $table->string('Landmark', 50);
-            $table->string('PinCode', 10);
-            $table->decimal('Latitude', 10, 8)->nullable();
-            $table->decimal('Longitude', 11, 8)->nullable();
+        Schema::create('company_profile', function (Blueprint $table) {
+            $table->bigIncrements('company_profile_id')->index();
+            $table->string('company_name');
+            $table->string('logo_url');
+            $table->string('gst_in_number');
+            $table->string('street_address1');
+            $table->string('street_address2')->nullable();
+            $table->string('landmark', 50);
+            $table->string('pin_code', 10);
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
             $table->integer('city_id');
             $table->integer('state_id');
-            $table->integer('counrty_id');
+            $table->integer('country_id');
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
         });
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('CompanyProfile');
+        Schema::dropIfExists('company_profile');
     }
 };

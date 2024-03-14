@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('block_flat', function (Blueprint $table) {
             $table->bigIncrements('block_flat_id')->index();
             $table->integer('society_block_id')->index();
-            $table->integer('flock_no')->index();
+            $table->integer('flat_no')->index();
             $table->integer('is_empty')->enum([1, 2])->default(1)->comment('1 - True, 2 - False')->index();
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();

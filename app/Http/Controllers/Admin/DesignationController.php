@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Auth;
 
 class DesignationController extends Controller
 {
-    
+
     public function index()
     {
         return view('admin.designation.list');
     }
-    
+
     public function listdata(Request $request){
-      
+
         // Page Length
         $pageNumber = ( $request->start / $request->length )+1;
         $pageLength = $request->length;
@@ -30,7 +30,7 @@ class DesignationController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'desc';
 
         // get data from products table
-        $query = Designation::select('*');
+        $query = Designation::select('*')->where('company_designation_id','<>',1);
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('designation_name', 'like', "%".$search."%");
@@ -40,7 +40,7 @@ class DesignationController extends Controller
         switch($orderColumnIndex){
             case '0':
                 $orderByName = 'designation_name';
-                break;  
+                break;
         }
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();
@@ -70,7 +70,7 @@ class DesignationController extends Controller
             $designation->save();
 
             $this->defalt_permission($designation->company_designation_id);
-            
+
             return response()->json(['status' => '200', 'action' => 'add']);
         }
         else{
@@ -93,21 +93,22 @@ class DesignationController extends Controller
             $user_permission->company_designation_id = $id;
             $user_permission->eAuthority = $key;
             $user_permission->updated_by  = Auth::user()->user_id;
-            
+
             $user_permission->can_view = 2;
             $user_permission->can_add = 2;
             $user_permission->can_edit = 2;
             $user_permission->can_delete = 2;
             $user_permission->can_print = 2;
-            if($key == 12){
+            if($key == 2){
                 $user_permission->can_add = 0;
                 $user_permission->can_delete = 0;
             }
-            if($key == 2){
-                $user_permission->can_add = 0;
-            }
             if($key == 11){
                 $user_permission->can_add = 0;
+            }
+            if($key == 12){
+                $user_permission->can_add = 0;
+                $user_permission->can_delete = 0;
             }
             $user_permission->save();
         }
@@ -155,9 +156,10 @@ class DesignationController extends Controller
     public function permissiondesignation($id)
     {
         $modules = Helpers::getModulesArray();
+        $designation = Designation::select('designation_name')->find($id);
         $designation_permissions = CompanyDesignationAuthority::where('company_designation_id', $id)->orderBy('eAuthority', 'asc')->get();
        // $user_permissions = CompanyDesignationAuthority::join('project_pages', 'user_permissions.project_page_id', '=', 'project_pages.id')->select('user_permissions.*', 'project_pages.label')->where('user_permissions.user_id', $id)->orderBy('user_permissions.project_page_id', 'asc')->get();
-        return view('admin.designation.permission', compact('designation_permissions','modules'));
+        return view('admin.designation.permission', compact('designation_permissions','modules','designation'));
     }
 
     public function savepermission(Request $request)
@@ -182,7 +184,7 @@ class DesignationController extends Controller
             }
             $designation_permission->updated_by  = Auth::user()->user_id;
             $designation_permission->save();
-           
+
         }
 
         return response()->json(['status' => '200']);

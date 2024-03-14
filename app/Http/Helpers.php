@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http;
 
@@ -8,7 +8,7 @@ use App\Models\Settings;
 use Illuminate\Support\Str;
 
 class Helpers{
-	
+
 	public static function MailSending($template, $data, $to, $sub){
 		$fromEmail = env('MAIL_USERNAME');
 		$fromName = env('MAIL_FROM_NAME');
@@ -49,8 +49,10 @@ class Helpers{
             10 => 'Subscription Order',
             11 => 'Order Payment',
             12 => 'Company Profile',
+            13 => 'Service Vendor',
+            14 => 'Daily Help Service',
         ];
     }
 
-    
+
 }
