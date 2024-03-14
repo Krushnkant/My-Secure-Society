@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
-    
+
     <title>@yield('title') - My Secure Society </title>
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('image/favicon.png') }}">
     <!-- <link rel="stylesheet" href="./vendor/owl-carousel/css/owl.carousel.min.css">
     <link rel="stylesheet" href="./vendor/owl-carousel/css/owl.theme.default.min.css"> -->
     <!-- <link href="./vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet"> -->
@@ -136,7 +136,9 @@
                             </li> -->
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                                    <img class="" src="{{ isset(Auth::user()->profile_pic_url) ? asset(Auth::user()->profile_pic_url) : asset('image/avtar.png') }}" alt="">
+                                    <img class=""
+                                        src="{{ isset(Auth::user()->profile_pic_url) ? asset(Auth::user()->profile_pic_url) : asset('image/avtar.png') }}"
+                                        alt="">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <a href="{{ route('admin.user.profile') }}" class="dropdown-item">
@@ -182,7 +184,8 @@
         ***********************************-->
         <div class="footer">
             <div class="copyright">
-                <p>Copyright © Designed &amp; Developed by <a href="#" target="_blank">Web Vedant Technology</a> 2024</p>
+                <p>Copyright © Designed &amp; Developed by <a href="#" target="_blank">Web Vedant Technology</a>
+                    2024</p>
             </div>
         </div>
         <!--**********************************
@@ -244,4 +247,5 @@
     <script src="{{ asset('/js/dashboard/dashboard-1.js') }}"></script>
     @yield('js')
 </body>
+
 </html>

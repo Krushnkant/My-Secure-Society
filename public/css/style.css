@@ -19459,4 +19459,14 @@ background:white;
 .switch.flat input:checked + .slider {
 background:limeGreen;
 }
+
+.forget-pass-content {
+  max-width: 355px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+}
+
+.forget-pass-content {
+  text-align: center;
+}
 /*# sourceMappingURL=style.css.map */
