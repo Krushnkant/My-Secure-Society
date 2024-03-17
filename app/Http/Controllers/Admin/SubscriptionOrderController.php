@@ -30,7 +30,7 @@ class SubscriptionOrderController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = SubscriptionOrder::select('*')->with('society');
@@ -118,7 +118,7 @@ class SubscriptionOrderController extends Controller
             $subscriptionorder->due_date = $request->due_date;
             $subscriptionorder->updated_by = Auth::user()->user_id;
             $subscriptionorder->save();
-    
+
             if($subscriptionorder){
                 $order_payment = New OrderPayment();
                 $order_payment->subscription_order_id = $subscriptionorder->subscription_order_id;
@@ -146,7 +146,7 @@ class SubscriptionOrderController extends Controller
     public function edit($id)
     {
         $subscriptionorder = SubscriptionOrder::with('payment_order')->find($id);
-     
+
         return response()->json($subscriptionorder);
     }
     public function delete($id)
@@ -179,7 +179,12 @@ class SubscriptionOrderController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        SubscriptionOrder::whereIn('user_id', $ids)->delete();
+        $subscriptionorders = SubscriptionOrder::whereIn('subscription_order_id', $ids)->get();
+        foreach ($subscriptionorders as $subscriptionorder) {
+            $subscriptionorder->estatus = 3;
+            $subscriptionorder->save();
+        }
+        SubscriptionOrder::whereIn('subscription_order_id', $ids)->delete();
         return response()->json(['status' => '200']);
     }
 }

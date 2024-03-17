@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
-                            
+
                             @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_add(3)) )
                             <button type="button" id="AddBtn_User" class="btn btn-outline-primary" data-toggle="modal" data-target="#UserModal">Add New</button>
                             @endif
@@ -35,9 +35,7 @@
                                         <th>Profile Image</th>
                                         <th>Full Name</th>
                                         <th>Designation</th>
-                                        <th>User Type</th>
-                                       <th>Email</th>
-                                        <th>Mobile Number</th>
+                                        <th>Contact Info</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -48,9 +46,7 @@
                                         <th>Profile Image</th>
                                         <th>Full Name</th>
                                         <th>Designation</th>
-                                        <th>User Type</th>
-                                       <th>Email</th>
-                                        <th>Mobile Number</th>
+                                        <th>Contact Info</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -111,7 +107,7 @@
                         data.tab_type = tab_type;
                     }
                 },
-                
+
                 order: ['1', 'DESC'],
                 pageLength: 10,
                 searching: 1,
@@ -143,21 +139,15 @@
                         data: 'designation',
                     },
                     {
-                        width: "10%",
-                        data: 'user_type_name',
-                    },
-
-                    {
-                        width: "10%",
-                        data: 'email',
-                    },
-                    {
-                        width: "10%",
-                        data: 'mobile_no',
+                        width: "15%",
+                        data: null,
+                        render: function(data, type, row) {
+                            return row.email + '<br>' + row.mobile_no;
+                        }
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
-                        width: "10%",
+                        width: "5%",
                         orderable: false,
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
@@ -176,7 +166,7 @@
                     },
                     {
                         data: 'id',
-                        width: "10%",
+                        width: "5%",
                         orderable: false,
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
@@ -188,7 +178,7 @@
                             if(is_delete) {
                               action += `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.user_id}"><i class="fa fa-close color-danger"></i></a>`;
                             }
-                            action += `</span>`; 
+                            action += `</span>`;
                             return action;
                         }
                     }
@@ -222,7 +212,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this User !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -267,7 +257,7 @@
             });
         }
 
-        
+
         $('body').on('click', '#AddBtn_User', function() {
             $('#UserModal').find('.modal-title').html("Add User");
             $("#UserModal").find('form').trigger('reset');
@@ -284,6 +274,13 @@
             $("#full_name").focus();
             var default_image = "{{ asset('image/avtar.png') }}";
             $('#profilepic_image_show').attr('src', default_image);
+        });
+
+        $('#userform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_user($('#save_newBtn'), 'save_new');
+            }
         });
 
         $('body').on('click', '#save_newBtn', function() {
@@ -394,7 +391,7 @@
             });
         }
 
-        
+
         $('body').on('click', '#editBtn', function() {
             var edit_id = $(this).attr('data-id');
             $('#UserModal').find('.modal-title').html("Edit User");
@@ -402,7 +399,7 @@
             $('#email-error').html("");
             $('#mobile_no-error').html("");
             $.get("{{ url('admin/users') }}" + '/' + edit_id + '/edit', function(data) {
-               
+
                 $('#UserModal').find('#save_newBtn').attr("data-action", "update");
                 $('#UserModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#UserModal').find('#save_newBtn').attr("data-id", edit_id);
@@ -414,11 +411,9 @@
                 $('#password').val(123456);
                 $('#password').prop('disabled', true);
                 $('input[name="gender"][value="' + data.gender + '"]').prop('checked', true);
-                $('select[name="blood_group"]').val(data.blood_group).trigger('change');
-                $('select[name="user_type"]').val(data.user_type).trigger('change');
                 $('select[name="designation"]').val(data.userdesignation.company_designation_id).trigger('change');
                 if(data.profile_pic_url==null){
-                    var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                    var default_image = "{{ asset('image/avtar.png') }}";
                     $('#profilepic_image_show').attr('src', default_image);
                 }
                 else{
@@ -460,7 +455,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this User !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",
@@ -480,6 +475,11 @@
                                         timeOut: 5000
                                     });
                                     getTableData('', 1);
+                                }
+                                if (res.status == 403) {
+                                    toastr.error("Unauthorized", 'Error', {
+                                        timeOut: 5000
+                                    });
                                 }
 
                                 if (res.status == 400) {
@@ -517,6 +517,6 @@
             }
         });
 
-       
+
     </script>
 @endsection

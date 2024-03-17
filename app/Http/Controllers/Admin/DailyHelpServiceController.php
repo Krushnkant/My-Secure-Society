@@ -24,7 +24,7 @@ class DailyHelpServiceController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = DailyHelpService::select('*');
@@ -77,7 +77,7 @@ class DailyHelpServiceController extends Controller
             $help->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
             $help->save();
 
-            
+
             return response()->json(['status' => '200', 'action' => 'add']);
         }else{
             $help = DailyHelpService::find($request->id);
@@ -146,7 +146,12 @@ class DailyHelpServiceController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        DailyHelpService::whereIn('service_vendor_id', $ids)->delete();
+        $helps = DailyHelpService::whereIn('daily_help_service_id', $ids)->get();
+        foreach ($helps as $help) {
+            $help->estatus = 3;
+            $help->save();
+        }
+        DailyHelpService::whereIn('daily_help_service_id', $ids)->delete();
         return response()->json(['status' => '200']);
     }
 }

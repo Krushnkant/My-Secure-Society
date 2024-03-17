@@ -198,7 +198,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Category !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -266,7 +266,12 @@
             });
         });
 
-
+        $('#businesscategoryform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_category($('#save_newBtn'), 'save_new');
+            }
+        });
 
         $('body').on('click', '#save_newBtn', function() {
             save_category($(this), 'save_new');
@@ -324,7 +329,7 @@
                             $("#BusinessCategoryModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#BusinessCategoryModal").find("#save_newBtn").removeAttr('data-id');
                             $("#BusinessCategoryModal").find("#save_closeBtn").removeAttr('data-id');
-                            
+
                             $("#business_category_name").focus();
                             if (res.action == 'add') {
                                 $('select[name="parent_business_category_id"]').append('<option value="' + res.newCategoryId + '">' + res.newCategoryName + '</option>');
@@ -383,10 +388,10 @@
                         dropdown.append('<option value="' + category.business_category_id + '">' + category.business_category_name + '</option>');
                     });
                     dropdown.val(data.parent_business_category_id).trigger('change');
-                  
+
                 });
 
-                
+
                 $("#BusinessCategoryModal").modal('show');
             });
         });
@@ -421,7 +426,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this Category !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",
@@ -462,6 +467,6 @@
         $(".single-select-placeholder").select2({
             placeholder: "Select a parent category",
         });
-        
+
     </script>
 @endsection

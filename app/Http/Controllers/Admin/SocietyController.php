@@ -27,7 +27,7 @@ class SocietyController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = Society::select('*');
@@ -127,7 +127,12 @@ class SocietyController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        Society::whereIn('user_id', $ids)->delete();
+        $societies = Society::whereIn('society_id', $ids)->get();
+        foreach ($societies as $societie) {
+            $societie->estatus = 3;
+            $societie->save();
+        }
+        Society::whereIn('society_id', $ids)->delete();
         return response()->json(['status' => '200']);
     }
 }

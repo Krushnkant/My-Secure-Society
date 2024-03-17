@@ -27,8 +27,7 @@ class DesignationController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
-
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
         // get data from products table
         $query = Designation::select('*')->where('company_designation_id','<>',1);
         $search = $request->search;
@@ -52,10 +51,12 @@ class DesignationController extends Controller
     public function addorupdate(Request $request){
         $messages = [
             'designation_name.required' =>'Please provide a designation name',
+            'designation_name.max' =>'The designation name must not exceed :max characters.',
+            'designation_name.unique' =>'The designation name has already been taken.',
         ];
 
         $validator = Validator::make($request->all(), [
-            'designation_name' => 'required',
+            'designation_name' => 'required|max:255|unique:company_designation,designation_name,'. ($request->id ?? 'NULL') .',company_designation_id',
         ], $messages);
 
         if ($validator->fails()) {
@@ -104,7 +105,7 @@ class DesignationController extends Controller
                 $user_permission->can_delete = 0;
             }
             if($key == 11){
-                $user_permission->can_add = 0;
+                $user_permission->can_edit = 0;
             }
             if($key == 12){
                 $user_permission->can_add = 0;
@@ -147,6 +148,16 @@ class DesignationController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
+        $designations = Designation::whereIn('company_designation_id', $ids)->get();
+        foreach ($designations as $designation) {
+            $designation->estatus = 3;
+            $designation->save();
+        }
+        $designations = Designation::whereIn('company_designation_id', $ids)->get();
+        foreach ($designations as $designation) {
+            $designation->estatus = 3;
+            $designation->save();
+        }
         Designation::whereIn('company_designation_id', $ids)->delete();
 
         return response()->json(['status' => '200']);

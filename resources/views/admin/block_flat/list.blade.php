@@ -201,7 +201,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Block !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -260,7 +260,12 @@
             $("#flat_no").focus();
         });
 
-
+        $('#flatform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_flat($('#save_newBtn'), 'save_new');
+            }
+        });
 
         $('body').on('click', '#save_newBtn', function() {
             save_flat($(this), 'save_new');
@@ -402,7 +407,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this Block !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",

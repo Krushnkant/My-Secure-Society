@@ -24,7 +24,7 @@ class BlockController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = Block::select('*');
@@ -37,7 +37,7 @@ class BlockController extends Controller
         switch($orderColumnIndex){
             case '0':
                 $orderByName = 'block_name';
-                break;  
+                break;
         }
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();
@@ -73,7 +73,7 @@ class BlockController extends Controller
         $block->updated_by = Auth::user()->user_id;
         $block->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
         $block->save();
-        
+
         return response()->json(['status' => '200', 'action' => 'add']);
     }
 
@@ -110,6 +110,11 @@ class BlockController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
+        $blocks = Block::whereIn('society_block_id', $ids)->get();
+        foreach ($blocks as $block) {
+            $block->estatus = 3;
+            $block->save();
+        }
         Block::whereIn('society_block_id', $ids)->delete();
 
         return response()->json(['status' => '200']);

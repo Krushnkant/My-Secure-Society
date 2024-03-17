@@ -191,7 +191,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Designation !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -247,6 +247,13 @@
             $("#DesignationModal").find("#save_newBtn").removeAttr('data-id');
             $("#DesignationModal").find("#save_closeBtn").removeAttr('data-id');
             $("#designation_name").focus();
+        });
+
+        $('#designationform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault(); 
+                save_designation($('#save_newBtn'), 'save_new');
+            }
         });
 
         $('body').on('click', '#save_newBtn', function() {
@@ -389,7 +396,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this Designation !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",

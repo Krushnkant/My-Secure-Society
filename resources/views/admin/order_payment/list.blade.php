@@ -193,7 +193,12 @@
             $("#amount_paid").focus();
         });
 
-
+        $('#orderpaymentform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_order_payment($('#save_newBtn'), 'save_new');
+            }
+        });
 
         $('body').on('click', '#save_newBtn', function() {
             save_order_payment($(this), 'save_new');
@@ -327,7 +332,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                 title: "Are you sure to delete ?",
-                text: "You will not be able to recover this imaginary file !!",
+                text: "You will not be able to recover this Order !!",
                 type: "warning",
                 showCancelButton: !0,
                 confirmButtonColor: "#DD6B55",

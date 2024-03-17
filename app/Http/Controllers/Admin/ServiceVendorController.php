@@ -25,7 +25,7 @@ class ServiceVendorController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = ServiceVendor::with('service_vendor_file')->select('*');
@@ -174,6 +174,11 @@ class ServiceVendorController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
+        $services = ServiceVendor::whereIn('service_vendor_id', $ids)->get();
+        foreach ($services as $service) {
+            $service->estatus = 3;
+            $service->save();
+        }
         ServiceVendor::whereIn('service_vendor_id', $ids)->delete();
         return response()->json(['status' => '200']);
     }
