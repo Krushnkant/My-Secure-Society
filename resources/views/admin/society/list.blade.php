@@ -165,7 +165,7 @@
                             if (is_view) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Blog" id="viewBlock"  data-id="${row.society_id}"><i class="fa fa-list color-muted"></i> </a>`;
-                                }    
+                                }
                             if (is_edit) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.society_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
@@ -208,7 +208,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Society !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -253,6 +253,13 @@
                 }
             });
         }
+
+        $('#societyform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_society($('#save_newBtn'), 'save_new');
+            }
+        });
 
 
         $('body').on('click', '#AddBtn_Society', function() {
@@ -299,7 +306,7 @@
                     if (res.status == 'failed') {
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
-                        
+
                         if (res.errors.society_name) {
                             $('#society_name-error').show().text(res.errors.society_name);
                         } else {
@@ -421,7 +428,7 @@
             $('#city_id-error').html("");
             $('#state_id-error').html("");
             $('#country_id-error').html("");
-         
+
             $.get("{{ url('admin/society') }}" + '/' + edit_id + '/edit', function(data) {
                 $('#SocietyModal').find('#save_newBtn').attr("data-action", "update");
                 $('#SocietyModal').find('#save_closeBtn').attr("data-action", "update");
@@ -433,7 +440,7 @@
                 $('#street_address2').val(data.street_address2);
                 $('#landmark').val(data.landmark);
                 $('#pin_code').val(data.pin_code);
-                 
+
                 $('select[name="country_id"]').val(data.country_id).trigger('change');
 
                 $.ajax({
@@ -511,7 +518,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this Society !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",
@@ -566,7 +573,7 @@
                         $("#state-dropdown").append('<option data-value="' + value.state_id +
                             '" value="' + value.state_id + '">' + value.state_name + '</option>');
                     });
-                    
+
                     // Trigger the change event on state dropdown after updating options
                     $("#state-dropdown").trigger('change');
                 }
@@ -601,6 +608,6 @@
             window.open(url, "_blank");
         });
 
-       
+
     </script>
 @endsection

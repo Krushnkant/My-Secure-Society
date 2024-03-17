@@ -24,7 +24,7 @@ class FlatController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = Flat::select('*');
@@ -37,7 +37,7 @@ class FlatController extends Controller
         switch($orderColumnIndex){
             case '0':
                 $orderByName = 'flat_no';
-                break;  
+                break;
         }
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();
@@ -73,7 +73,7 @@ class FlatController extends Controller
         $flat->created_by = Auth::user()->user_id;
         $flat->updated_by = Auth::user()->user_id;
         $flat->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-        $flat->save(); 
+        $flat->save();
         return response()->json(['status' => '200', 'action' => 'add']);
     }
 
@@ -110,6 +110,11 @@ class FlatController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
+        $flats = Flat::whereIn('block_flat_id', $ids)->get();
+        foreach ($flats as $flat) {
+            $flat->estatus = 3;
+            $flat->save();
+        }
         Flat::whereIn('block_flat_id', $ids)->delete();
 
         return response()->json(['status' => '200']);

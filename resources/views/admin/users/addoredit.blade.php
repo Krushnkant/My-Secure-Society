@@ -22,10 +22,10 @@
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Email Address <span class="text-danger">*</span></label>
+                                <label class="text-label">Email <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <input type="email" class="form-control" id="email" name="email"
-                                        placeholder="Email Address">
+                                        placeholder="Email">
                                     <div id="email-error" class="invalid-feedback animated fadeInDown"
                                         style="display: none;"></div>
                                 </div>
@@ -42,20 +42,6 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">User Type <span class="text-danger">*</span></label>
-                                <select class="single-select-placeholder js-states" name="user_type">
-                                    <option value="1">Company Admin User</option>
-                                    <option value="2">Resident App User</option>
-                                    <option value="3">Guard App User</option>
-                                    <option value="4">App User</option>
-                                    <option value="5">Daily Help User</option>
-                                    <option value="6">Staff Member</option>
-                                </select>
-                            </div>
-                        </div>
-
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
                                 <label class="text-label">Mobile Number <span class="text-danger">*</span></label>
@@ -76,22 +62,6 @@
                                     <div id="password-error" class="invalid-feedback animated fadeInDown"
                                         style="display: none;"></div>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">Blood Group <span class="text-danger">*</span></label>
-                                <select class="single-select-placeholder js-states" name="blood_group">
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
-                                </select>
                             </div>
                         </div>
                         <div class="col-lg-6 mb-2">

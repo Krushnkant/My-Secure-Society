@@ -4,18 +4,24 @@
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>{{ $designation->designation_name }} Designation Permission</h4>
+            <h4>Permission for {{ $designation->designation_name }} </h4>
         </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('admin.designation.list') }}">Designation</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">{{ $designation->designation_name }}</a></li>
+        </ol>
     </div>
 @endsection
 
 @section('content')
 
     <div class="row">
-      
+
             <div class="col-lg-12">
                 <div class="card">
-                   
+
                     <div class="card-body">
                         <div class="table-responsive">
                             <form class="form-valide" id="permissionForm" action="#" method="post">
@@ -54,7 +60,7 @@
                                              <td class="text-center"><input type="checkbox"
                                                 class=" permissionCheckBox"
                                                 value="{{ $designation_permission->can_edit }}" name="canEditArr[]" {{
-                                                $designation_permission->can_edit==1?"checked":'' }} {{  $designation_permission->can_edit==0?"disabled":'' }}></td>        
+                                                $designation_permission->can_edit==1?"checked":'' }} {{  $designation_permission->can_edit==0?"disabled":'' }}></td>
                                             <td class="text-center"><input type="checkbox"
                                                     class=" permissionCheckBox"
                                                     value="{{ $designation_permission->can_delete }}" name="canDeleteArr[]" {{
@@ -62,23 +68,25 @@
                                             <td class="text-center"><input type="checkbox"
                                                 class=" permissionCheckBox"
                                                 value="{{ $designation_permission->can_print }}" name="canPrintArr[]" {{
-                                                $designation_permission->can_print==1?"checked":'' }} {{  $designation_permission->can_print==0?"disabled":'' }}></td>        
+                                                $designation_permission->can_print==1?"checked":'' }} {{  $designation_permission->can_print==0?"disabled":'' }}></td>
                                         </tr>
                                         <?php $i++; ?>
                                         @endforeach
                                   </tbody>
-                                 
+
                             </table>
                             @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_edit(2)))
+                            <div class="text-right mt-5 btn-page">
                                 <button type="submit" id="savePermissionBtn" class="btn btn-primary">Save <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
-                            @endif    
+                            </div>
+                            @endif
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-           
-        
+
+
     </div>
 
 @endsection
@@ -142,6 +150,18 @@
             $(thi).val(2);
         }
    });
+
+   $('.permissionCheckBox[name="canEditArr[]"]').click(function() {
+    var $editCheckbox = $(this);
+    var $viewCheckbox = $editCheckbox.closest('tr').find('.permissionCheckBox[name="canViewArr[]"]');
+
+    if ($editCheckbox.is(':checked')) {
+        $viewCheckbox.prop('checked', true).val(1);
+    }
+    // else {
+    //     $viewCheckbox.prop('checked', false).val(0);
+    // }
+});
 
     </script>
 @endsection

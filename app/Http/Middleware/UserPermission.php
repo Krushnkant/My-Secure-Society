@@ -29,6 +29,8 @@ class UserPermission
             else{
                 if($request->route()->getName()=='admin.designation.list' && is_view(1) == 0){
                     return redirect(route('admin.403_page'));
+                }else if($request->route()->getName()=='admin.designation.permissiondesignation' && is_view(2) == 0){
+                    return redirect(route('admin.403_page'));
                 }else if($request->route()->getName()=='admin.users.list' && is_view(3) == 0){
                     return redirect(route('admin.403_page'));
                 }else if ($request->route()->getName()=='admin.emergencycontact.list' && is_view(4) == 0){

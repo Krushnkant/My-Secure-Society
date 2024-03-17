@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class BusinessCategoryController extends Controller
 {
-    
+
     public function index() {
         $categories = BusinessCategory::where('estatus',1)->get();
         return view('admin.business_category.list',compact('categories'));
@@ -24,7 +24,7 @@ class BusinessCategoryController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = BusinessCategory::with('parent_category')->select('*');
@@ -37,7 +37,7 @@ class BusinessCategoryController extends Controller
         switch($orderColumnIndex){
             case '0':
                 $orderByName = 'business_category_name';
-                break;  
+                break;
         }
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();
@@ -130,6 +130,11 @@ class BusinessCategoryController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
+        $categories = BusinessCategory::whereIn('business_category_id', $ids)->get();
+        foreach ($categories as $category) {
+            $category->estatus = 3;
+            $category->save();
+        }
         BusinessCategory::whereIn('business_category_id', $ids)->delete();
 
         return response()->json(['status' => '200']);

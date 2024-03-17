@@ -28,13 +28,13 @@ class UserController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
-        $query = User::with('userdesignation')->select('*');
-        $query = $query->whereHas('userdesignation', function ($query) {
-            $query->where('company_designation_id', '!=', 1);
-        });
+        $query = User::with('userdesignation')->select('*')->where('user_id','!=',1);
+        // $query = $query->whereHas('userdesignation', function ($query) {
+        //     $query->where('company_designation_id', '!=', 1);
+        // });
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('full_name', 'like', "%".$search."%");
@@ -58,12 +58,9 @@ class UserController extends Controller
                 'user_id' => $item->user_id,
                 'full_name' => $item->full_name,
                 'email' => $item->email,
-                'user_type' => $item->user_type,
                 'profile_pic_url' => $item->profile_pic_url,
                 'mobile_no' => $item->mobile_no,
                 'estatus' => $item->estatus,
-                'user_type' => $item->user_type,
-                'user_type_name' => getUserType($item->user_type),
                 'designation' => isset($item->userdesignation->designation)?$item->userdesignation->designation->designation_name:"",
             ];
         });
@@ -82,17 +79,17 @@ class UserController extends Controller
         if(!isset($request->id)){
             $validator = Validator::make($request->all(), [
                 'profile_pic' => 'image|mimes:jpeg,png,jpg',
-                'full_name' => 'required',
+                'full_name' => 'required|max:70',
                 'mobile_no' => 'required|numeric|digits:10|unique:user,mobile_no,NULL,id,deleted_at,NULL',
-                'email' => 'required|email|unique:user,email,NULL,id,deleted_at,NULL',
-                'password' => 'required',
+                'email' => 'required|email|max:50|unique:user,email,NULL,id,deleted_at,NULL',
+                'password' => 'required|max:255',
             ], $messages);
         }else{
             $validator = Validator::make($request->all(), [
                 'profile_pic' => 'image|mimes:jpeg,png,jpg',
-                'full_name' => 'required',
+                'full_name' => 'required|max:70',
                 'mobile_no' => 'required|numeric|digits:10',
-                'email' => 'required|email',
+                'email' => 'required|email|max:50',
             ], $messages);
         }
 
@@ -103,12 +100,11 @@ class UserController extends Controller
             $user = new User();
             $user->full_name = $request->full_name;
             $user->user_code = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
-            $user->user_type = $request->user_type;
+            $user->user_type = 1;
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             $user->mobile_no = $request->mobile_no;
             $user->gender = $request->gender;
-            $user->blood_group = $request->blood_group;
             $user->created_by = Auth::user()->user_id;
             $user->updated_by = Auth::user()->user_id;
             $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
@@ -124,7 +120,6 @@ class UserController extends Controller
             if ($user) {
                 $old_image = $user->profile_pic_url;
                 $user->full_name = $request->full_name;
-                $user->user_type = $request->user_type;
                 $user->email = $request->email;
                 $user->mobile_no = $request->mobile_no;
                 $user->gender = $request->gender;
@@ -182,7 +177,10 @@ class UserController extends Controller
     }
 
     public function delete($id){
-        $user = User::find($id);
+        $user = User::findOrFail($id);
+        if ($id == Auth::id()) {
+            return response()->json(['status' => '403']);
+        }
         if ($user){
             $user->estatus = 3;
             $user->save();
@@ -209,7 +207,14 @@ class UserController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        User::whereIn('user_id', $ids)->delete();
+        $users = User::whereIn('user_id', $ids)->get();
+        foreach ($users as $user) {
+            if ($user->user_id != Auth::id()) {
+                $user->estatus = 3;
+                $user->save();
+                $user->delete();
+            }
+        }
         return response()->json(['status' => '200']);
     }
 }

@@ -147,7 +147,7 @@
                             if (is_view) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Blog" id="viewFlat"  data-id="${row.society_block_id}"><i class="fa fa-list color-muted"></i> </a>`;
-                                } 
+                                }
                             if (is_edit) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.society_block_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
@@ -191,7 +191,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Block !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -249,7 +249,12 @@
             $("#block_name").focus();
         });
 
-
+        $('#blockform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_block($('#save_newBtn'), 'save_new');
+            }
+        });
 
         $('body').on('click', '#save_newBtn', function() {
             save_block($(this), 'save_new');
@@ -389,7 +394,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                 title: "Are you sure to delete ?",
-                text: "You will not be able to recover this imaginary file !!",
+                text: "You will not be able to recover this Block !!",
                 type: "warning",
                 showCancelButton: !0,
                 confirmButtonColor: "#DD6B55",

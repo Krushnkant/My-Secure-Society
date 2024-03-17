@@ -13,7 +13,7 @@ class ProductController extends Controller
     }
 
     public function getProducts(Request $request){
-      
+
         // Page Length
         $pageNumber = ( $request->start / $request->length )+1;
         $pageLength = $request->length;
@@ -21,7 +21,7 @@ class ProductController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = \DB::table('products')->select('*');
@@ -45,7 +45,7 @@ class ProductController extends Controller
             case '2':
                 $orderByName = 'amount';
                 break;
-        
+
         }
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();

@@ -49,8 +49,6 @@ Route::post('get-cities-by-state', [CountryStateCityController::class, 'getCity'
 
 Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'admin.'],function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('products', [ProductController::class, 'index'])->name('products');
-    Route::post('/get-products', [ProductController::class, 'getProducts'])->name('products.getProducts');
 
     // Business Category
     Route::get('businesscategory',[BusinessCategoryController::class,'index'])->name('businesscategory.list');
