@@ -7,6 +7,12 @@
             <h4> Order Payment</h4>
         </div>
     </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('admin.subscriptionorder.list') }}">Order</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Order Payment</a></li>
+        </ol>
+    </div>
 @endsection
 
 @section('content')
@@ -64,6 +70,7 @@
     <!-- Datatable -->
     <script src="{{ asset('/vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('/js/plugins-init/datatables.init.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     <script type="text/javascript">
     $(".single-select-placeholder").select2();
@@ -99,9 +106,10 @@
                     data: function(data) {
                         data.search = $('input[type="search"]').val();
                         data.tab_type = tab_type;
+                        data.order_id = "{{ $id }}";
                     }
                 },
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [
@@ -157,6 +165,10 @@
                     {
                         width: "10%",
                         data: 'payment_date',
+                        render: function(data, type, row) {
+                            var formattedDate = moment(row.payment_date).format('DD-MM-YYYY');
+                            return formattedDate;
+                        }
                     },
                     {
                         data: 'id',
@@ -332,7 +344,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                 title: "Are you sure to delete ?",
-                text: "You will not be able to recover this Order !!",
+                text: "You will not be able to recover this Order Payment !!",
                 type: "warning",
                 showCancelButton: !0,
                 confirmButtonColor: "#DD6B55",

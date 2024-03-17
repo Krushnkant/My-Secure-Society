@@ -4,15 +4,20 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Block;
+use App\Models\Flat;
 use App\Models\Society;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class BlockController extends Controller
 {
     public function index($id) {
         $society = Society::find($id);
+        if($society == null){
+            return view('admin.404');
+        }
         return view('admin.society_block.list',compact('society','id'));
     }
 
@@ -27,7 +32,7 @@ class BlockController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
-        $query = Block::select('*');
+        $query = Block::select('*')->where('society_id',$request->society_id);
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('block_name', 'like', "%".$search."%");
@@ -48,11 +53,18 @@ class BlockController extends Controller
 
     public function addorupdate(Request $request){
         $messages = [
-            'block_name.required' =>'Please provide a block name',
+            'block_name.required' => 'Please provide a block name',
+            'block_name.unique' => 'The block name is already taken for this society',
         ];
-
+    
         $validator = Validator::make($request->all(), [
-            'block_name' => 'required',
+            'block_name' => [
+                'required',
+                'max:100',
+                Rule::unique('society_block')->where(function ($query) use ($request) {
+                    return $query->where('society_id', $request->society_id);
+                }),
+            ],
         ], $messages);
 
         if ($validator->fails()) {
@@ -85,6 +97,10 @@ class BlockController extends Controller
     public function delete($id){
         $block = Block::find($id);
         if ($block){
+            $flat = Flat::where('society_block_id', $id)->exists();
+            if ($flat) {
+                return response()->json(['status' => '300', 'message' => 'Cannot delete society. It is associated with one or more society block.']);
+            }
             $block->estatus = 3;
             $block->save();
             $block->delete();
@@ -112,11 +128,13 @@ class BlockController extends Controller
         $ids = $request->input('ids');
         $blocks = Block::whereIn('society_block_id', $ids)->get();
         foreach ($blocks as $block) {
-            $block->estatus = 3;
-            $block->save();
+            $flat = Flat::where('society_block_id', $block->society_block_id)->exists();
+            if (!$flat) {
+                $block->estatus = 3;
+                $block->save();
+                $block->delete();
+            }
         }
-        Block::whereIn('society_block_id', $ids)->delete();
-
         return response()->json(['status' => '200']);
     }
 }

@@ -38,6 +38,24 @@
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
+                                <label class="text-label" for="latitude">Latitude <span class="text-danger">*</span></label>
+                                <input type="number" name="latitude" id="latitude" class="form-control"
+                                    placeholder="Latitude">
+                                <div id="latitude-error" class="invalid-feedback animated fadeInDown"
+                                    style="display: none;"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-2">
+                            <div class="form-group">
+                                <label class="text-label" for="longitude">Longitude <span class="text-danger">*</span></label>
+                                <input type="number" name="longitude" id="longitude" class="form-control"
+                                    placeholder="Longitude">
+                                <div id="longitude-error" class="invalid-feedback animated fadeInDown"
+                                    style="display: none;"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-2">
+                            <div class="form-group">
                                 <label class="text-label" for="landmark">Landmark <span class="text-danger">*</span></label>
                                 <input type="text" name="landmark" id="landmark" class="form-control"
                                     placeholder="Landmark">
@@ -61,7 +79,7 @@
                                     <option value=""></option>
                                     @foreach ($countries as $country)
                                         <option value="{{ $country->country_id }}">
-                                            {{ $country->counrty_name }}</option>
+                                            {{ $country->country_name }}</option>
                                     @endforeach
                                 </select>
                                 <div id="country_id-error" class="invalid-feedback animated fadeInDown"

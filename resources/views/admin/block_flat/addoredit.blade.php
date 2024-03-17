@@ -15,11 +15,11 @@
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
                                 <label class="text-label">Flat No <span class="text-danger">*</span></label>
-                                <input type="text" name="flat_no" id="flat_no" class="form-control" placeholder="Flat No">
+                                <input type="number" name="flat_no" id="flat_no" class="form-control" placeholder="Flat No">
                                 <div id="flat_no-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                             </div>
                         </div>
-                        <div class="col-lg-12 mb-2">
+                        {{-- <div class="col-lg-12 mb-2">
                             <div class="form-group">
                                 <label class="text-label">Empty <span class="text-danger">*</span></label>
                                 <select class="single-select-placeholder js-states" name="is_empty">
@@ -27,7 +27,7 @@
                                     <option value="2">No</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="modal-footer modal-footer-fixed px-5">

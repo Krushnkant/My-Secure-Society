@@ -78,7 +78,7 @@
                                             <option value=""></option>
                                             @foreach ($countries as $country)
                                                 <option value="{{ $country->country_id }}">
-                                                    {{ $country->counrty_name }}</option>
+                                                    {{ $country->country_name }}</option>
                                             @endforeach
                                         </select>
                                         <div id="country_id-error" class="invalid-feedback animated fadeInDown"
@@ -124,7 +124,10 @@
                             <input type="hidden" name="state" id="state_id" value="{{ isset($company->state_id)?$company->state_id:'' }}">
                             <input type="hidden" name="city" id="city_id" value="{{ isset($company->city_id)?$company->city_id:'' }}">
                             @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_edit(12)))
-                            <button type="button" id="saveBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
+                            
+                            <div class="mt-5 btn-page">
+                                <button type="button" id="saveBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
+                            </div>
                             @endif
                     </form>
                 </div>
@@ -145,6 +148,13 @@
         });
         $("#city-dropdown").select2({
             placeholder: "Select a city"
+        });
+
+        $('#companyform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                $('#saveBtn').click();
+            }
         });
 
         $('body').on('click', '#saveBtn', function() {
@@ -178,6 +188,11 @@
                             $('#street_address1-error').show().text(res.errors.street_address1);
                         } else {
                             $('#street_address1-error').hide();
+                        }
+                        if (res.errors.street_address2) {
+                            $('#street_address2-error').show().text(res.errors.street_address2);
+                        } else {
+                            $('#street_address2-error').hide();
                         }
                         if (res.errors.landmark) {
                             $('#landmark-error').show().text(res.errors.landmark);

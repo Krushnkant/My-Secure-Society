@@ -100,7 +100,9 @@
                         data.tab_type = tab_type;
                     }
                 },
-                order: ['1', 'DESC'],
+                order: [
+                    [1, 'asc'] // Default ordering by the second column (designation_name) in ascending order
+                ],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{

@@ -104,7 +104,7 @@
                         data.tab_type = tab_type;
                     }
                 },
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
@@ -447,6 +447,13 @@
                                     });
                                     getTableData('', 1);
                                 }
+                                if (res.status == 300) {
+                                    $(btn).find('.loadericonfa').hide();
+                                    $(btn).prop('disabled', false);
+                                    toastr.error(res.message, 'Error', {
+                                        timeOut: 5000
+                                    });
+                                }
 
                                 if (res.status == 400) {
                                     toastr.error("Please try again", 'Error', {
@@ -466,7 +473,7 @@
 
         $(".single-select-placeholder").select2({
             placeholder: "Select a parent category",
+            allowClear: true
         });
-
     </script>
 @endsection

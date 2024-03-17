@@ -4,8 +4,14 @@
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>{{ $society->society_name }} Block</h4>
+            <h4>Blocks in {{ $society->society_name }}</h4>
         </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('admin.society.list') }}">Society</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Block</a></li>
+        </ol>
     </div>
 @endsection
 
@@ -98,9 +104,10 @@
                     data: function(data) {
                         data.search = $('input[type="search"]').val();
                         data.tab_type = tab_type;
+                        data.society_id = "{{ $id }}";
                     }
                 },
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{

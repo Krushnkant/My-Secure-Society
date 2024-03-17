@@ -13,6 +13,9 @@ class FlatController extends Controller
 {
     public function index($id) {
         $block = Block::with('society')->find($id);
+        if($block == null){
+            return view('admin.404');
+        }
         return view('admin.block_flat.list',compact('block','id'));
     }
 
@@ -27,7 +30,7 @@ class FlatController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
-        $query = Flat::select('*');
+        $query = Flat::select('*')->where('society_block_id',$request->block_id);
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('flat_no', 'like', "%".$search."%");
@@ -52,7 +55,7 @@ class FlatController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'flat_no' => 'required',
+            'flat_no' => 'required|integer',
         ], $messages);
 
         if ($validator->fails()) {
@@ -69,7 +72,7 @@ class FlatController extends Controller
         }
         $flat->society_block_id = $request->society_block_id;
         $flat->flat_no = $request->flat_no;
-        $flat->is_empty = $request->is_empty;
+        //$flat->is_empty = $request->is_empty;
         $flat->created_by = Auth::user()->user_id;
         $flat->updated_by = Auth::user()->user_id;
         $flat->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
