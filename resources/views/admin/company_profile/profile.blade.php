@@ -124,7 +124,7 @@
                             <input type="hidden" name="state" id="state_id" value="{{ isset($company->state_id)?$company->state_id:'' }}">
                             <input type="hidden" name="city" id="city_id" value="{{ isset($company->city_id)?$company->city_id:'' }}">
                             @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_edit(12)))
-                            
+
                             <div class="mt-5 btn-page">
                                 <button type="button" id="saveBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
                             </div>
@@ -350,7 +350,7 @@
             var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
             if ($.inArray(fileType, validImageTypes) < 0) {
                 $('#profile_pic-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
-                var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                var default_image = "{{ asset('image/avatar.png') }}";
                 $('#profilepic_image_show').attr('src', default_image);
             }
             else {

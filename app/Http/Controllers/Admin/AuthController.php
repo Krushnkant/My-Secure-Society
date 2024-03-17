@@ -165,7 +165,6 @@ class AuthController extends Controller
         $user->email = $request->email;
         $user->mobile_no = $request->mobile_no;
         $user->gender = $request->gender;
-        $user->blood_group = $request->blood_group;
         $user->updated_by = Auth::user()->user_id;
         if ($request->hasFile('profile_pic')) {
             $image = $request->file('profile_pic');

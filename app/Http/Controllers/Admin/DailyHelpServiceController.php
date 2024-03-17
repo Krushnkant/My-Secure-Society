@@ -7,6 +7,7 @@ use App\Models\DailyHelpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class DailyHelpServiceController extends Controller
 {
@@ -53,13 +54,24 @@ class DailyHelpServiceController extends Controller
         ];
         if(!isset($request->id)){
             $validator = Validator::make($request->all(), [
-                'service_name' => 'required',
                 'icon' => 'required|image|mimes:jpeg,png,jpg,gif',
+                'service_name' => [
+                    'required',
+                    'max:50',
+                    Rule::unique('daily_help_service', 'service_name')
+                        ->whereNull('deleted_at'),
+                ],
             ], $messages);
         }else{
             $validator = Validator::make($request->all(), [
-                'service_name' => 'required',
                 'icon' => 'image|mimes:jpeg,png,jpg,gif',
+                'service_name' => [
+                    'required',
+                    'max:50',
+                    Rule::unique('daily_help_service', 'service_name')
+                        ->ignore($request->id,'daily_help_service_id')
+                        ->whereNull('deleted_at'),
+                ],
             ], $messages);
         }
 

@@ -505,7 +505,7 @@
             var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
             if ($.inArray(fileType, validImageTypes) < 0) {
                 $('#profilepic-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
-                var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                var default_image = "{{ asset('image/avatar.png') }}";
                 $('#profilepic_image_show').attr('src', default_image);
             }
             else {

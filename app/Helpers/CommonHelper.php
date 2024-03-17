@@ -88,6 +88,8 @@ function getModulesArray()
         10 => 'Subscription Order',
         11 => 'Order Payment',
         12 => 'Company Profile',
+        13 => 'Service Vendor',
+        14 => 'Daily Help Service',
     ];
 }
 

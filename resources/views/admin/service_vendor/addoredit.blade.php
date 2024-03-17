@@ -13,37 +13,31 @@
                     <div class="row">
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Vendor Company Name <span class="text-danger">*</span></label>
+                                <label class="text-label">Vendor<span class="text-danger">*</span></label>
                                 <input type="text" name="vendor_company_name" id="vendor_company_name" class="form-control"
-                                    placeholder="Vendor Company Name">
+                                    placeholder="Vendor">
                                 <div id="vendor_company_name-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
                             </div>
                         </div>
-
-
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
                                 <label class="text-label">Service Type <span class="text-danger">*</span></label>
                                 <select class="single-select-placeholder js-states" name="service_type">
                                     <option value="1">Delivery</option>
                                     <option value="2">Cab</option>
-                                    <option value="3">Other</option>
                                 </select>
                             </div>
                         </div>
-
-
-
                         <div class="col-lg-12 mb-2">
                             <div class="form-group ">
-                                <label class="col-form-label" for="file">File
+                                <label class="col-form-label" for="file">Logo <span class="text-danger">*</span>
                                 </label>
                                 <input type="file" class="form-control-file" id="file" onchange=""
                                     name="file">
                                 <div id="file-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                 <img src="{{ asset('image/avtar.png') }}" class=""
-                                    id="file_image_show" height="100px" width="100px"
+                                    id="file_image_show" height="100px" width="150px"
                                     style="margin-top: 10px;">
                             </div>
                         </div>

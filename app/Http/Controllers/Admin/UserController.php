@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -76,23 +77,41 @@ class UserController extends Controller
             'email.required' => 'Please provide a Email Address.',
             'password.required' => 'Please provide a Password.',
         ];
-        if(!isset($request->id)){
-            $validator = Validator::make($request->all(), [
-                'profile_pic' => 'image|mimes:jpeg,png,jpg',
-                'full_name' => 'required|max:70',
-                'mobile_no' => 'required|numeric|digits:10|unique:user,mobile_no,NULL,id,deleted_at,NULL',
-                'email' => 'required|email|max:50|unique:user,email,NULL,id,deleted_at,NULL',
-                'password' => 'required|max:255',
-            ], $messages);
-        }else{
-            $validator = Validator::make($request->all(), [
-                'profile_pic' => 'image|mimes:jpeg,png,jpg',
-                'full_name' => 'required|max:70',
-                'mobile_no' => 'required|numeric|digits:10',
-                'email' => 'required|email|max:50',
-            ], $messages);
+        $rules = [
+            'profile_pic' => $request->has('profile_pic') ? 'image|mimes:jpeg,png,jpg' : '',
+            'full_name' => 'required|max:70',
+        ];
+        if ($request->has('id') && $request->has('email')) {
+            $rules['email'] = [
+                'required',
+                'email',
+                'max:50',
+                Rule::unique('user')->ignore($request->id,'user_id')->whereNull('deleted_at'),
+            ];
+        } elseif ($request->has('email')) {
+            $rules['email'] = [
+                'required',
+                'email',
+                'max:50',
+                Rule::unique('user')->whereNull('deleted_at'),
+            ];
         }
-
+        if ($request->has('id') && $request->has('mobile_no')) {
+            $rules['mobile_no'] = [
+                'required',
+                'numeric',
+                'digits:10',
+                Rule::unique('user')->ignore($request->id,'user_id')->whereNull('deleted_at'),
+            ];
+        } elseif ($request->has('mobile_no')) {
+            $rules['mobile_no'] = [
+                'required',
+                'numeric',
+                'digits:10',
+                Rule::unique('user')->whereNull('deleted_at'),
+            ];
+        }
+        $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }

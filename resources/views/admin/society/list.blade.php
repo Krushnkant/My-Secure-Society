@@ -506,8 +506,6 @@
                                     $("#city-dropdown").append('<option data-value="' + value.city_id +
                                         '" value="' + value.city_id + '">' + value.city_name + '</option>');
                                 });
-
-                                // Set the selected city in the city dropdown
                                 $('#city-dropdown').val(data.city_id).trigger('change');
                             }
                         });

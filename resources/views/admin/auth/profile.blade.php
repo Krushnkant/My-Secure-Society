@@ -8,13 +8,13 @@
         </div>
     </div>
     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
-        
+
     </div>
 @endsection
 @section('content')
-               
+
     <div class="row">
-        
+
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
@@ -27,7 +27,7 @@
                                 </li>
                             </ul>
                             <div class="tab-content">
-                               
+
                                 <div id="update-profile" class="tab-pane fade active show">
                                     <div class="pt-3">
                                         <div class="settings-form">
@@ -35,38 +35,36 @@
                                                 {{ csrf_field() }}
                                                 <div class="form-row">
                                                     <div class="form-group col-md-6">
+                                                        <label class="col-form-label" for="profilePic">Profile Image
+                                                        </label>
+                                                        <input type="file" class="form-control-file" id="profile_pic" onchange=""
+                                                            name="profile_pic">
+                                                        <div id="profilepic-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <img src="{{ isset($profile->profile_pic_url) ? asset($profile->profile_pic_url) : asset('image/avtar.png') }}" class="" id="profilepic_image_show" height="100px" width="100px"
+                                                            style="margin-top: 10px;">
+                                                    </div>
+                                                    <div class="form-group col-md-12">
                                                         <label class="text-label">Full Name <span class="text-danger">*</span></label>
                                                         <input type="text" name="full_name" id="full_name" class="form-control" placeholder="Full Name" value="{{ isset($profile->full_name)?$profile->full_name:'' }}">
                                                         <div id="full_name-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                                     </div>
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-12">
                                                         <label class="text-label">Email Address <span class="text-danger">*</span></label>
                                                             <div class="input-group">
                                                                 <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" value="{{ isset($profile->email)?$profile->email:'' }}">
                                                                 <div id="email-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                                             </div>
                                                     </div>
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-12">
                                                         <label class="text-label">Mobile Number <span class="text-danger">*</span></label>
                                                         <div class="input-group">
                                                             <input type="number" name="mobile_no" id="mobile_no" class="form-control" placeholder="Mobile Number" value="{{ isset($profile->mobile_no)?$profile->mobile_no:'' }}">
                                                             <div id="mobile_no-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label class="text-label">Blood Group <span class="text-danger">*</span></label>
-                                                        <select class="single-select-placeholder js-states" name="blood_group">
-                                                            <option value="A+" {{ old('blood_group', isset($profile->blood_group) ? $profile->blood_group : '') === 'A+' ? 'selected' : '' }}>A+</option>
-                                                            <option value="A-" {{ old('blood_group', isset($profile->blood_group) ? $profile->blood_group : '') === 'A-' ? 'selected' : '' }}>A-</option>
-                                                            <option value="B+" {{ old('blood_group', isset($profile->blood_group) ? $profile->blood_group : '') === 'B+' ? 'selected' : '' }}>B+</option>
-                                                            <option value="B-" {{ old('blood_group', isset($profile->blood_group) ? $profile->blood_group : '') === 'B-' ? 'selected' : '' }}>B-</option>
-                                                            <option value="O+" {{ old('blood_group', isset($profile->blood_group) ? $profile->blood_group : '') === 'O+' ? 'selected' : '' }}>O+</option>
-                                                            <option value="O-" {{ old('blood_group', isset($profile->blood_group) ? $profile->blood_group : '') === 'O-' ? 'selected' : '' }}>O-</option>
-                                                            <option value="AB+" {{ old('blood_group', isset($profile->blood_group) ? $profile->blood_group : '') === 'AB+' ? 'selected' : '' }}>AB+</option>
-                                                            <option value="AB-" {{ old('blood_group', isset($profile->blood_group) ? $profile->blood_group : '') === 'AB-' ? 'selected' : '' }}>AB-</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-12">
                                                         <label class="text-label">Gender <span class="text-danger">*</span></label>
                                                         <div class="input-group">
                                                             <label class="radio-inline">
@@ -78,17 +76,12 @@
                                                             </label>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label class="col-form-label" for="profilePic">Profile Image
-                                                        </label>
-                                                        <input type="file" class="form-control-file" id="profile_pic" onchange=""
-                                                            name="profile_pic">
-                                                        <div id="profilepic-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
-                                                        <img src="{{ isset($profile->profile_pic_url) ? asset($profile->profile_pic_url) : asset('image/avtar.png') }}" class="" id="profilepic_image_show" height="100px" width="100px"
-                                                            style="margin-top: 10px;">
-                                                    </div>
+
                                                 </div>
-                                                <button type="button" id="saveProfileBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
+                                                <div class="mt-5 btn-page">
+                                                    <button type="button" id="saveProfileBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
+                                                </div>
+
                                             </form>
                                         </div>
                                     </div>
@@ -105,7 +98,7 @@
                                                             <input type="password" class="form-control" id="password" name="password" placeholder="Password">
                                                             <div id="password-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                                                         </div>
-                                                     
+
                                                     </div>
                                                 </div>
                                                 <div class="form-row">
@@ -117,7 +110,10 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <button type="button" id="savePasswordBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
+                                                <div class="mt-5 btn-page">
+                                                    <button type="button" id="savePasswordBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
+                                                </div>
+
                                             </form>
                                         </div>
                                     </div>
@@ -129,7 +125,7 @@
             </div>
         </div>
     </div>
-            
+
 @endsection
 
 @section('js')
@@ -140,6 +136,13 @@
 
     <script  type="text/javascript">
         $(".single-select-placeholder").select2({
+        });
+
+        $('#profileupdateform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                $('#saveProfileBtn').click();
+            }
         });
 
         $('body').on('click', '#saveProfileBtn', function() {
@@ -205,6 +208,12 @@
             });
         });
 
+        $('#changepassowrdform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                $('#savePasswordBtn').click();
+            }
+        });
 
         $('body').on('click', '#savePasswordBtn', function() {
            var btn = $(this);
@@ -267,7 +276,7 @@
             var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
             if ($.inArray(fileType, validImageTypes) < 0) {
                 $('#profile_pic-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
-                var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                var default_image = "{{ asset('image/avatar.png') }}";
                 $('#profilepic_image_show').attr('src', default_image);
             }
             else {
@@ -278,6 +287,6 @@
                 reader.readAsDataURL(this.files[0]);
             }
         });
-       
+
     </script>
 @endsection

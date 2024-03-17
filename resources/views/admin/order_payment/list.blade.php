@@ -124,6 +124,9 @@
                     {
                         width: "10%",
                         data: 'amount_paid',
+                        render: function(data, type, row) {
+                           return 'Rs. '+data
+                        }
                     },
                     {
                         width: "10%",

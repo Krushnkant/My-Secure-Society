@@ -8,6 +8,7 @@ use App\Models\ServiceVendorFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class ServiceVendorController extends Controller
 {
@@ -50,21 +51,32 @@ class ServiceVendorController extends Controller
 
     public function addorupdate(Request $request){
         $messages = [
+            'file.required' =>'Please provide a logo',
             'file.image' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
             'file.mimes' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
-            'vendor_company_name.required' => 'Please provide a FullName',
-
+            'vendor_company_name.required' => 'Please provide a vendor',
         ];
         if(!isset($request->id)){
             $validator = Validator::make($request->all(), [
-                'file' => 'image|mimes:jpeg,png,jpg',
-                'vendor_company_name' => 'required',
+                'file' => 'required|image|mimes:jpeg,png,jpg',
+                'vendor_company_name' => [
+                    'required',
+                    'max:50',
+                    Rule::unique('service_vendor', 'vendor_company_name')
+                        ->whereNull('deleted_at'),
+                ],
 
             ], $messages);
         }else{
             $validator = Validator::make($request->all(), [
                 'file' => 'image|mimes:jpeg,png,jpg',
-                'vendor_company_name' => 'required',
+                'vendor_company_name' => [
+                    'required',
+                    'max:50',
+                    Rule::unique('service_vendor', 'vendor_company_name')
+                        ->ignore($request->id,'service_vendor_id')
+                        ->whereNull('deleted_at'),
+                ],
 
             ], $messages);
         }

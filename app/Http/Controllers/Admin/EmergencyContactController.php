@@ -53,8 +53,8 @@ class EmergencyContactController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'mobile_no' => 'required',
+            'name' => 'required|max:100',
+            'mobile_no' => 'required|numeric',
         ], $messages);
 
         if ($validator->fails()) {

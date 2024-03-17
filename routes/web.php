@@ -50,15 +50,7 @@ Route::post('get-cities-by-state', [CountryStateCityController::class, 'getCity'
 Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'admin.'],function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Business Category
-    Route::get('businesscategory',[BusinessCategoryController::class,'index'])->name('businesscategory.list');
-    Route::post('businesscategory/listdata',[BusinessCategoryController::class,'listdata'])->name('businesscategory.listdata');
-    Route::post('businesscategory/addorupdate',[BusinessCategoryController::class,'addorupdate'])->name('businesscategory.addorupdate');
-    Route::get('businesscategory/{id}/edit',[BusinessCategoryController::class,'edit'])->name('businesscategory.edit');
-    Route::get('businesscategory/{id}/delete',[BusinessCategoryController::class,'delete'])->name('businesscategory.delete');
-    Route::get('businesscategory/changestatus/{id}',[BusinessCategoryController::class,'changestatus'])->name('businesscategory.changestatus');
-    Route::post('businesscategory/multipledelete', [BusinessCategoryController::class,'multipledelete'])->name('businesscategory.multipledelete');
-    Route::get('businesscategory/ajaxlist/{id?}',[BusinessCategoryController::class,'ajaxlist'])->name('businesscategory.ajaxlist');
+
 
     // Designation
     Route::get('designation',[DesignationController::class,'index'])->name('designation.list');
@@ -72,6 +64,16 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
     // Designation Permission
     Route::get('designation/{id}/permission',[DesignationController::class,'permissiondesignation'])->name('designation.permissiondesignation');
     Route::post('designation/savepermission',[DesignationController::class,'savepermission'])->name('designation.savepermission');
+
+    // Business Category
+    Route::get('businesscategory',[BusinessCategoryController::class,'index'])->name('businesscategory.list');
+    Route::post('businesscategory/listdata',[BusinessCategoryController::class,'listdata'])->name('businesscategory.listdata');
+    Route::post('businesscategory/addorupdate',[BusinessCategoryController::class,'addorupdate'])->name('businesscategory.addorupdate');
+    Route::get('businesscategory/{id}/edit',[BusinessCategoryController::class,'edit'])->name('businesscategory.edit');
+    Route::get('businesscategory/{id}/delete',[BusinessCategoryController::class,'delete'])->name('businesscategory.delete');
+    Route::get('businesscategory/changestatus/{id}',[BusinessCategoryController::class,'changestatus'])->name('businesscategory.changestatus');
+    Route::post('businesscategory/multipledelete', [BusinessCategoryController::class,'multipledelete'])->name('businesscategory.multipledelete');
+    Route::get('businesscategory/ajaxlist/{id?}',[BusinessCategoryController::class,'ajaxlist'])->name('businesscategory.ajaxlist');
 
     // Users
     Route::get('users',[UserController::class,'index'])->name('users.list');

@@ -32,8 +32,8 @@
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
-                                        <th>Service Icon</th>
-                                        <th>Service Name</th>
+                                        <th>Icon</th>
+                                        <th>Service</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -41,8 +41,8 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th>Service Icon</th>
-                                        <th>Service Name</th>
+                                        <th>Icon</th>
+                                        <th>Service</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -253,7 +253,7 @@
             $("#DailyHelpModal").find("#save_newBtn").removeAttr('data-id');
             $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-id');
             $("#service_name").focus();
-            var default_image = "{{ asset('image/avtar.png') }}";
+            var default_image = "{{ asset('image/placeholder.png') }}";
             $('#icon_image_show').attr('src', default_image);
         });
 
@@ -329,7 +329,7 @@
                             $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#DailyHelpModal").find("#save_newBtn").removeAttr('data-id');
                             $("#DailyHelpModal").find("#save_closeBtn").removeAttr('data-id');
-                            var default_image = "{{ asset('image/avtar.png') }}";
+                            var default_image = "{{ asset('image/placeholder.png') }}";
                             $('#icon_image_show').attr('src', default_image);
                             $("#service_name").focus();
                             if (res.action == 'add') {
@@ -381,7 +381,7 @@
                 $('#id').val(data.daily_help_service_id);
                 $('#service_name').val(data.service_name);
                 if(data.service_icon==null){
-                    var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                    var default_image = "{{ asset('image/placeholder.png') }}";
                     $('#icon_image_show').attr('src', default_image);
                 }
                 else{
@@ -468,7 +468,7 @@
             var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
             if ($.inArray(fileType, validImageTypes) < 0) {
                 $('#icon-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
-                var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                var default_image = "{{ asset('image/placeholder.png') }}";
                 $('#icon_image_show').attr('src', default_image);
             }
             else {

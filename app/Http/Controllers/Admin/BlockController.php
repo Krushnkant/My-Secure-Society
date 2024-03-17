@@ -56,13 +56,13 @@ class BlockController extends Controller
             'block_name.required' => 'Please provide a block name',
             'block_name.unique' => 'The block name is already taken for this society',
         ];
-    
+
         $validator = Validator::make($request->all(), [
             'block_name' => [
                 'required',
                 'max:100',
                 Rule::unique('society_block')->where(function ($query) use ($request) {
-                    return $query->where('society_id', $request->society_id);
+                    return $query->where('society_id', $request->society_id)->whereNull('deleted_at');
                 }),
             ],
         ], $messages);

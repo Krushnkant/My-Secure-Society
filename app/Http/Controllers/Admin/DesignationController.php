@@ -9,6 +9,7 @@ use App\Models\Designation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class DesignationController extends Controller
 {
@@ -56,7 +57,13 @@ class DesignationController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'designation_name' => 'required|max:255|unique:company_designation,designation_name,'. ($request->id ?? 'NULL') .',company_designation_id',
+            'designation_name' => [
+                'required',
+                'max:255',
+                Rule::unique('company_designation', 'designation_name')
+                ->ignore($request->id, 'company_designation_id')
+                    ->whereNull('deleted_at'),
+            ],
         ], $messages);
 
         if ($validator->fails()) {

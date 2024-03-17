@@ -7,6 +7,7 @@ use App\Models\BusinessCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class BusinessCategoryController extends Controller
 {
@@ -53,9 +54,15 @@ class BusinessCategoryController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'business_category_name' => 'required|max:50|unique:business_category,business_category_name,'. ($request->id ?? 'NULL') .',business_category_id',
+            'business_category_name' => [
+                'required',
+                'max:50',
+                Rule::unique('business_category', 'business_category_name')
+                    ->ignore($request->id,'business_category_id')
+                    ->whereNull('deleted_at'),
+            ],
         ], $messages);
-       
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }
@@ -91,12 +98,12 @@ class BusinessCategoryController extends Controller
 
     public function ajaxlist(Request $request,$id = null){
 
-        
+
 
         $categories = BusinessCategory::where('estatus',1);
         if ($id !== null) {
             $childCategories = $this->getAllChildCategories($id);
-            
+
             $categories = $categories->where('business_category_id','!=',$id);
             $categories = $categories->whereNotIn('business_category_id',$childCategories);
         }
@@ -107,7 +114,7 @@ class BusinessCategoryController extends Controller
     private function getAllChildCategories($categoryId)
     {
         $categories = BusinessCategory::where('parent_business_category_id', $categoryId)->get();
-      
+
         $childCategories = [];
         $childCategories = [$categoryId];
         foreach ($categories as $category) {

@@ -33,8 +33,8 @@
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
-                                        <th>Name</th>
-                                        <th>Mobile No.</th>
+                                        <th>Help Line For</th>
+                                        <th>Help Line No</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -42,8 +42,8 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th>Name</th>
-                                        <th>Mobile No.</th>
+                                        <th>Help Line For</th>
+                                        <th>Help Line No</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -126,7 +126,7 @@
                         width: "10%",
                         orderable: false,
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(1)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(4)));
                             if (is_edit) {
                                 var estatus = `<label class="switch">
                                         <input type="checkbox" id="statuscheck_${row.emergency_contact_id }" onchange="changeStatus(${row.emergency_contact_id })" value="${data}" ${data == 1 ? 'checked' : ''}>
