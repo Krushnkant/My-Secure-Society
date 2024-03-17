@@ -4,8 +4,15 @@
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>{{ $block->society->society_name }} {{ $block->block_name }} Flat</h4>
+            <h4>Flat in {{ $block?->block_name }}  for {{ $block?->society?->society_name }}</h4>
         </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('admin.society.list') }}">Society</a></li>
+            <li class="breadcrumb-item active"><a href="{{ route('admin.block.list', ['id' => $block?->society?->society_id]) }}">Block</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Flat</a></li>
+        </ol>
     </div>
 @endsection
 
@@ -34,7 +41,7 @@
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
                                         <th>Flat No</th>
-                                        <th>Empty</th>
+                                        {{-- <th>Empty</th> --}}
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -43,7 +50,7 @@
                                     <tr>
                                         <th></th>
                                         <th>Flat No</th>
-                                        <th>Empty</th>
+                                        {{-- <th>Empty</th> --}}
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -101,9 +108,10 @@
                     data: function(data) {
                         data.search = $('input[type="search"]').val();
                         data.tab_type = tab_type;
+                        data.block_id = "{{ $id }}";
                     }
                 },
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
@@ -118,17 +126,17 @@
                         width: "20%",
                         data: 'flat_no',
                     },
-                    {
-                        width: "20%",
-                        data: 'is_empty',
-                        orderable: false,
-                        render: function(data, type, row) {
-                            if (data == 1) {
-                                return `<span class="badge badge-success">Yes</span>`;
-                            }
-                            return `<span class="badge badge-danger">No</span>`;;
-                        }
-                    },
+                    // {
+                    //     width: "20%",
+                    //     data: 'is_empty',
+                    //     orderable: false,
+                    //     render: function(data, type, row) {
+                    //         if (data == 1) {
+                    //             return `<span class="badge badge-success">Yes</span>`;
+                    //         }
+                    //         return `<span class="badge badge-danger">No</span>`;;
+                    //     }
+                    // },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
@@ -201,7 +209,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this Block !!",
+                                text: "You will not be able to recover this Flat !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -248,7 +256,7 @@
         }
 
         $('body').on('click', '#AddBtn_Flat', function() {
-            $('#FlatModel').find('.modal-title').html("Add Block");
+            $('#FlatModel').find('.modal-title').html("Add Flat");
             $("#FlatModel").find('form').trigger('reset');
             $('.single-select-placeholder').trigger('change');
             $('#id').val("");
@@ -385,14 +393,14 @@
                     if (res.status == 200 && res.action == 'deactive') {
                         $("#statuscheck_" + id).val(2);
                         $("#statuscheck_" + id).prop('checked', false);
-                        toastr.success("Block deactivated successfully!", 'Success', {
+                        toastr.success("Flat deactivated successfully!", 'Success', {
                             timeOut: 5000
                         });
                     }
                     if (res.status == 200 && res.action == 'active') {
                         $("#statuscheck_" + id).val(1);
                         $("#statuscheck_" + id).prop('checked', 1);
-                        toastr.success("Block activated successfully!", 'Success', {
+                        toastr.success("Flat activated successfully!", 'Success', {
                             timeOut: 5000
                         });
                     }
@@ -407,7 +415,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this Block !!",
+                    text: "You will not be able to recover this Flat !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",

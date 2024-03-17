@@ -12,6 +12,10 @@ use App\Models\OrderPayment;
 class OrderPaymentController extends Controller
 {
     public function index($id) {
+        $order = SubscriptionOrder::find($id);
+        if($order == null){
+            return view('admin.404');
+        }
         return view('admin.order_payment.list',compact('id'));
     }
 
@@ -26,7 +30,7 @@ class OrderPaymentController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
-        $query = OrderPayment::select('*');
+        $query = OrderPayment::select('*')->where('subscription_order_id',$request->order_id);
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('order_payment_id', 'like', "%".$search."%");

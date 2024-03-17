@@ -39,8 +39,8 @@
                                         {{-- <th>Sub Total</th>
                                         <th>GST Percent</th> --}}
                                         <th>Total Amount</th>
-                                        <th>Total Paid Amount</th>
-                                        <th>Total Outstanding Amount</th>
+                                        <th>Paid Amount</th>
+                                        <th>Outstanding Amount</th>
                                         <th>Order Status</th>
                                         <th>Due Date</th>
                                         <th>Action</th>
@@ -54,8 +54,8 @@
                                         {{-- <th>Sub Total</th>
                                         <th>GST Percent</th> --}}
                                         <th>Total Amount</th>
-                                        <th>Total Paid Amount</th>
-                                        <th>Total Outstanding Amount</th>
+                                        <th>Paid Amount</th>
+                                        <th>Outstanding Amount</th>
                                         <th>Order Status</th>
                                         <th>Due Date</th>
                                         <th>Action</th>
@@ -79,6 +79,7 @@
     <!-- Datatable -->
     <script src="{{ asset('/vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('/js/plugins-init/datatables.init.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     <script type="text/javascript">
         $("#society-dropdown").select2({
@@ -123,7 +124,7 @@
                     }
                 },
 
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
@@ -156,14 +157,23 @@
                     {
                         width: "10%",
                         data: 'total_amount',
+                        render: function(data, type, row) {
+                           return 'Rs. '+data
+                        }
                     },
                     {
                         width: "10%",
                         data: 'total_paid_amount',
+                        render: function(data, type, row) {
+                           return 'Rs. '+data
+                        }
                     },
                     {
                         width: "10%",
                         data: 'total_outstanding_amount',
+                        render: function(data, type, row) {
+                           return 'Rs. '+data
+                        }
                     },
                     {
                         data: 'order_status', // Assume 'status' is the field in your database for the status
@@ -187,6 +197,11 @@
                     {
                         width: "10%",
                         data: 'due_date',
+                        render: function(data, type, row) {
+                            // Assuming the 'due_date' is in a format that Moment.js can parse
+                            var formattedDate = moment(row.due_date).format('DD-MM-YYYY');
+                            return formattedDate;
+                        }
 
                     },
                     {
@@ -244,7 +259,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this Flat !!",
+                                text: "You will not be able to recover this Order !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -506,38 +521,12 @@
             });
         });
 
-        function changeStatus(id) {
-            $.ajax({
-                type: 'GET',
-                url: "{{ url('admin/society/changestatus') }}" + '/' + id,
-                success: function(res) {
-                    if (res.status == 200 && res.action == 'deactive') {
-                        $("#statuscheck_" + id).val(2);
-                        $("#statuscheck_" + id).prop('checked', false);
-                        toastr.success("Society deactivated successfully!", 'Success', {
-                            timeOut: 5000
-                        });
-                    }
-                    if (res.status == 200 && res.action == 'active') {
-                        $("#statuscheck_" + id).val(1);
-                        $("#statuscheck_" + id).prop('checked', 1);
-                        toastr.success("Society activated successfully!", 'Success', {
-                            timeOut: 5000
-                        });
-                    }
-                },
-                error: function(data) {
-                    toastr.error("Please try again", 'Error', {
-                        timeOut: 5000
-                    });
-                }
-            });
-        }
+ 
 
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this Flat !!",
+                    text: "You will not be able to recover this Order !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",
@@ -550,10 +539,10 @@
                         var remove_id = $(this).attr('data-id');
                         $.ajax({
                             type: 'GET',
-                            url: "{{ url('admin/society') }}" + '/' + remove_id + '/delete',
+                            url: "{{ url('admin/subscriptionorder') }}" + '/' + remove_id + '/delete',
                             success: function(res) {
                                 if (res.status == 200) {
-                                    toastr.success("User deleted successfully!", 'Success', {
+                                    toastr.success("Order deleted successfully!", 'Success', {
                                         timeOut: 5000
                                     });
                                     getTableData('', 1);

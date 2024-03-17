@@ -102,7 +102,7 @@
                         data.tab_type = tab_type;
                     }
                 },
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{

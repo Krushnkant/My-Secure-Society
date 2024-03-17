@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Block;
 use App\Models\Country;
 use App\Models\Society;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ class SocietyController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
-        $query = Society::select('*');
+        $query = Society::select('*')->with('city','state','country');
         $search = $request->search;
         $query = $query->where(function ($query) use ($search) {
             $query->orWhere('society_name', 'like', "%" . $search . "%");
@@ -56,14 +57,19 @@ class SocietyController extends Controller
             'landmark.required' => 'Please provide a landmark',
             'pin_code.required' => 'Please provide a pin code',
             'city_id.required' => 'Please provide a city',
+            'latitude.required' => 'Please provide a latitude',
+            'longitude.required' => 'Please provide a longitude',
             'state_id.required' => 'Please provide a state',
             'country_id.required' => 'Please provide a country',
         ];
         $validator = Validator::make($request->all(), [
-            'society_name' => 'required',
-            'street_address1' => 'required',
-            'landmark' => 'required',
-            'pin_code' => 'required',
+            'society_name' => 'required|max:100',
+            'street_address1' => 'required|max:255',
+            'street_address2' => 'max:255',
+            'landmark' => 'required|max:50',
+            'pin_code' => 'required|numeric',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
             'city_id' => 'required',
             'state_id' => 'required',
             'country_id' => 'required',
@@ -74,23 +80,27 @@ class SocietyController extends Controller
         if (!isset($request->id)) {
             $society = new Society();
             $society->created_by = Auth::user()->user_id;
+            $action = "add";
         } else {
             $society = Society::find($request->id);
             if (!$society) {
                 return response()->json(['status' => '400']);
             }
+            $action = "update";
         }
         $society->society_name = $request->society_name;
         $society->street_address1 = $request->street_address1;
         $society->street_address2 = $request->street_address2;
         $society->landmark = $request->landmark;
         $society->pin_code = $request->pin_code;
+        $society->latitude = $request->latitude;
+        $society->longitude = $request->longitude;
         $society->city_id = $request->city_id;
         $society->state_id = $request->state_id;
         $society->country_id = $request->country_id;
         $society->updated_by = Auth::user()->user_id;
         $society->save();
-        return response()->json(['status' => '200', 'action' => 'add']);
+        return response()->json(['status' => '200', 'action' => $action]);
     }
     public function edit($id)
     {
@@ -101,6 +111,10 @@ class SocietyController extends Controller
     {
         $society = Society::find($id);
         if ($society) {
+            $block = Block::where('society_id', $id)->exists();
+            if ($block) {
+                return response()->json(['status' => '300', 'message' => 'Cannot delete society. It is associated with one or more society block.']);
+            }
             $society->estatus = 3;
             $society->save();
             $society->delete();
@@ -129,10 +143,13 @@ class SocietyController extends Controller
         $ids = $request->input('ids');
         $societies = Society::whereIn('society_id', $ids)->get();
         foreach ($societies as $societie) {
-            $societie->estatus = 3;
-            $societie->save();
+            $block = Block::where('society_id', $societie->society_id)->exists();
+            if (!$block) {
+                $societie->estatus = 3;
+                $societie->save();
+                $societie->delete();
+            }
         }
-        Society::whereIn('society_id', $ids)->delete();
         return response()->json(['status' => '200']);
     }
 }

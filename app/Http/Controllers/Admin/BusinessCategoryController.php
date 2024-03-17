@@ -48,12 +48,14 @@ class BusinessCategoryController extends Controller
     public function addorupdate(Request $request){
         $messages = [
             'business_category_name.required' =>'Please provide a business category name',
+            'business_category_name.max' =>'The category name must not exceed :max characters.',
+            'business_category_name.unique' =>'The category name has already been taken.',
         ];
 
         $validator = Validator::make($request->all(), [
-            'business_category_name' => 'required',
+            'business_category_name' => 'required|max:50|unique:business_category,business_category_name,'. ($request->id ?? 'NULL') .',business_category_id',
         ], $messages);
-
+       
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }
@@ -89,12 +91,31 @@ class BusinessCategoryController extends Controller
 
     public function ajaxlist(Request $request,$id = null){
 
+        
+
         $categories = BusinessCategory::where('estatus',1);
         if ($id !== null) {
+            $childCategories = $this->getAllChildCategories($id);
+            
             $categories = $categories->where('business_category_id','!=',$id);
+            $categories = $categories->whereNotIn('business_category_id',$childCategories);
         }
         $categories = $categories->get();
         return response()->json(['categories' => $categories]);
+    }
+
+    private function getAllChildCategories($categoryId)
+    {
+        $categories = BusinessCategory::where('parent_business_category_id', $categoryId)->get();
+      
+        $childCategories = [];
+        $childCategories = [$categoryId];
+        foreach ($categories as $category) {
+            $childCategories[] = $category->business_category_id;
+            $childCategories = array_merge($childCategories, $this->getAllChildCategories($category->business_category_id));
+        }
+
+        return $childCategories;
     }
 
     public function edit($id){
@@ -105,6 +126,13 @@ class BusinessCategoryController extends Controller
     public function delete($id){
         $category = BusinessCategory::find($id);
         if ($category){
+
+            $businessProfiles = \DB::table('business_profile_category')
+            ->where('business_category_id', $id)
+            ->exists();
+            if ($businessProfiles) {
+                return response()->json(['status' => '300', 'message' => 'Cannot delete category. It is associated with one or more business profiles.']);
+            }
             $category->estatus = 3;
             $category->save();
             $category->delete();
@@ -132,10 +160,15 @@ class BusinessCategoryController extends Controller
         $ids = $request->input('ids');
         $categories = BusinessCategory::whereIn('business_category_id', $ids)->get();
         foreach ($categories as $category) {
-            $category->estatus = 3;
-            $category->save();
+            $businessProfiles = \DB::table('business_profile_category')
+            ->where('business_category_id', $category->business_category_id)
+            ->exists();
+            if (!$businessProfiles) {
+                $category->estatus = 3;
+                $category->save();
+                $category->delete();
+            }
         }
-        BusinessCategory::whereIn('business_category_id', $ids)->delete();
 
         return response()->json(['status' => '200']);
     }

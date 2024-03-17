@@ -168,6 +168,9 @@ class DesignationController extends Controller
     {
         $modules = Helpers::getModulesArray();
         $designation = Designation::select('designation_name')->find($id);
+        if($designation == null){
+            return view('admin.404');
+        }
         $designation_permissions = CompanyDesignationAuthority::where('company_designation_id', $id)->orderBy('eAuthority', 'asc')->get();
        // $user_permissions = CompanyDesignationAuthority::join('project_pages', 'user_permissions.project_page_id', '=', 'project_pages.id')->select('user_permissions.*', 'project_pages.label')->where('user_permissions.user_id', $id)->orderBy('user_permissions.project_page_id', 'asc')->get();
         return view('admin.designation.permission', compact('designation_permissions','modules','designation'));

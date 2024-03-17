@@ -114,7 +114,7 @@
                     }
                 },
 
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
@@ -130,8 +130,12 @@
                         data: 'society_name',
                     },
                     {
-                        width: "20%",
-                        data: 'street_address1',
+                        width: "35%", // Adjust width as needed
+                        data: null,
+                        render: function(data, type, row) {
+                            // Concatenate address fields
+                            return `${row.street_address1},${row.landmark}, ${row.city.city_name}, ${row.state.state_name}, ${row.country.country_name}, ${row.pin_code}`;
+                        }
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
@@ -268,8 +272,11 @@
             $('#id').val("");
             $('#society_name-error').html("");
             $('#street_address1-error').html("");
+            $('#street_address2-error').html("");
             $('#landmark-error').html("");
             $('#pin_code-error').html("");
+            $('#latitude-error').html("");
+            $('#longitude-error').html("");
             $('#city_id-error').html("");
             $('#state_id-error').html("");
             $('#country_id-error').html("");
@@ -317,6 +324,11 @@
                         } else {
                             $('#street_address1-error').hide();
                         }
+                        if (res.errors.street_address2) {
+                            $('#street_address2-error').show().text(res.errors.street_address2);
+                        } else {
+                            $('#street_address2-error').hide();
+                        }
                         if (res.errors.landmark) {
                             $('#landmark-error').show().text(res.errors.landmark);
                         } else {
@@ -326,6 +338,16 @@
                             $('#pin_code-error').show().text(res.errors.pin_code);
                         } else {
                             $('#pin_code-error').hide();
+                        }
+                        if (res.errors.latitude) {
+                            $('#latitude-error').show().text(res.errors.latitude);
+                        } else {
+                            $('#latitude-error').hide();
+                        }
+                        if (res.errors.longitude) {
+                            $('#longitude-error').show().text(res.errors.longitude);
+                        } else {
+                            $('#longitude-error').hide();
                         }
                         if (res.errors.city_id) {
                             $('#city_id-error').show().text(res.errors.city_id);
@@ -370,8 +392,11 @@
                             $('#id').val("");
                             $('#society_name-error').html("");
                             $('#street_address1-error').html("");
+                            $('#street_address2-error').html("");
                             $('#landmark-error').html("");
                             $('#pin_code-error').html("");
+                            $('#latitude-error').html("");
+                            $('#longitude-error').html("");
                             $('#city_id-error').html("");
                             $('#state_id-error').html("");
                             $('#country_id-error').html("");
@@ -423,8 +448,11 @@
             $('#SocietyModal').find('.modal-title').html("Edit Society");
             $('#society_name-error').html("");
             $('#street_address1-error').html("");
+            $('#street_address2-error').html("");
             $('#landmark-error').html("");
             $('#pin_code-error').html("");
+            $('#latitude-error').html("");
+            $('#longitude-error').html("");
             $('#city_id-error').html("");
             $('#state_id-error').html("");
             $('#country_id-error').html("");
@@ -440,6 +468,8 @@
                 $('#street_address2').val(data.street_address2);
                 $('#landmark').val(data.landmark);
                 $('#pin_code').val(data.pin_code);
+                $('#latitude').val(data.latitude);
+                $('#longitude').val(data.longitude);
 
                 $('select[name="country_id"]').val(data.country_id).trigger('change');
 
@@ -538,6 +568,13 @@
                                         timeOut: 5000
                                     });
                                     getTableData('', 1);
+                                }
+                                if (res.status == 300) {
+                                    $(btn).find('.loadericonfa').hide();
+                                    $(btn).prop('disabled', false);
+                                    toastr.error(res.message, 'Error', {
+                                        timeOut: 5000
+                                    });
                                 }
 
                                 if (res.status == 400) {
