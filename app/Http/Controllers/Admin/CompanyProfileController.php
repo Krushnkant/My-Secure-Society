@@ -25,7 +25,7 @@ class CompanyProfileController extends Controller
             'profile_pic.mimes' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
             'company_name.required' => 'Please provide a society name',
             'gst_in_number.required' => 'Please provide a gst number',
-            'street_address1.required' => 'Please provide a street address 1',
+            'street_address1.required' => 'Please provide a street address',
             'landmark.required' => 'Please provide a landmark',
             'pin_code.required' => 'Please provide a pin code',
             'city_id.required' => 'Please provide a city',

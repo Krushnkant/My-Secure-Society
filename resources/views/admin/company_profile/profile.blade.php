@@ -20,6 +20,22 @@
                         {{ csrf_field() }}
                             <div class="row">
                                 <div class="col-lg-6 mb-2">
+                                    <div class="form-group ">
+                                        <label class="col-form-label" for="profile_pic">Logo
+                                        </label>
+                                        <input type="file" class="form-control-file" id="profile_pic" name="profile_pic">
+                                        <div id="profile_pic-error" class="invalid-feedback animated fadeInDown"
+                                            style="display: none;"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-2">
+                                    <div class="form-group ">
+                                        <img src="{{ asset(isset($company->logo_url)?$company->logo_url:'image/placeholder.png') }}" class=""
+                                            id="profilepic_image_show" height="100px" width="150px"
+                                            style="margin-top: 10px;">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-2">
                                     <div class="form-group">
                                         <label class="text-label" for="company_name">Company Name <span class="text-danger">*</span></label>
                                         <input type="text" name="company_name" id="company_name" class="form-control"
@@ -105,19 +121,7 @@
                                             style="display: none;"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 mb-2">
-                                    <div class="form-group ">
-                                        <label class="col-form-label" for="profile_pic">Logo
-                                        </label>
-                                        <input type="file" class="form-control-file" id="profile_pic" name="profile_pic">
-                                        <div id="profile_pic-error" class="invalid-feedback animated fadeInDown"
-                                            style="display: none;"></div>
-
-                                        <img src="{{ asset(isset($company->logo_url)?$company->logo_url:'image/avtar.png') }}" class=""
-                                            id="profilepic_image_show" height="100px" width="100px"
-                                            style="margin-top: 10px;">
-                                    </div>
-                                </div>
+                                
                             </div>
                             <input type="hidden" name="id" id="id" value="{{ isset($company->company_profile_id)?$company->company_profile_id:'' }}">
                             <input type="hidden" name="country" id="country_id" value="{{ isset($company->country_id)?$company->country_id:'' }}">

@@ -213,7 +213,6 @@
                                         selectedIds.push($(this).data('id'));
                                     });
 
-                                    // Perform AJAX request to delete selected rows
                                     $.ajax({
                                         url: "{{ route('admin.businesscategory.multipledelete') }}",
                                         type: "POST",
@@ -221,14 +220,14 @@
                                             ids: selectedIds
                                         },
                                         success: function(response) {
-                                            // Handle success response
-                                            console.log(response);
                                             toastr.success(
                                                 "Category deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            getTableData('', 1);
+                                            // getTableData('', 1);
+                                            $('#businesscategoryTable').DataTable().clear().draw();
+                                            $('#selectAll').prop('checked', false);
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
