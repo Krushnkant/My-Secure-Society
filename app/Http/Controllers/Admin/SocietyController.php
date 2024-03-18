@@ -53,7 +53,7 @@ class SocietyController extends Controller
     {
         $messages = [
             'society_name.required' => 'Please provide a society name',
-            'street_address1.required' => 'Please provide a street address 1',
+            'street_address1.required' => 'Please provide a street address',
             'landmark.required' => 'Please provide a landmark',
             'pin_code.required' => 'Please provide a pin code',
             'city_id.required' => 'Please provide a city',

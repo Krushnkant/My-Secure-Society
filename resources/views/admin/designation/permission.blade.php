@@ -28,19 +28,19 @@
                             {{ csrf_field() }}
                             <table class="table table-striped table-responsive-sm">
                                 <thead>
+                                    
+                                </thead>
+                                <thead class="">
                                     <tr>
                                         <th class="text-center">#</th>
                                         <th>Module</th>
-                                        <th class="text-center">Select All <input type="checkbox" id="selectAllCheckbox"></th>
-                                        <th class="text-center">View</th>
-                                        <th class="text-center">Add</th>
-                                        <th class="text-center">Edit</th>
-                                        <th class="text-center">Delete</th>
-                                        <th class="text-center">Print</th>
-                                        
+                                        <th class="text-center"> View <input type="checkbox" id="selectViewAllCheckbox"></th>
+                                        <th class="text-center"> Add <input type="checkbox" id="selectAddAllCheckbox"></th>
+                                        <th class="text-center"> Edit <input type="checkbox" id="selectEditAllCheckbox"></th>
+                                        <th class="text-center"> Delete <input type="checkbox" id="selectDeleteAllCheckbox"></th>
+                                        <th class="text-center"> Print <input type="checkbox" id="selectPrintAllCheckbox"></th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
                                     <?php $i = 1; ?>
                                     @foreach ($designation_permissions as $designation_permission)
@@ -51,7 +51,6 @@
                                         <tr>
                                             <th class="text-center">{{ $i }}</th>
                                             <td>{{ $modules[$i] }}</td>
-                                            <td></td>
                                             <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
                                                     value="{{ $designation_permission->can_view }}" name="canViewArr[]"
                                                     {{ $designation_permission->can_view == 1 ? 'checked' : '' }}
@@ -184,11 +183,52 @@
         });
 
         $(document).ready(function() {
-            $('#selectAllCheckbox').click(function() {
+    // Event handler for "View" column checkbox
+    $('#selectViewAllCheckbox').click(function() {
         var isChecked = $(this).prop('checked');
-        $('.permissionCheckBox').each(function() {
+        $('.permissionCheckBox[name="canViewArr[]"]').each(function() {
             if (!$(this).is(':disabled')) {
-                $(this).prop('checked', isChecked).val(1);
+                $(this).prop('checked', isChecked).val(isChecked ? 1 : 0);
+            }
+        });
+    });
+
+    // Event handler for "Add" column checkbox
+    $('#selectAddAllCheckbox').click(function() {
+        var isChecked = $(this).prop('checked');
+        $('.permissionCheckBox[name="canAddArr[]"]').each(function() {
+            if (!$(this).is(':disabled')) {
+                $(this).prop('checked', isChecked).val(isChecked ? 1 : 0);
+            }
+        });
+    });
+
+    // Event handler for "Edit" column checkbox
+    $('#selectEditAllCheckbox').click(function() {
+        var isChecked = $(this).prop('checked');
+        $('.permissionCheckBox[name="canEditArr[]"]').each(function() {
+            if (!$(this).is(':disabled')) {
+                $(this).prop('checked', isChecked).val(isChecked ? 1 : 0);
+            }
+        });
+    });
+
+    // Event handler for "Delete" column checkbox
+    $('#selectDeleteAllCheckbox').click(function() {
+        var isChecked = $(this).prop('checked');
+        $('.permissionCheckBox[name="canDeleteArr[]"]').each(function() {
+            if (!$(this).is(':disabled')) {
+                $(this).prop('checked', isChecked).val(isChecked ? 1 : 0);
+            }
+        });
+    });
+
+    // Event handler for "Print" column checkbox
+    $('#selectPrintAllCheckbox').click(function() {
+        var isChecked = $(this).prop('checked');
+        $('.permissionCheckBox[name="canPrintArr[]"]').each(function() {
+            if (!$(this).is(':disabled')) {
+                $(this).prop('checked', isChecked).val(isChecked ? 1 : 0);
             }
         });
     });
