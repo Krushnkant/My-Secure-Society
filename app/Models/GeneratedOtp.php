@@ -9,7 +9,13 @@ class GeneratedOtp extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'otp_code' => 'string',
+    ];
+
     protected $table = 'generated_otp';
     protected $primaryKey = 'generated_otp_id';
     public $timestamps = false;
+
+
 }
