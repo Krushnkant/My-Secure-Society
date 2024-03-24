@@ -21,6 +21,8 @@ Route::post('verify_otp',[AuthController::class,'verify_otp']);
 Route::post('send_otp',[AuthController::class,'send_otp']);
 
 Route::group(['middleware' => 'jwt'], function(){
-    Route::post('edit_profile',[UserController::class,'edit_profile']);
-    Route::get('get_profile',[UserController::class,'get_profile']);
+    Route::get('get_token',[AuthController::class,'get_token']);
+
+    Route::post('profile/edit',[UserController::class,'edit_profile']);
+    Route::get('profile/get',[UserController::class,'get_profile']);
 });    

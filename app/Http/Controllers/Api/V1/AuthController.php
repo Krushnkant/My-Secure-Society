@@ -105,7 +105,7 @@ class AuthController extends BaseController
             return $this->sendError($validator->errors(), "Validation Errors", []);
         }
 
-        $user = User::where('mobile_no',$request->mobile_no)->where('user_type',4)->first();
+        $user = User::with('societymember')->where('mobile_no',$request->mobile_no)->where('user_type',4)->first();
         if($user){
         $user_otp = GeneratedOtp::where('mobile_no',$request->mobile_no)->where('otp_code',$request->otp)->first();
             if ($user_otp && isset($user_otp['expire_time']) ){
@@ -116,7 +116,7 @@ class AuthController extends BaseController
                 if($diff->i > 30) {
                     return $this->sendError('OTP verification Failed.', "verification Failed", []);
                 }
-                $userJwt = ['user_id' => $user->user_id];
+                $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
                 $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
                 $data['profile_data'] =  new UserResource($user);
                 $data['isNewUser'] = $user->full_name == "" ? true : false;
@@ -131,14 +131,13 @@ class AuthController extends BaseController
     }
 
    
-    public function get_token(Request $request){
-        
+    public function get_token(){
         $user_id = Auth::id();
-        $user = User::where('user_id',$user_id)->first();
+        $user = User::with('societymember')->where('user_id',$user_id)->first();
         if($user){
-            $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> $user->user_id,'society_member_id'=> $user->society_member_id,'authority'=> []];
+            $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
             $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
-            return $this->sendResponseWithData($data,'get Token successfully.');
+            return $this->sendResponseWithData($data,'Token get successfully.');
            
         }else{
             return $this->sendError('User Not Found.', "verification Failed", []);
