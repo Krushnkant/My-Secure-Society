@@ -50,6 +50,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(UserDesignation::class,'user_id', 'user_id');
     }
 
+    public function societymember()
+    {
+        return $this->hasOne(SocietyMember::class,'user_id', 'user_id');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

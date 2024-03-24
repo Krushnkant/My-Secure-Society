@@ -17,6 +17,7 @@ use App\Http\Controllers\admin\SubscriptionOrderController;
 use App\Http\Controllers\admin\OrderPaymentController;
 use App\Http\Controllers\admin\EmergencyContactController;
 use App\Http\Controllers\admin\ServiceVendorController;
+use App\Http\Controllers\admin\SocietyMemberController;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +111,15 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
     Route::get('flat/{id}/delete',[FlatController::class,'delete'])->name('flat.delete');
     Route::get('flat/changestatus/{id}',[FlatController::class,'changestatus'])->name('flat.changestatus');
     Route::post('flat/multipledelete', [FlatController::class,'multipledelete'])->name('flat.multipledelete');
+
+    // Society Member
+    Route::get('societymember/{id}',[SocietyMemberController::class,'index'])->name('societymember.list');
+    Route::post('societymember/listdata',[SocietyMemberController::class,'listdata'])->name('societymember.listdata');
+    Route::post('societymember/addorupdate',[SocietyMemberController::class,'addorupdate'])->name('societymember.addorupdate');
+    Route::get('societymember/{id}/edit',[SocietyMemberController::class,'edit'])->name('societymember.edit');
+    Route::get('societymember/{id}/delete',[SocietyMemberController::class,'delete'])->name('societymember.delete');
+    Route::get('societymember/changestatus/{id}',[SocietyMemberController::class,'changestatus'])->name('societymember.changestatus');
+    Route::post('societymember/multipledelete', [SocietyMemberController::class,'multipledelete'])->name('societymember.multipledelete');
 
      // Designation Permission
      Route::get('company/profile',[CompanyProfileController::class,'profile'])->name('company.profile');

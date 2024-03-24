@@ -166,9 +166,13 @@
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(7)));
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(7)));
                             var action = `<span>`;
+                                if (is_view) {
+                                action +=
+                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Member" id="viewSocietyMember"  data-id="${row.society_id}"><i class="fa fa-list color-muted"></i> </a>`;
+                                }    
                             if (is_view) {
                                 action +=
-                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Blog" id="viewBlock"  data-id="${row.society_id}"><i class="fa fa-list color-muted"></i> </a>`;
+                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Block" id="viewBlock"  data-id="${row.society_id}"><i class="fa fa-list color-muted"></i> </a>`;
                                 }
                             if (is_edit) {
                                 action +=
@@ -641,6 +645,13 @@
             // e.preventDefault();
             var id = $(this).attr('data-id');
             var url = "{{ url('admin/block') }}" + "/" + id;
+            window.open(url, "_blank");
+        });
+
+        $('body').on('click', '#viewSocietyMember', function(e) {
+            // e.preventDefault();
+            var id = $(this).attr('data-id');
+            var url = "{{ url('admin/societymember') }}" + "/" + id;
             window.open(url, "_blank");
         });
 

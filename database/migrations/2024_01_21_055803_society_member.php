@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('society_member_id')->index();
             $table->integer('parent_society_member_id')->index();
             $table->integer('user_id')->index();
+            $table->integer('society_id')->index();
             $table->integer('block_flat_id')->index();
             $table->integer('resident_designation_id')->index();
             $table->integer('society_department_id')->nullable()->comment('Null for Not Member of any Department');
