@@ -120,6 +120,7 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
     Route::get('societymember/{id}/delete',[SocietyMemberController::class,'delete'])->name('societymember.delete');
     Route::get('societymember/changestatus/{id}',[SocietyMemberController::class,'changestatus'])->name('societymember.changestatus');
     Route::post('societymember/multipledelete', [SocietyMemberController::class,'multipledelete'])->name('societymember.multipledelete');
+    Route::post('get-flat-by-block', [SocietyMemberController::class, 'getFlat']);
 
      // Designation Permission
      Route::get('company/profile',[CompanyProfileController::class,'profile'])->name('company.profile');

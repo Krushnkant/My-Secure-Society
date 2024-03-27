@@ -72,6 +72,13 @@
     <script src="{{ asset('/js/plugins-init/datatables.init.js') }}"></script>
 
     <script type="text/javascript">
+    $(".single-select-placeholder").select2();
+    $("#block-dropdown").select2({
+        placeholder: "Select a block"
+    });
+    $("#flat-dropdown").select2({
+        placeholder: "Select a flat"
+    });
         $(document).ready(function() {
             getTableData('', 1);
         });
@@ -241,15 +248,21 @@
         }
 
         $('body').on('click', '#AddBtn_SocietyMember', function() {
-            $('#SocietyMemberModal').find('.modal-title').html("Add Block");
+            $('#SocietyMemberModal').find('.modal-title').html("Add Society Member");
             $("#SocietyMemberModal").find('form').trigger('reset');
             $('#id').val("");
+            $("#full_name").focus();
             $('#full_name-error').html("");
+            $('#email-error').html("");
+            $('#mobile_no-error').html("");
+            $('.single-select-placeholder').trigger('change');
+            $('#block-dropdown').trigger('change');
+            $('#flat-dropdown').trigger('change');
+            $('#password').prop('disabled', false);
             $("#SocietyMemberModal").find("#save_newBtn").removeAttr('data-action');
             $("#SocietyMemberModal").find("#save_closeBtn").removeAttr('data-action');
             $("#SocietyMemberModal").find("#save_newBtn").removeAttr('data-id');
             $("#SocietyMemberModal").find("#save_closeBtn").removeAttr('data-id');
-            $("#full_name").focus();
         });
 
         $('#societymemberform').keypress(function(event) {
@@ -285,6 +298,21 @@
                         } else {
                             $('#full_name-error').hide();
                         }
+                        if (res.errors.email) {
+                            $('#email-error').show().text(res.errors.email);
+                        } else {
+                            $('#email-error').hide();
+                        }
+                        if (res.errors.mobile_no) {
+                            $('#mobile_no-error').show().text(res.errors.mobile_no);
+                        } else {
+                            $('#mobile_no-error').hide();
+                        }
+                        if (res.errors.password) {
+                            $('#password-error').show().text(res.errors.password);
+                        } else {
+                            $('#password-error').hide();
+                        }
                     }
 
                     if (res.status == 200) {
@@ -310,6 +338,12 @@
                             $("#SocietyMemberModal").find('form').trigger('reset');
                             $('#id').val("");
                             $('#full_name-error').html("");
+                            $('#email-error').html("");
+                            $('#mobile_no-error').html("");
+                            $('.single-select-placeholder').trigger('change');
+                            $('#block-dropdown').trigger('change');
+                            $('#flat-dropdown').trigger('change');
+                            $('#password').prop('disabled', false);
                             $("#SocietyMemberModal").find("#save_newBtn").removeAttr('data-action');
                             $("#SocietyMemberModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#SocietyMemberModal").find("#save_newBtn").removeAttr('data-id');
@@ -355,14 +389,26 @@
             var edit_id = $(this).attr('data-id');
 
             $('#SocietyMemberModal').find('.modal-title').html("Edit Block");
+            $('#id').val("");
             $('#full_name-error').html("");
+            $('#email-error').html("");
+            $('#mobile_no-error').html("");
+            $('.single-select-placeholder').trigger('change');
+            $('#block-dropdown').trigger('change');
+            $('#flat-dropdown').trigger('change');
             $.get("{{ url('admin/block') }}" + '/' + edit_id + '/edit', function(data) {
                 $('#SocietyMemberModal').find('#save_newBtn').attr("data-action", "update");
                 $('#SocietyMemberModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#SocietyMemberModal').find('#save_newBtn').attr("data-id", edit_id);
                 $('#SocietyMemberModal').find('#save_closeBtn').attr("data-id", edit_id);
-                $('#id').val(data.society_member_id);
+                $('#id').val(data.user_id);
                 $('#full_name').val(data.full_name);
+                $('#email').val(data.email);
+                $('#mobile_no').val(data.mobile_no);
+                $('#password').val(123456);
+                $('#password').prop('disabled', true);
+                $('input[name="gender"][value="' + data.gender + '"]').prop('checked', true);
+                $('select[name="designation"]').val(data.resident_designation_id).trigger('change');
                 $("#SocietyMemberModal").modal('show');
             });
         });
@@ -431,6 +477,27 @@
                             });
                         }
                     });
+                }
+            });
+        });
+
+        $('#block-dropdown').on('change', function() {
+            var block_id = $(this).val();
+            $("#flat-dropdown").html('');
+            $.ajax({
+                url: "{{ url('admin/get-flat-by-block') }}",
+                type: "POST",
+                data: {
+                    block_id: block_id,
+                    _token: '{{ csrf_token() }}'
+                },
+                dataType: 'json',
+                success: function(result) {
+                    $('#flat-dropdown').html('<option value="">Select a flat</option>');
+                    $.each(result.flats, function(key, value) {
+                        $("#flat-dropdown").append('<option value="' + value.block_flat_id + '">' + value.flat_no + '</option>');
+                    });
+                    $("#flat-dropdown").trigger('change');
                 }
             });
         });

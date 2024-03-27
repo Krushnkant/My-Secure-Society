@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Block;
 use App\Models\Flat;
+use App\Models\ResidentDesignation;
 use App\Models\Society;
 use App\Models\SocietyMember;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class SocietyMemberController extends Controller
@@ -19,7 +22,14 @@ class SocietyMemberController extends Controller
         if($society == null){
             return view('admin.404');
         }
-        return view('admin.society_member.list',compact('society','id'));
+        $resident_designations = ResidentDesignation::where('estatus', 1)
+        ->where(function ($query) use ($id) {
+            $query->where('society_id', $id)
+                ->orWhere('society_id', 0);
+        })->get();
+
+        $blocks = Block::where('estatus', 1)->where('society_id', $id)->get();
+        return view('admin.society_member.list',compact('society','id','resident_designations','blocks'));
     }
 
     public function listdata(Request $request){
@@ -33,16 +43,18 @@ class SocietyMemberController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
       
-        $query = SocietyMember::select('*')->where('society_id',$request->society_id);
-        $search = $request->search;
-        $query = $query->where(function($query) use ($search){
-            $query->orWhere('full_name', 'like', "%".$search."%");
-        });
+        $query = SocietyMember::select('user.*')
+        ->leftJoin('user', 'society_member.user_id', '=', 'user.user_id')
+        ->where('society_member.society_id', $request->society_id);
 
-        $orderByName = 'full_name';
+        $search = $request->search;
+        $query = $query->where(function($query) use ($search) {
+            $query->orWhere('user.full_name', 'like', "%".$search."%");
+        });
+        $orderByName = 'user.full_name';
         switch($orderColumnIndex){
             case '0':
-                $orderByName = 'full_name';
+                $orderByName = 'user.full_name';
                 break;
         }
         $query = $query->orderBy($orderByName, $orderBy);
@@ -60,7 +72,6 @@ class SocietyMemberController extends Controller
             'password.required' => 'Please provide a Password.',
         ];
         $rules = [
-            'profile_pic' => $request->has('profile_pic') ? 'image|mimes:jpeg,png,jpg' : '',
             'full_name' => 'required|max:70',
         ];
         if ($request->has('id') && $request->has('email')) {
@@ -101,7 +112,7 @@ class SocietyMemberController extends Controller
             $user = new User();
             $user->full_name = $request->full_name;
             $user->user_code = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
-            $user->user_type = 1;
+            $user->user_type = 2;
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             $user->mobile_no = $request->mobile_no;
@@ -109,17 +120,16 @@ class SocietyMemberController extends Controller
             $user->created_by = Auth::user()->user_id;
             $user->updated_by = Auth::user()->user_id;
             $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            if ($request->hasFile('profile_pic')) {
-                $user->profile_pic_url = $this->uploadProfileImage($request);
-            }
             $user->save();
+            if($user){
+                
+            }
 
-            $this->addUserDesignation($user,$request);
+           
             return response()->json(['status' => '200', 'action' => 'add']);
         }else{
             $user = User::find($request->id);
             if ($user) {
-                $old_image = $user->profile_pic_url;
                 $user->full_name = $request->full_name;
                 $user->email = $request->email;
                 $user->mobile_no = $request->mobile_no;
@@ -127,12 +137,10 @@ class SocietyMemberController extends Controller
                 $user->blood_group = $request->blood_group;
                 $user->updated_by = Auth::user()->user_id;
                 $user->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-                if ($request->hasFile('profile_pic')) {
-                    $user->profile_pic_url = $this->uploadProfileImage($request,$old_image);
-                }
+        
                 $user->save();
 
-                $this->addUserDesignation($user,$request);
+                
                 return response()->json(['status' => '200', 'action' => 'update']);
             }
 
@@ -188,5 +196,11 @@ class SocietyMemberController extends Controller
             }
         }
         return response()->json(['status' => '200']);
+    }
+
+    public function getFlat(Request $request)
+    {
+        $data['flats'] = Flat::where("society_block_id",$request->block_id)->get(["flat_no","block_flat_id"]);
+        return response()->json($data);
     }
 }
