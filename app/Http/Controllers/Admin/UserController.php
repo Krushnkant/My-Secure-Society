@@ -32,10 +32,8 @@ class UserController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
-        $query = User::with('userdesignation')->select('*')->where('user_id','!=',1);
-        // $query = $query->whereHas('userdesignation', function ($query) {
-        //     $query->where('company_designation_id', '!=', 1);
-        // });
+        $query = User::with('userdesignation')->where('user_id','!=',1)->where('user_type',1);
+   
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('full_name', 'like', "%".$search."%");

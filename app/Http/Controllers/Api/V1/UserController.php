@@ -15,7 +15,7 @@ class UserController extends BaseController
 {
     public function get_profile(){
         $user_id = Auth::id();
-        $user = User::where('user_id',$user_id)->where('user_type',4)->where('estatus',1)->first();
+        $user = User::where('user_id',$user_id)->whereIn('user_type', [2, 4])->where('estatus',1)->first();
         if (!$user){
             return $this->sendError("You can not get this profile", "Invalid user", []);
         }

@@ -1,5 +1,5 @@
 @extends('admin.layout.app')
-@section('title', 'Society Block')
+@section('title', 'Society Member')
 
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
@@ -39,7 +39,10 @@
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
-                                        <th>full_name</th>
+                                        <th>Name</th>
+                                        <th>Contact Info</th>
+                                        <th>Designation</th>
+                                        <th>Location</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -47,7 +50,10 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th>full_name</th>
+                                        <th>Name</th>
+                                        <th>Contact Info</th>
+                                        <th>Designation</th>
+                                        <th>Location</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -126,9 +132,30 @@
                         }
                     },
                     {
-                        width: "20%",
+                        width: "10%",
                         data: 'full_name',
                     },
+                    {
+                        width: "15%",
+                        data: null,
+                        orderable: false,
+                        render: function(data, type, row) {
+                            return row.email + '<br>' + row.mobile_no;
+                        }
+                    },
+                    {
+                        width: "10%",
+                        data: 'designation_name'
+                    },
+                    {
+                        width: "15%",
+                        data: null,
+                        orderable: false,
+                        render: function(data, type, row) {
+                            return '<b>block : </b> '+ row.block_name + '<br>' + '<b>flat :</b> '+ row.flat_no;
+                        }
+                    },
+                    
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
@@ -201,7 +228,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this Block !!",
+                                text: "You will not be able to recover this Member !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -225,7 +252,7 @@
                                         },
                                         success: function(response) {
                                             toastr.success(
-                                                "society member deleted successfully!",
+                                                "Member deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
@@ -255,6 +282,9 @@
             $('#full_name-error').html("");
             $('#email-error').html("");
             $('#mobile_no-error').html("");
+            $('#password-error').html("");
+            $('#block_id-error').html("");
+            $('#flat_id-error').html("");
             $('.single-select-placeholder').trigger('change');
             $('#block-dropdown').trigger('change');
             $('#flat-dropdown').trigger('change');
@@ -313,6 +343,16 @@
                         } else {
                             $('#password-error').hide();
                         }
+                        if (res.errors.block_id) {
+                            $('#block_id-error').show().text(res.errors.block_id);
+                        } else {
+                            $('#block_id-error').hide();
+                        }
+                        if (res.errors.flat_id) {
+                            $('#flat_id-error').show().text(res.errors.flat_id);
+                        } else {
+                            $('#flat_id-error').hide();
+                        }
                     }
 
                     if (res.status == 200) {
@@ -321,12 +361,12 @@
                             $(btn).find('.loadericonfa').hide();
                             $(btn).prop('disabled', false);
                             if (res.action == 'add') {
-                                toastr.success("society member added successfully!", 'Success', {
+                                toastr.success("Member added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("society member updated successfully!", 'Success', {
+                                toastr.success("Member updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -340,6 +380,9 @@
                             $('#full_name-error').html("");
                             $('#email-error').html("");
                             $('#mobile_no-error').html("");
+                            $('#password-error').html("");
+                            $('#block_id-error').html("");
+                            $('#flat_id-error').html("");
                             $('.single-select-placeholder').trigger('change');
                             $('#block-dropdown').trigger('change');
                             $('#flat-dropdown').trigger('change');
@@ -350,12 +393,12 @@
                             $("#SocietyMemberModal").find("#save_closeBtn").removeAttr('data-id');
                             $("#full_name").focus();
                             if (res.action == 'add') {
-                                toastr.success("society member added successfully!", 'Success', {
+                                toastr.success("Member added successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
                             if (res.action == 'update') {
-                                toastr.success("society member updated successfully!", 'Success', {
+                                toastr.success("Member updated successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                             }
@@ -388,15 +431,17 @@
         $('body').on('click', '#editBtn', function() {
             var edit_id = $(this).attr('data-id');
 
-            $('#SocietyMemberModal').find('.modal-title').html("Edit Block");
+            $('#SocietyMemberModal').find('.modal-title').html("Edit Society Member");
             $('#id').val("");
             $('#full_name-error').html("");
             $('#email-error').html("");
             $('#mobile_no-error').html("");
+            $('#block_id-error').html("");
+            $('#flat_id-error').html("");
             $('.single-select-placeholder').trigger('change');
             $('#block-dropdown').trigger('change');
             $('#flat-dropdown').trigger('change');
-            $.get("{{ url('admin/block') }}" + '/' + edit_id + '/edit', function(data) {
+            $.get("{{ url('admin/societymember') }}" + '/' + edit_id + '/edit', function(data) {
                 $('#SocietyMemberModal').find('#save_newBtn').attr("data-action", "update");
                 $('#SocietyMemberModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#SocietyMemberModal').find('#save_newBtn').attr("data-id", edit_id);
@@ -409,6 +454,24 @@
                 $('#password').prop('disabled', true);
                 $('input[name="gender"][value="' + data.gender + '"]').prop('checked', true);
                 $('select[name="designation"]').val(data.resident_designation_id).trigger('change');
+                $('select[name="resident_type"]').val(data.resident_type).trigger('change');
+                $('#block-dropdown').val(data.society_block_id).trigger('change');
+                $.ajax({
+                    url: "{{ url('admin/get-flat-by-block') }}",
+                    type: "POST",
+                    data: {
+                        block_id: data.society_block_id,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    dataType: 'json',
+                    success: function(result) {
+                        $('#flat-dropdown').html('<option value="">Select a flat</option>');
+                        $.each(result.flats, function(key, value) {
+                            $("#flat-dropdown").append('<option value="' + value.block_flat_id + '">' + value.flat_no + '</option>');
+                        });
+                        $("#flat-dropdown").val(data.block_flat_id).trigger('change'); // Trigger change event after setting value
+                    }
+                });
                 $("#SocietyMemberModal").modal('show');
             });
         });
@@ -421,14 +484,14 @@
                     if (res.status == 200 && res.action == 'deactive') {
                         $("#statuscheck_" + id).val(2);
                         $("#statuscheck_" + id).prop('checked', false);
-                        toastr.success("society member deactivated successfully!", 'Success', {
+                        toastr.success("Member deactivated successfully!", 'Success', {
                             timeOut: 5000
                         });
                     }
                     if (res.status == 200 && res.action == 'active') {
                         $("#statuscheck_" + id).val(1);
                         $("#statuscheck_" + id).prop('checked', 1);
-                        toastr.success("society member activated successfully!", 'Success', {
+                        toastr.success("Member activated successfully!", 'Success', {
                             timeOut: 5000
                         });
                     }
@@ -459,7 +522,7 @@
                         url: "{{ url('admin/societymember') }}" + '/' + remove_id + '/delete',
                         success: function(res) {
                             if (res.status == 200) {
-                                toastr.success("society member deleted successfully!", 'Success', {
+                                toastr.success("Member deleted successfully!", 'Success', {
                                     timeOut: 5000
                                 });
                                 getTableData('', 1);

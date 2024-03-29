@@ -16,6 +16,11 @@ class Block extends Model
 
     public function society()
     {
-        return $this->hasOne(Society::class,'society_id', 'society_id');
+        return $this->belongsTo(Society::class, 'society_id');
+    }
+
+    public function block_flats()
+    {
+        return $this->hasMany(Flat::class, 'society_block_id');
     }
 }

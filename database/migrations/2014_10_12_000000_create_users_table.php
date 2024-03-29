@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('user_code')->unique();
             $table->string('full_name', 70)->nullable();
             $table->string('mobile_no', 15);
-            $table->string('email', 50)->unique()->nullable();
+            $table->string('email', 50)->nullable();
             // $table->dateTime('EmailVerifiedAt')->nullable();
             $table->string('password', 255)->nullable();
             $table->string('profile_pic_url')->nullable();
