@@ -107,7 +107,7 @@
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
                                 <label class="text-label">Flat <span class="text-danger">*</span></label>
-                                <select class=" js-states" name="flat_id_id" id="flat-dropdown">
+                                <select class=" js-states" name="flat_id" id="flat-dropdown">
                                     <option value=""></option>
                                 </select>
                                 <div id="flat_id-error" class="invalid-feedback animated fadeInDown"

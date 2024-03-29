@@ -39,8 +39,8 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(), 'status' => 'failed']);
         }
-
-        $credentials = $request->only('email', 'password');
+        $request->merge(['user_type' => 1]);
+        $credentials = $request->only('email', 'password', 'user_type');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             if ($user->estatus == 1) {
@@ -69,7 +69,16 @@ class AuthController extends Controller
     public function postForgetpassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|exists:user',
+            'email' => [
+                'required',
+                'email',
+                function ($attribute, $value, $fail) {
+                    $user = User::where('email', $value)->first();
+                    if (!$user || $user->user_type != 1) {
+                        $fail('Invalid email or user type not allowed to reset password.');
+                    }
+                },
+            ],
         ]);
 
         if ($validator->fails()) {

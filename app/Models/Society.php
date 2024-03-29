@@ -29,4 +29,9 @@ class Society extends Model
     {
         return $this->belongsTo(City::class, 'city_id', 'city_id');
     }
+
+    public function society_blocks()
+    {
+        return $this->hasMany(Block::class, 'society_id');
+    }
 }

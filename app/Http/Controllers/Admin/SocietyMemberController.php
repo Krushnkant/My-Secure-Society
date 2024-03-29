@@ -43,8 +43,11 @@ class SocietyMemberController extends Controller
         $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
       
-        $query = SocietyMember::select('user.*')
+        $query = SocietyMember::select('user.*','society_member.society_member_id','society_member.resident_designation_id','resident_designation.designation_name','block_flat.flat_no','society_block.block_name')
         ->leftJoin('user', 'society_member.user_id', '=', 'user.user_id')
+        ->leftJoin('resident_designation', 'society_member.resident_designation_id', '=', 'resident_designation.resident_designation_id')
+        ->leftJoin('block_flat', 'society_member.block_flat_id', '=', 'block_flat.block_flat_id')
+        ->leftJoin('society_block', 'society_block.society_block_id', '=', 'block_flat.society_block_id')
         ->where('society_member.society_id', $request->society_id);
 
         $search = $request->search;
@@ -73,20 +76,22 @@ class SocietyMemberController extends Controller
         ];
         $rules = [
             'full_name' => 'required|max:70',
+            'block_id' => 'required',
+            'flat_id' => 'required',
         ];
         if ($request->has('id') && $request->has('email')) {
             $rules['email'] = [
                 'required',
                 'email',
                 'max:50',
-                Rule::unique('user')->ignore($request->id,'user_id')->whereNull('deleted_at'),
+                Rule::unique('user')->ignore($request->id,'user_id')->where('user_type',2)->whereNull('deleted_at'),
             ];
         } elseif ($request->has('email')) {
             $rules['email'] = [
                 'required',
                 'email',
                 'max:50',
-                Rule::unique('user')->whereNull('deleted_at'),
+                Rule::unique('user')->where('user_type',2)->whereNull('deleted_at'),
             ];
         }
         if ($request->has('id') && $request->has('mobile_no')) {
@@ -94,16 +99,21 @@ class SocietyMemberController extends Controller
                 'required',
                 'numeric',
                 'digits:10',
-                Rule::unique('user')->ignore($request->id,'user_id')->whereNull('deleted_at'),
+                Rule::unique('user')->ignore($request->id,'user_id')->where('user_type',2)->whereNull('deleted_at'),
             ];
         } elseif ($request->has('mobile_no')) {
             $rules['mobile_no'] = [
                 'required',
                 'numeric',
                 'digits:10',
-                Rule::unique('user')->whereNull('deleted_at'),
+                Rule::unique('user')->where('user_type',2)->whereNull('deleted_at'),
             ];
         }
+        if (!$request->has('id')) {
+            $rules['password'] = [
+                'required',
+            ];
+        } 
         $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
@@ -122,7 +132,17 @@ class SocietyMemberController extends Controller
             $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
             $user->save();
             if($user){
-                
+               $society_member = New SocietyMember();
+               $society_member->user_id = $user->user_id;
+               $society_member->parent_society_member_id = 0;
+               $society_member->society_id = $request->society_id;
+               $society_member->block_flat_id  = $request->flat_id ;
+               $society_member->resident_designation_id  = $request->designation;
+               $society_member->resident_type  = $request->resident_type;
+               $society_member->created_by = Auth::user()->user_id;
+               $society_member->updated_by = Auth::user()->user_id;
+               $society_member->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+               $society_member->save();
             }
 
            
@@ -137,8 +157,16 @@ class SocietyMemberController extends Controller
                 $user->blood_group = $request->blood_group;
                 $user->updated_by = Auth::user()->user_id;
                 $user->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-        
                 $user->save();
+                $society_member = SocietyMember::where('user_id',$request->id)->first();
+                if($society_member){
+                    $society_member->block_flat_id  = $request->flat_id ;
+                    $society_member->resident_designation_id  = $request->designation;
+                    $society_member->resident_type  = $request->resident_type;
+                    $society_member->updated_by = Auth::user()->user_id;
+                    $society_member->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+                    $society_member->save();
+                }
 
                 
                 return response()->json(['status' => '200', 'action' => 'update']);
@@ -150,35 +178,46 @@ class SocietyMemberController extends Controller
     }
 
     public function edit($id){
-        $block = SocietyMember::find($id);
-        return response()->json($block);
+        $society_member = SocietyMember::select('user.*','society_member.society_member_id','society_member.resident_type','society_member.resident_designation_id','resident_designation.designation_name','society_member.block_flat_id','block_flat.society_block_id')
+        ->leftJoin('user', 'society_member.user_id', '=', 'user.user_id')
+        ->leftJoin('resident_designation', 'society_member.resident_designation_id', '=', 'resident_designation.resident_designation_id')
+        ->leftJoin('block_flat', 'society_member.block_flat_id', '=', 'block_flat.block_flat_id')
+        ->where('society_member.society_member_id', $id)->first();
+        return response()->json($society_member);
     }
 
     public function delete($id){
-        $block = SocietyMember::find($id);
-        if ($block){
-            $flat = Flat::where('society_block_id', $id)->exists();
-            if ($flat) {
-                return response()->json(['status' => '300', 'message' => 'Cannot delete society. It is associated with one or more society block.']);
+        $society_member = SocietyMember::find($id);
+        if ($society_member){
+            $user = User::find($society_member->user_id);
+            if ($user) {
+                $user->estatus = 3;
+                $user->save();
+                $user->delete();
             }
-            $block->estatus = 3;
-            $block->save();
-            $block->delete();
+            $society_member->estatus = 3;
+            $society_member->save();
+            $society_member->delete();
             return response()->json(['status' => '200']);
         }
         return response()->json(['status' => '400']);
     }
 
     public function changestatus($id){
-        $block = SocietyMember::find($id);
-        if ($block->estatus==1){
-            $block->estatus = 2;
-            $block->save();
+        $society_member = SocietyMember::find($id);
+        $user = User::find($society_member->user_id);
+        if ($society_member->estatus==1){
+            $society_member->estatus = 2;
+            $society_member->save();
+            $user->estatus = 2;
+            $user->save();
             return response()->json(['status' => '200','action' =>'deactive']);
         }
-        if ($block->estatus==2){
-            $block->estatus = 1;
-            $block->save();
+        if ($society_member->estatus==2){
+            $society_member->estatus = 1;
+            $society_member->save();
+            $user->estatus = 1;
+            $user->save();
             return response()->json(['status' => '200','action' =>'active']);
         }
     }
@@ -186,14 +225,17 @@ class SocietyMemberController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        $blocks = SocietyMember::whereIn('society_block_id', $ids)->get();
-        foreach ($blocks as $block) {
-            $flat = Flat::where('society_block_id', $block->society_block_id)->exists();
-            if (!$flat) {
-                $block->estatus = 3;
-                $block->save();
-                $block->delete();
+        $society_members = SocietyMember::whereIn('society_member_id', $ids)->get();
+        foreach ($society_members as $society_member) {
+            $user = User::find($society_member->user_id);
+            if($user){
+                $user->estatus = 3;
+                $user->save();
+                $user->delete();
             }
+            $society_member->estatus = 3;
+            $society_member->save();
+            $society_member->delete();
         }
         return response()->json(['status' => '200']);
     }

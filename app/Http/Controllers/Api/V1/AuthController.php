@@ -27,7 +27,7 @@ class AuthController extends BaseController
         }
 
         $mobile_no = $request->mobile_no;
-        $user = User::where('mobile_no',$mobile_no)->where('user_type',4)->first();
+        $user = User::where('mobile_no',$mobile_no)->whereIn('user_type', [2, 4])->first();
         
         if ($user){
             if($user->estatus != 1){
