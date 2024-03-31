@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('blood_donate_request_response', function (Blueprint $table) {
-            $table->bigIncrements('blood_donate_request_response_id')->index();
+            $table->bigIncrements('blood_donate_request_response_id');
             $table->integer('blood_donate_request_id')->index();
             $table->string('message')->nullable();
             $table->integer('response_status')->enum([1, 2, 3, 4])->default(1)->comment('1 - Confirmed, 3 - Deleted, 4 - Pending')->index();

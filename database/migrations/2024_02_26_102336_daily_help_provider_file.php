@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('daily_help_providerFile', function (Blueprint $table) {
-            $table->bigIncrements('daily_help_providerFileId')->index();
+            $table->bigIncrements('daily_help_provider_file_id')->index();
             $table->integer('daily_help_provider_id')->index();
-            $table->integer('FileView')->enum([1, 4, 5])->comment('1 - Front Side, 2 - Back Side')->index();
-            $table->integer('FileType')->enum([1])->comment('1 - Image')->index();
-            $table->string('FileUrl', 500);
+            $table->integer('file_view')->enum([1, 4, 5])->comment('1 - Front Side, 2 - Back Side')->index();
+            $table->integer('file_type')->enum([1])->comment('1 - Image')->index();
+            $table->string('file_url', 500);
             $table->dateTime('uploaded_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }

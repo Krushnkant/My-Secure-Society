@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('DailyPostPoleOption', function (Blueprint $table) {
-            $table->bigIncrements('DailyPostPoleOptionId')->index();
-            $table->integer('SocietyDailyPostId')->index();
-            $table->string('OptionText', 150);
-            $table->integer('TotalVote');
+        Schema::create('daily_post_pole_option', function (Blueprint $table) {
+            $table->bigIncrements('daily_post_pole_option_id')->index();
+            $table->integer('society_daily_post_id')->index();
+            $table->string('option_text', 150);
+            $table->integer('total_vote');
         });
     }
 
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('DailyPostPoleOption');
+        Schema::dropIfExists('daily_post_pole_option');
     }
 };

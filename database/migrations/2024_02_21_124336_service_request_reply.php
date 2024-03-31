@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ServiceRequestReply', function (Blueprint $table) {
-            $table->bigIncrements('ServiceRequestReplyId')->index();
-            $table->integer('ServiceRequestId')->index();
-            $table->string('ReplyDescription', 500);
+        Schema::create('service_request_reply', function (Blueprint $table) {
+            $table->bigIncrements('service_request_reply_id')->index();
+            $table->integer('service_request_id')->index();
+            $table->string('reply_description', 500);
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
         });
@@ -25,6 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ServiceRequestReply');
+        Schema::dropIfExists('service_request_reply');
     }
 };
+

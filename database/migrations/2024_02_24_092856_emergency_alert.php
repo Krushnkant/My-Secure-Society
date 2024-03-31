@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('EmergencyAlert', function (Blueprint $table) {
-            $table->bigIncrements('EmergencyAlertId')->index();
-            $table->integer('AlertReasonType')->index()->comment('1 - Fire, 2 - Stuck in Lift, 3 - Animal Threat, 4 - Other');
-            $table->string('AlertMessage');
+        Schema::create('emergency_alert', function (Blueprint $table) {
+            $table->bigIncrements('emergency_alert_id')->index();
+            $table->integer('alert_reason_type')->index()->comment('1 - Fire, 2 - Stuck in Lift, 3 - Animal Threat, 4 - Other');
+            $table->string('alert_message');
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
         });
@@ -25,6 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('EmergencyAlert');
+        Schema::dropIfExists('emergency_alert');
     }
 };
+
