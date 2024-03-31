@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('SocietyDailyPostId')->index();
             $table->integer('FileType')->enum([1, 2, 3, 4, 5])->comment('1 - Image, 2 - Video, 3 - HTML, 4 - PDF, 5 - Other')->index();
             $table->string('FileUrl', 500);
-            $table->dateTime('UploadedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->dateTime('uploaded_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 

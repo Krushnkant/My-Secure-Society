@@ -4,14 +4,13 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\SocietyMember;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 class SocietyMemberController extends BaseController
 {
-    public function add_flat(Request $request)
+    public function save_flat(Request $request)
     {
         $user_id = Auth::id();
         $validator = Validator::make($request->all(), [

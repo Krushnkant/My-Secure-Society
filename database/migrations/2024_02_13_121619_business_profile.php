@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('BusinessProfile', function (Blueprint $table) {
-            $table->bigIncrements('BusinessProfileId')->index();
-            $table->string('BusinessName', 100);
-            $table->string('BusinessIcon')->nullable();
-            $table->string('PhoneNumber', 15);
-            $table->string('WebsiteUrl')->nullable();
-            $table->string('Description', 500)->nullable();
-            $table->string('StreetAddress1');
-            $table->string('StreetAddress2')->nullable();
-            $table->string('Landmark', 50);
-            $table->string('PinCode', 10)->index();
-            $table->decimal('Latitude', 10, 8)->nullable();
-            $table->decimal('Longitude', 11, 8)->nullable();
+        Schema::create('business_profile', function (Blueprint $table) {
+            $table->bigIncrements('business_profile_id')->index();
+            $table->string('business_name', 100);
+            $table->string('business_icon')->nullable();
+            $table->string('phone_number', 15);
+            $table->string('website_url')->nullable();
+            $table->string('description', 500)->nullable();
+            $table->string('street_address1');
+            $table->string('street_address2')->nullable();
+            $table->string('landmark', 50);
+            $table->string('pin_code', 10)->index();
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
             $table->integer('city_id')->index();
             $table->integer('state_id')->index();
             $table->integer('country_id');
@@ -41,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('BusinessProfile');
+        Schema::dropIfExists('business_profile');
     }
 };

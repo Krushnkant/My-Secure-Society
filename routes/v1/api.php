@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\api\v1\FamilyMemberController;
 use App\Http\Controllers\api\v1\SocietyMemberController;
 use App\Http\Controllers\Api\V1\UserController;
 
@@ -27,7 +28,11 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('profile/edit',[UserController::class,'edit_profile']);
     Route::get('profile/get',[UserController::class,'get_profile']);
 
-    Route::post('flat/save',[SocietyMemberController::class,'add_flat']);
+    Route::post('flat/save',[SocietyMemberController::class,'save_flat']);
     Route::post('flats/list',[SocietyMemberController::class,'flat_list']);
     Route::post('flat/delete',[SocietyMemberController::class,'delete_flat']);
+
+    Route::post('family/save',[FamilyMemberController::class,'save_family']);
+    Route::post('family/list',[FamilyMemberController::class,'family_list']);
+    Route::post('family/delete',[FamilyMemberController::class,'delete_family_member']);
 });    

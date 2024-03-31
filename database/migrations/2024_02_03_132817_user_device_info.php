@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('UserDeviceInfo', function (Blueprint $table) {
-            $table->bigIncrements('UserDeviceInfoId')->index();
+        Schema::create('user_device_info', function (Blueprint $table) {
+            $table->bigIncrements('user_device_info_id')->index();
             $table->integer('user_id')->index();
-            $table->string('DeviceId');
-            $table->string('ImeiNo');
-            $table->string('PhoneCompany');
-            $table->string('DeviceModal');
-            $table->string('DeviceOs');
+            $table->string('device_id');
+            $table->string('imei_no');
+            $table->string('phone_company');
+            $table->string('device_modal');
+            $table->string('device_os');
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
             $table->softDeletes('deleted_at');
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('UserDeviceInfo');
+        Schema::dropIfExists('user_device_info');
     }
 };

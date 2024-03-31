@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('AmenitySlot', function (Blueprint $table) {
-            $table->bigIncrements('AmenitySlotId')->index();
-            $table->integer('AmenityId')->index();
-            $table->time('StartTime');
-            $table->time('EndTime');
-            $table->decimal('RentAmount', 10, 2);
+        Schema::create('amenity_slot', function (Blueprint $table) {
+            $table->bigIncrements('amenity_slot_id')->index();
+            $table->integer('amenity_id')->index();
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->decimal('rent_amount', 10, 2);
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('AmenitySlot');
+        Schema::dropIfExists('amenity_slot');
     }
 };

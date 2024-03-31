@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('DailyHelpProvider', function (Blueprint $table) {
-            $table->bigIncrements('DailyHelpProviderId')->index();
+        Schema::create('daily_help_provider', function (Blueprint $table) {
+            $table->bigIncrements('daily_help_provider_id')->index();
             $table->integer('society_id')->index();
             $table->integer('user_id')->index();
-            $table->integer('DailyHelpServiceId')->index();
+            $table->integer('daily_help_service_id')->index();
             // $table->float('Rating');
             // $table->integer('TotalReviews')->index();
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('DailyHelpProvider');
+        Schema::dropIfExists('daily_help_provider');
     }
 };
