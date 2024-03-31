@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('GuardCampusVisitTime', function (Blueprint $table) {
-            $table->bigIncrements('GuardCampusVisitTimeId')->index();
-            $table->integer('SocietyGuardId')->index();
-            $table->time('VisitTime');
+        Schema::create('guard_campus_visit_time', function (Blueprint $table) {
+            $table->bigIncrements('guard_campus_visit_time_id')->index();
+            $table->integer('society_guard_id')->index();
+            $table->time('visit_time');
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('GuardCampusVisitTime');
+        Schema::dropIfExists('guard_campus_visit_time');
     }
 };

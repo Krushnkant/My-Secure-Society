@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SocietyDepartment', function (Blueprint $table) {
-            $table->bigIncrements('SocietyDepartmentId')->index();
+        Schema::create('society_department', function (Blueprint $table) {
+            $table->bigIncrements('society_department_id')->index();
             $table->integer('society_id')->index();
-            $table->string('DepartmentName', 50);
+            $table->string('department_name', 50);
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SocietyDepartment');
+        Schema::dropIfExists('society_department');
     }
 };

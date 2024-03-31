@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigIncrements('service_category_id')->index();
             $table->integer('society_id')->index();
             $table->integer('society_department_id')->index();
-            // $table->integer('ParentServiceCategoryId')->comment('0 For First Parent Category. Max upto 3')->index();
+            // $table->integer('parent_service_category_id')->comment('0 For First Parent Category. Max upto 3')->index();
             $table->string('service_category_name', 50);
             $table->string('category_description', 400)->nullable();
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();

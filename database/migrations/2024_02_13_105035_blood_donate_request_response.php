@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('BloodDonateRequestResponse', function (Blueprint $table) {
-            $table->bigIncrements('BloodDonateRequestResponseId')->index();
-            $table->integer('BloodDonateRequestId')->index();
-            $table->string('Message')->nullable();
-            $table->integer('Responsestatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Confirmed, 3 - Deleted, 4 - Pending')->index();
+        Schema::create('blood_donate_request_response', function (Blueprint $table) {
+            $table->bigIncrements('blood_donate_request_response_id')->index();
+            $table->integer('blood_donate_request_id')->index();
+            $table->string('message')->nullable();
+            $table->integer('response_status')->enum([1, 2, 3, 4])->default(1)->comment('1 - Confirmed, 3 - Deleted, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('BloodDonateRequestResponse');
+        Schema::dropIfExists('blood_donate_request_response');
     }
 };

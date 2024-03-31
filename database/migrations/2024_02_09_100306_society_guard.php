@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SocietyGuard', function (Blueprint $table) {
-            $table->bigIncrements('SocietyGuardId')->index();
+        Schema::create('society_guard', function (Blueprint $table) {
+            $table->bigIncrements('society_guard_id')->index();
             $table->integer('society_id')->index();
             $table->integer('user_id')->index();
-            $table->integer('SocietyGuardStandingAreaId');
-            $table->time('DutyStartTime');
-            $table->time('DutyEndTime');
+            $table->integer('society_guard_standing_area_id');
+            $table->time('duty_start_time');
+            $table->time('duty_end_time');
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SocietyGuard');
+        Schema::dropIfExists('society_guard');
     }
 };

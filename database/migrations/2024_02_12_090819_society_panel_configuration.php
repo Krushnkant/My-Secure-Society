@@ -10,22 +10,22 @@ return new class extends Migration
      * Run the migrations.
      */
 
-    //  ConfigurationName & Value
+    // ConfigurationName & Value
     // 1 - Resident can Add Forum Topic? [1 - True, 2 - False]
-    // 2 - Auto Generate Maintanance Invoice [1 - True, 2 - False]
-    // 3 - Maintanance Invoice Generate Date
-    // 4 - Maintanance Invoice Due Date
+    // 2 - Auto Generate Maintenance Invoice [1 - True, 2 - False]
+    // 3 - Maintenance Invoice Generate Date
+    // 4 - Maintenance Invoice Due Date
     // 5 - Auto Generate Loan Interest Invoice [1 - True, 2 - False]
     // 6 - Loan Interest Generate Date
     // 7 - Loan Interest Invoice Due Date
     
     public function up(): void
     {
-        Schema::create('SocietyPanelConfiguration', function (Blueprint $table) {
-            $table->bigIncrements('SocietyPanelConfigurationId')->index();
+        Schema::create('society_panel_configuration', function (Blueprint $table) {
+            $table->bigIncrements('society_panel_configuration_id')->index();
             $table->integer('society_id');
-            $table->string('ConfigurationName');
-            $table->string('ConfigurationValue');
+            $table->string('configuration_name');
+            $table->string('configuration_value');
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
         });
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SocietyPanelConfiguration');
+        Schema::dropIfExists('society_panel_configuration');
     }
 };
