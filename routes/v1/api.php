@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\api\v1\DocumentFolderController;
 use App\Http\Controllers\api\v1\FamilyMemberController;
 use App\Http\Controllers\api\v1\SocietyMemberController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -35,4 +36,8 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('family/save',[FamilyMemberController::class,'save_family']);
     Route::post('family/list',[FamilyMemberController::class,'family_list']);
     Route::post('family/delete',[FamilyMemberController::class,'delete_family_member']);
+
+    Route::post('folder/save',[DocumentFolderController::class,'save_folder']);
+    Route::post('folder/list',[DocumentFolderController::class,'folder_list']);
+    Route::post('folder/delete',[DocumentFolderController::class,'delete_folder']);
 });    
