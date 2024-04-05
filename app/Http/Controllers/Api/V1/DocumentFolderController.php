@@ -3,38 +3,18 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\DocumentFolder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class DocumentFolderController extends BaseController
 {
-    public function save_family(Request $request)
+    public function save_folder(Request $request)
     {
-        $society_member_id = $this->payload['society_member_id'];
-        if($society_member_id == ""){
-            return $this->sendError('Flat Not Found.', "Not Found", []);
-        }
-        $request->merge(['society_member_id'=>$society_member_id]);
         $rules = [
-            'profile_pic' => $request->has('profile_pic') ? 'image|mimes:jpeg,png,jpg' : '',
             'full_name' => 'required|max:70',
-            'society_member_id' => 'required|exists:society_member',
         ];
-        if ($request->has('user_id') && $request->has('mobile_no')) {
-            $rules['mobile_no'] = [
-                'required',
-                'numeric',
-                'digits:10',
-                Rule::unique('user')->ignore($request->user_id,'user_id')->whereIn('user_type',[2,3])->whereNull('deleted_at'),
-            ];
-        } elseif ($request->has('mobile_no')) {
-            $rules['mobile_no'] = [
-                'required',
-                'numeric',
-                'digits:10',
-                Rule::unique('user')->whereIn('user_type',[2,3])->whereNull('deleted_at'),
-            ];
-        }
-
+       
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -42,21 +22,12 @@ class DocumentFolderController extends BaseController
         }
 
         if($request->user_id == 0){
-            $user = New User();
-            $user->full_name = $request->full_name;
-            if ($request->hasFile('profile_pic')) {
-                $user->profile_pic_url = $this->uploadProfileImage($request);
-            }
+            $user = New DocumentFolder();
             $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
             $user->created_by = Auth::user()->user_id;
             $user->updated_by = Auth::user()->user_id;
         }else{
             $user = User::find($request->user_id);
-            $old_image = $user->profile_pic_url;
-            $user->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            if ($request->hasFile('profile_pic')) {
-                $user->profile_pic_url = $this->uploadProfileImage($request,$old_image);
-            }
             $user->updated_by = Auth::user()->user_id;
         }
 
