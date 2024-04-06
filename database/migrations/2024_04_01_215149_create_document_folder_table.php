@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('document_folder', function (Blueprint $table) {
             $table->bigIncrements('document_folder_id')->index();
-            $table->string('designation_name', 100);
+            $table->string('folder_name', 100);
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->integer('created_by')->index();
             $table->integer('updated_by')->index();

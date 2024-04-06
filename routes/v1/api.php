@@ -40,4 +40,5 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('folder/save',[DocumentFolderController::class,'save_folder']);
     Route::post('folder/list',[DocumentFolderController::class,'folder_list']);
     Route::post('folder/delete',[DocumentFolderController::class,'delete_folder']);
+    Route::post('folder/get',[DocumentFolderController::class,'get_folder']);
 });    

@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\DocumentFolder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class DocumentFolderController extends BaseController
 {
     public function save_folder(Request $request)
     {
         $rules = [
-            'full_name' => 'required|max:70',
+            'folder_name' => 'required|max:70',
         ];
        
         $validator = Validator::make($request->all(), $rules);
@@ -21,92 +22,73 @@ class DocumentFolderController extends BaseController
             return $this->sendError($validator->errors(), "Validation Errors", []);
         }
 
-        if($request->user_id == 0){
-            $user = New DocumentFolder();
-            $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            $user->created_by = Auth::user()->user_id;
-            $user->updated_by = Auth::user()->user_id;
+        if($request->folder_id == 0){
+            $folder = New DocumentFolder();
+            $folder->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $folder->created_by = Auth::user()->user_id;
+            $folder->updated_by = Auth::user()->user_id;
+            $action = "Added";
         }else{
-            $user = User::find($request->user_id);
-            $user->updated_by = Auth::user()->user_id;
+            $folder = DocumentFolder::find($request->folder_id);
+            $folder->updated_by = Auth::user()->user_id;
+            $action = "Updated";
         }
+        $folder->folder_name = $request->folder_name;
+        $folder->save();
 
-        $user->full_name = $request->full_name;
-        $user->user_code = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
-        $user->user_type = 2;
-        $user->mobile_no = $request->mobile_no;
-        $user->save();
-
-        if($user && $request->user_id == 0){
-            $main_society_member = SocietyMember::find($society_member_id);
-            $society_member = new SocietyMember();
-            $society_member->user_id = $user->user_id;
-            $society_member->parent_society_member_id  = $main_society_member->society_member_id;
-            $society_member->society_id = $main_society_member->society_id;
-            $society_member->resident_designation_id = 3;
-            $society_member->block_flat_id = $main_society_member->block_flat_id;
-            $society_member->resident_type = $main_society_member->resident_type;
-            $society_member->created_by = Auth::id();
-            $society_member->updated_by = Auth::id();
-            $society_member->save();
-        }
-
-        return $this->sendResponseSuccess("Family Member Added Successfully");
+        return $this->sendResponseSuccess("Folder ". $action ." Successfully");
     }
 
-    public function uploadProfileImage($request,$old_image=""){
-        $image = $request->file('profile_pic');
-        $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-        $destinationPath = public_path('images/profile_pic');
-        $image->move($destinationPath, $image_name);
-        if(isset($old_image) && $old_image != "") {
-            $old_image = public_path($old_image);
-            if (file_exists($old_image)) {
-                unlink($old_image);
-            }
-        }
-        return  'images/profile_pic/'.$image_name;
-    }
-
-    public function family_list(Request $request)
+  
+    public function folder_list()
     {
-        $society_member_id = $this->payload['society_member_id'];
-        if($society_member_id == ""){
-            return $this->sendError('Flat Not Found.', "Not Found", []);
-        }
-        $family_members = SocietyMember::with('user')->where('parent_society_member_id', $society_member_id);
-        $family_members = $family_members->orderBy('created_at', 'DESC')->paginate(10);
-
-        $family_member_arr = array();
-        foreach ($family_members as $family_member) {
-            $temp['society_member_id'] = $family_member['society_member_id'];
-            $temp['full_name'] = $family_member->user->full_name;
-            $temp['mobile_no'] = $family_member->user->mobile_no;
-            $temp['profile_pic'] = $family_member->user->profile_pic_url;
-            $temp['is_app_user'] = $family_member->user->usertype == 3 ? true : false;
-            array_push($family_member_arr, $temp);
+        $folders = DocumentFolder::where('estatus',1)->paginate(10);
+        $folder_arr = array();
+        foreach ($folders as $folder) {
+            $temp['document_folder_id'] = $folder->document_folder_id;
+            $temp['full_name'] = $folder->folder_name;
+            array_push($folder_arr, $temp);
         }
 
-        $data['family_members'] = $family_member_arr;
-        $data['total_records'] = $family_members->toArray()['total'];
-        return $this->sendResponseWithData($data, "All Family Member Retrieved Successfully.");
+        $data['folders'] = $folder_arr;
+        $data['total_records'] = $folders->toArray()['total'];
+        return $this->sendResponseWithData($data, "All Folder Retrieved Successfully.");
     }
 
-    public function delete_family_member(Request $request)
+    public function delete_folder(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'society_member_id' => 'required|exists:society_member',
+            'document_folder_id' => 'required|exists:document_folder',
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors(), "Validation Errors", []);
         }
 
-        $society_member = SocietyMember::find($request->society_member_id);
-        if ($society_member) {
-            $society_member->estatus = 3;
-            $society_member->save();
-            $society_member->delete();
+        $folder = DocumentFolder::find($request->document_folder_id);
+        if ($folder) {
+            $folder->estatus = 3;
+            $folder->save();
+            $folder->delete();
         }
-        return $this->sendResponseSuccess("member deleted Successfully.");
+        return $this->sendResponseSuccess("folder deleted Successfully.");
+    }
+
+    public function get_folder(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'document_folder_id' => 'required|exists:document_folder',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors(), "Validation Errors", []);
+        }
+        $folder = DocumentFolder::where('estatus',1)->first();
+        if (!$folder){
+            return $this->sendError("You can not view this folder", "Invalid folder", []);
+        }
+        $data = array();
+        $temp['document_folder_id'] = $folder->document_folder_id;
+        $temp['full_name'] = $folder->folder_name;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "All Folder Retrieved Successfully.");
     }
 }
