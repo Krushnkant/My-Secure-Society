@@ -3,8 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\api\v1\BannerController;
 use App\Http\Controllers\api\v1\DocumentFolderController;
 use App\Http\Controllers\api\v1\FamilyMemberController;
+use App\Http\Controllers\api\v1\SocietyDocumentController;
 use App\Http\Controllers\api\v1\SocietyMemberController;
 use App\Http\Controllers\Api\V1\UserController;
 
@@ -41,4 +43,13 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('folder/list',[DocumentFolderController::class,'folder_list']);
     Route::post('folder/delete',[DocumentFolderController::class,'delete_folder']);
     Route::post('folder/get',[DocumentFolderController::class,'get_folder']);
+
+    Route::post('document/save',[SocietyDocumentController::class,'save_document']);
+    Route::post('document/list',[SocietyDocumentController::class,'folder_document']);
+    Route::post('document/delete',[SocietyDocumentController::class,'delete_document']);
+    Route::post('document/get',[SocietyDocumentController::class,'get_document']);
+
+    
+    Route::get('banner/list',[BannerController::class,'banner_list']);
+    Route::get('banner/config/list',[BannerController::class,'banner_config_list']);
 });    
