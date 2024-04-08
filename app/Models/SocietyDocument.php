@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PostBanner extends Model
+class SocietyDocument extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $table = 'post_banner';
-    protected $primaryKey = 'post_banner_id';
+    protected $table = 'society_document';
+    protected $primaryKey = 'society_document_id';
     protected $dates = ['deleted_at'];
 }

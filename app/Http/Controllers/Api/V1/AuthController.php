@@ -116,7 +116,7 @@ class AuthController extends BaseController
                 if($diff->i > 30) {
                     return $this->sendError('OTP verification Failed.', "verification Failed", []);
                 }
-                $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
+                $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
                 $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
                 $data['profile_data'] =  new UserResource($user);
                 $data['isNewUser'] = $user->full_name == "" ? true : false;
@@ -135,7 +135,7 @@ class AuthController extends BaseController
         $user_id = Auth::id();
         $user = User::with('societymember')->where('user_id',$user_id)->first();
         if($user){
-            $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
+            $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
             $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
             return $this->sendResponseWithData($data,'Token get successfully.');
            
