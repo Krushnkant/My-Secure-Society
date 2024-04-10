@@ -124,9 +124,10 @@
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.society_member_id}">`;
                         }
@@ -160,6 +161,7 @@
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                       className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(8)));
                             if (is_edit) {
@@ -178,8 +180,9 @@
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(8)));
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(8)));
@@ -314,10 +317,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#societymemberform").serializeArray();
-
+            var formAction = $("#societymemberform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/societymember/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -406,6 +409,14 @@
                         getTableData('', 1);
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#SocietyMemberModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -442,6 +453,7 @@
             $('#block-dropdown').trigger('change');
             $('#flat-dropdown').trigger('change');
             $.get("{{ url('admin/societymember') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#SocietyMemberModal').find('form').attr('action', "{{ url('admin/societymember/update') }}");
                 $('#SocietyMemberModal').find('#save_newBtn').attr("data-action", "update");
                 $('#SocietyMemberModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#SocietyMemberModal').find('#save_newBtn').attr("data-id", edit_id);

@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="EmergencyContactModal" tabindex="-1" role="dialog" aria-labelledby="EmergencyContactModal">
     <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="emergencycontactform" action="#" method="post">
+            <form class="form-valide" id="emergencycontactform" action="{{ url('admin/emergencycontact/add') }}" method="post">
             {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title">Add Emergency Contact</h5>

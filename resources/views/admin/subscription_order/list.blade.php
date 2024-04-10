@@ -128,9 +128,10 @@
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.subscription_order_id}">`;
                         }
@@ -208,6 +209,7 @@
                         data: 'id',
                         width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_view = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_view(11)));
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(10)));
@@ -348,10 +350,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = new FormData($("#orderform")[0]);
-
+            var formAction = $("#orderform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/subscriptionorder/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -462,6 +464,14 @@
                         getTableData('', 1);
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#OrderModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -499,6 +509,7 @@
             $('#society-dropdown').trigger('change');
 
             $.get("{{ url('admin/subscriptionorder') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#OrderModal').find('form').attr('action', "{{ url('admin/subscriptionorder/update') }}");
                 $('#OrderModal').find('#save_newBtn').attr("data-action", "update");
                 $('#OrderModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#OrderModal').find('#save_newBtn').attr("data-id", edit_id);

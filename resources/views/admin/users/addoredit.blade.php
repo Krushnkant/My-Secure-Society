@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="UserModal" tabindex="-1" role="dialog" aria-labelledby="UserModal">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="userform" method="post" enctype="multipart/form-data">
+            <form class="form-valide" id="userform" method="post" action="{{ url('admin/users/add') }}" enctype="multipart/form-data">
                 {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title">Add User</h5>

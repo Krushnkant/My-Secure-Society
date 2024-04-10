@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="DesignationModal" tabindex="-1" role="dialog" aria-labelledby="DesignationModal">
     <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="designationform" action="#" method="post">
+            <form class="form-valide" id="designationform" action="{{ url('admin/designation/add') }}" method="post">
             {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title">Add Designation</h5>

@@ -106,21 +106,23 @@
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.company_designation_id}">`;
                         }
                     },
                     {
-                        width: "20%",
+                        width: "74%",
                         data: 'designation_name',
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(1)));
                             if (is_edit) {
@@ -139,8 +141,9 @@
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "15%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_view = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_view(2)));
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(1)));
@@ -270,10 +273,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#designationform").serializeArray();
-
+            var formAction = $("#designationform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/designation/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -328,6 +331,14 @@
                         getTableData('', 1);
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#DesignationModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -353,6 +364,7 @@
             $('#DesignationModal').find('.modal-title').html("Edit Designation");
             $('#designation_name-error').html("");
             $.get("{{ url('admin/designation') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#DesignationModal').find('form').attr('action', "{{ url('admin/designation/update') }}");
                 $('#DesignationModal').find('#save_newBtn').attr("data-action", "update");
                 $('#DesignationModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#DesignationModal').find('#save_newBtn').attr("data-id", edit_id);

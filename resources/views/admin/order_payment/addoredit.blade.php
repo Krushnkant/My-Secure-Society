@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="OrderPaymentModel" tabindex="-1" role="dialog" aria-labelledby="OrderPaymentModel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="orderpaymentform" method="post">
+            <form class="form-valide" id="orderpaymentform" action="{{ url('admin/orderpayment/add') }}" method="post">
                 {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title"></h5>

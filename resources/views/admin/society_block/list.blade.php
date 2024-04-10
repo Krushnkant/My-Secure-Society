@@ -111,9 +111,10 @@
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.society_block_id}">`;
                         }
@@ -126,6 +127,7 @@
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(8)));
                             if (is_edit) {
@@ -144,8 +146,9 @@
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_view = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_view(9)));
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(8)));
@@ -275,10 +278,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#blockform").serializeArray();
-
+            var formAction = $("#blockform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/block/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -333,6 +336,14 @@
                         getTableData('', 1);
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#BlockModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -361,6 +372,7 @@
             $('#BlockModal').find('.modal-title').html("Edit Block");
             $('#block_name-error').html("");
             $.get("{{ url('admin/block') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#BlockModal').find('form').attr('action', "{{ url('admin/block/update') }}");
                 $('#BlockModal').find('#save_newBtn').attr("data-action", "update");
                 $('#BlockModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#BlockModal').find('#save_newBtn').attr("data-id", edit_id);

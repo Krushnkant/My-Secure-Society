@@ -106,9 +106,10 @@
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.emergency_contact_id }">`;
                         }
@@ -125,6 +126,7 @@
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                       className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(4)));
                             if (is_edit) {
@@ -143,8 +145,9 @@
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(4)));
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 &&is_delete(4)));
@@ -269,10 +272,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#emergencycontactform").serializeArray();
-
+            var formAction = $("#emergencycontactform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/emergencycontact/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -333,6 +336,14 @@
                         getTableData('', 1);
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#EmergencyContactModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -359,6 +370,7 @@
             $('#name-error').html("");
             $('#mobile_no-error').html("");
             $.get("{{ url('admin/emergencycontact') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#EmergencyContactModal').find('form').attr('action', "{{ url('admin/emergencycontact/update') }}");
                 $('#EmergencyContactModal').find('#save_newBtn').attr("data-action", "update");
                 $('#EmergencyContactModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#EmergencyContactModal').find('#save_newBtn').attr("data-id", edit_id);
