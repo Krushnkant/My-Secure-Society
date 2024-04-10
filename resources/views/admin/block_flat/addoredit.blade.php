@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="FlatModel" tabindex="-1" role="dialog" aria-labelledby="FlatModel">
     <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="flatform" action="#" method="post">
+            <form class="form-valide" id="flatform" action="{{ url('admin/flat/add') }}" method="post">
             <input type="hidden" name="society_block_id" id="society_block_id" value="{{ $id }}">
             {{ csrf_field() }}
                 <div class="modal-header">

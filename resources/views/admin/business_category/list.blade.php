@@ -108,9 +108,10 @@
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.business_category_id}">`;
                         }
@@ -130,6 +131,7 @@
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                       className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(5)));
                             if (is_edit) {
@@ -148,8 +150,9 @@
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(5)));
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(5)));
@@ -284,10 +287,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#businesscategoryform").serializeArray();
-
+            var formAction = $("#businesscategoryform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/businesscategory/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -373,6 +376,7 @@
             $('#BusinessCategoryModal').find('.modal-title').html("Edit Business Category");
             $('#business_category_name-error').html("");
             $.get("{{ url('admin/businesscategory') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#BusinessCategoryModal').find('form').attr('action', "{{ url('admin/businesscategory/update') }}");
                 $('#BusinessCategoryModal').find('#save_newBtn').attr("data-action", "update");
                 $('#BusinessCategoryModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#BusinessCategoryModal').find('#save_newBtn').attr("data-id", edit_id);

@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="SocietyMemberModal" tabindex="-1" role="dialog" aria-labelledby="SocietyMemberModal">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="societymemberform" action="#" method="post">
+            <form class="form-valide" id="societymemberform" action="{{ url('admin/societymember/add') }}" method="post">
             <input type="hidden" name="society_id" id="society_id" value="{{ $id }}">
             {{ csrf_field() }}
                 <div class="modal-header">

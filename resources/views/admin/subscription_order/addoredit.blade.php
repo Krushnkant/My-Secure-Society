@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="OrderModal" tabindex="-1" role="dialog" aria-labelledby="OrderModal">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="orderform" method="post">
+            <form class="form-valide" id="orderform" action="{{ url('admin/subscriptionorder/add') }}" method="post">
                 {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title">Add User</h5>

@@ -115,9 +115,10 @@
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.block_flat_id}">`;
                         }
@@ -126,21 +127,11 @@
                         width: "20%",
                         data: 'flat_no',
                     },
-                    // {
-                    //     width: "20%",
-                    //     data: 'is_empty',
-                    //     orderable: false,
-                    //     render: function(data, type, row) {
-                    //         if (data == 1) {
-                    //             return `<span class="badge badge-success">Yes</span>`;
-                    //         }
-                    //         return `<span class="badge badge-danger">No</span>`;;
-                    //     }
-                    // },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(9)));
                             if (is_edit) {
@@ -161,6 +152,7 @@
                         data: 'id',
                         width: "5%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(9)));
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(9)));
@@ -286,10 +278,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#flatform").serializeArray();
-
+            var formAction = $("#flatform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/flat/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -344,6 +336,13 @@
                         }
                         getTableData('', 1);
                     }
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
 
                     if (res.status == 400) {
                         $("#FlatModel").modal('hide');
@@ -373,6 +372,7 @@
             $('#FlatModel').find('.modal-title').html("Edit Flat");
             $('#flat_no-error').html("");
             $.get("{{ url('admin/flat') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#FlatModel').find('form').attr('action', "{{ url('admin/flat/update') }}");
                 $('#FlatModel').find('#save_newBtn').attr("data-action", "update");
                 $('#FlatModel').find('#save_closeBtn').attr("data-action", "update");
                 $('#FlatModel').find('#save_newBtn').attr("data-id", edit_id);

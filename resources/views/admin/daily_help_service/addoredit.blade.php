@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="DailyHelpModal" tabindex="-1" role="dialog" aria-labelledby="DailyHelpModal">
     <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="servicevendorform" method="post" enctype="multipart/form-data">
+            <form class="form-valide" id="servicevendorform" action="{{ url('admin/dailyhelpservice/add') }}" method="post" enctype="multipart/form-data">
                 {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title">Add User</h5>

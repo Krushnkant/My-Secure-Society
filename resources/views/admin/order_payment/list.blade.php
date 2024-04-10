@@ -175,8 +175,9 @@
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(11)));
                             var action = `<span>`;
@@ -227,10 +228,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#orderpaymentform").serializeArray();
-
+            var formAction = $("#orderpaymentform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/orderpayment/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -302,6 +303,14 @@
                         });
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#OrderPaymentModel").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -331,6 +340,7 @@
             $('#payment_date-error').html("");
             $('#amount_paid-error').html("");
             $.get("{{ url('admin/flat') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#OrderPaymentModel').find('form').attr('action', "{{ url('admin/orderpayment/update') }}");
                 $('#OrderPaymentModel').find('#save_newBtn').attr("data-action", "update");
                 $('#OrderPaymentModel').find('#save_closeBtn').attr("data-action", "update");
                 $('#OrderPaymentModel').find('#save_newBtn').attr("data-id", edit_id);
