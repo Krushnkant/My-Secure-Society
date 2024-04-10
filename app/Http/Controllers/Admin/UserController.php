@@ -33,7 +33,7 @@ class UserController extends Controller
 
         // get data from products table
         $query = User::with('userdesignation')->where('user_id','!=',1)->where('user_type',1);
-   
+
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('full_name', 'like', "%".$search."%");
@@ -79,6 +79,12 @@ class UserController extends Controller
             'profile_pic' => $request->has('profile_pic') ? 'image|mimes:jpeg,png,jpg' : '',
             'full_name' => 'required|max:70',
         ];
+        if ($request->has('password')) {
+            $rules['password'] = [
+                'required',
+                'max:20',
+            ];
+        }
         if ($request->has('id') && $request->has('email')) {
             $rules['email'] = [
                 'required',

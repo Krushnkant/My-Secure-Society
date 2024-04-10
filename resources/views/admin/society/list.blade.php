@@ -171,8 +171,8 @@
                             var action = `<span>`;
                                 if (is_view) {
                                 action +=
-                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Member" id="viewSocietyMember"  data-id="${row.society_id}"><i class="fa fa-list color-muted"></i> </a>`;
-                                }    
+                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Member" id="viewSocietyMember"  data-id="${row.society_id}"><i class="fa fa-users color-muted"></i> </a>`;
+                                }
                             if (is_view) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Block" id="viewBlock"  data-id="${row.society_id}"><i class="fa fa-list color-muted"></i> </a>`;
@@ -242,7 +242,7 @@
                                             ids: selectedIds
                                         },
                                         success: function(response) {
-                                            
+
                                             toastr.success(
                                                 "Society deleted successfully!",
                                                 'Success', {

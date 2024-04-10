@@ -59,7 +59,7 @@ class DesignationController extends Controller
         $validator = Validator::make($request->all(), [
             'designation_name' => [
                 'required',
-                'max:255',
+                'max:60',
                 Rule::unique('company_designation', 'designation_name')
                 ->ignore($request->id, 'company_designation_id')
                     ->whereNull('deleted_at'),

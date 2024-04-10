@@ -127,7 +127,7 @@
                         render: function(data, type, row) {
                             var profile_pic = (data != "" && data != null) ? data : '{{ asset("image/avtar.png") }}';
                             return `<div class="media-left">
-                                      <img class="media-object mr-3"  width="50px" height="50px" alt="Profile Pic" src="${profile_pic}" alt="...">
+                                      <img class="media-object mr-3 rounded-circle"  width="50px" height="50px" alt="Profile Pic" src="${profile_pic}" alt="...">
                                 </div>`;
                         }
                     },
@@ -324,6 +324,11 @@
                             $('#mobile_no-error').show().text(res.errors.mobile_no);
                         } else {
                             $('#mobile_no-error').hide();
+                        }
+                        if (res.errors.password) {
+                            $('#password-error').show().text(res.errors.password);
+                        } else {
+                            $('#password-error').hide();
                         }
 
                     }

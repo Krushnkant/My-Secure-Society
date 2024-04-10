@@ -188,6 +188,7 @@
                     $('#deleteSelected').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
+                            alert();
                             toastr.error("Please select at least one row to delete.", 'Error', {
                                 timeOut: 5000
                             });
@@ -256,7 +257,7 @@
 
         $('#designationform').keypress(function(event) {
             if (event.keyCode === 13) {
-                event.preventDefault(); 
+                event.preventDefault();
                 save_designation($('#save_newBtn'), 'save_new');
             }
         });
