@@ -232,6 +232,15 @@
                     if (res.status == 200) {
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
+                        $('#profile_pic-error').html("");
+                        $('#company_name-error').html("");
+                        $('#city_id-error').html("");
+                        $('#gst_in_number-error').html("");
+                        $('#landmark-error').html("");
+                        $('#pin_code-error').html("");
+                        $('#state_id-error').html("");
+                        $('#country_id-error').html("");
+                        $('#street_address1-error').html("");
                         toastr.success("Company updated successfully!", 'Success', {
                             timeOut: 5000
                         });

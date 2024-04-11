@@ -165,16 +165,19 @@ class BusinessCategoryController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        $categories = BusinessCategory::whereIn('business_category_id', $ids)->get();
-        foreach ($categories as $category) {
-            $businessProfiles = \DB::table('business_profile_category')
-            ->where('business_category_id', $category->business_category_id)
+        $categories = BusinessCategory::whereIn('business_category_id', $ids)->pluck('business_category_id');
+        $businessProfiles = \DB::table('business_profile_category')
+            ->whereIn('business_category_id', $categories)
             ->exists();
-            if (!$businessProfiles) {
-                $category->estatus = 3;
-                $category->save();
-                $category->delete();
-            }
+
+        if($businessProfiles) {
+            return response()->json(['status' => '300','message'=>"Categories can't be deleted due to some Categories having profile"]);
+        }    
+        foreach ($categories as $category) {
+            $category = BusinessCategory::where('business_category_id',$category)->first();
+            $category->estatus = 3;
+            $category->save();
+            $category->delete();
         }
 
         return response()->json(['status' => '200']);

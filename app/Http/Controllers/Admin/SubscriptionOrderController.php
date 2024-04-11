@@ -106,7 +106,7 @@ class SubscriptionOrderController extends Controller
             $subscriptionorder = new SubscriptionOrder();
             $subscriptionorder->created_by = Auth::user()->user_id;
             $subscriptionorder->society_id = $request->society_id;
-            $subscriptionorder->order_id = 'ORD-' . $randomNumber;
+            $subscriptionorder->order_id =  $randomNumber;
             $subscriptionorder->total_flat = $request->total_flat;
             $subscriptionorder->amount_per_flat = $request->amount_per_flat;
             $subscriptionorder->sub_total_amount = $request->sub_total_amount;

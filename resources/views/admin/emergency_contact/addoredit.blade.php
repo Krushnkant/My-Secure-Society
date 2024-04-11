@@ -13,8 +13,8 @@
                     <div class="row">
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Name to Help For <span class="text-danger">*</span></label>
-                                <input type="text" name="name" id="name" class="form-control" placeholder="Name to Help For">
+                                <label class="text-label"> Help For <span class="text-danger">*</span></label>
+                                <input type="text" name="name" id="name" class="form-control" placeholder="Help For">
                                 <div id="name-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                             </div>
                         </div>

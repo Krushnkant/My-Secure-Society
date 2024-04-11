@@ -26,7 +26,7 @@ class FamilyMemberController extends BaseController
     {
         $society_member_id = $this->payload['society_member_id'];
         if($society_member_id == ""){
-            return $this->sendError('Flat Not Found.', "Not Found", []);
+            return $this->sendError(400,'Flat Not Found.', "Not Found", []);
         }
         $request->merge(['society_member_id'=>$society_member_id]);
         $rules = [
@@ -53,7 +53,7 @@ class FamilyMemberController extends BaseController
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         if($request->user_id == 0){
@@ -116,7 +116,7 @@ class FamilyMemberController extends BaseController
     {
         $society_member_id = $this->payload['society_member_id'];
         if($society_member_id == ""){
-            return $this->sendError('Flat Not Found.', "Not Found", []);
+            return $this->sendError(400,'Flat Not Found.', "Not Found", []);
         }
         $family_members = SocietyMember::with('user')->where('parent_society_member_id', $society_member_id);
         $family_members = $family_members->orderBy('created_at', 'DESC')->paginate(10);
@@ -142,7 +142,7 @@ class FamilyMemberController extends BaseController
             'society_member_id' => 'required|exists:society_member',
         ]);
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         $society_member = SocietyMember::find($request->society_member_id);

@@ -125,7 +125,7 @@
                         width: "10%",
                         data: 'amount_paid',
                         render: function(data, type, row) {
-                           return 'Rs. '+data
+                           return '&#8377; '+data
                         }
                     },
                     {
@@ -196,6 +196,7 @@
         }
 
         $('body').on('click', '#AddBtn_OrderPayment', function() {
+            $('#OrderPaymentModel').find('form').attr('action', "{{ url('admin/orderpayment/add') }}");
             $('#OrderPaymentModel').find('.modal-title').html("Add Order Payment");
             $("#OrderPaymentModel").find('form').trigger('reset');
             $('.single-select-placeholder').trigger('change');

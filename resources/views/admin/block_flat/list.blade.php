@@ -190,7 +190,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -247,6 +247,7 @@
         }
 
         $('body').on('click', '#AddBtn_Flat', function() {
+            $('#FlatModel').find('form').attr('action', "{{ url('admin/flat/add') }}");
             $('#FlatModel').find('.modal-title').html("Add Flat");
             $("#FlatModel").find('form').trigger('reset');
             $('.single-select-placeholder').trigger('change');

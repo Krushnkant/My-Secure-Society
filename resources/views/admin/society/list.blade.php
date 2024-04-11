@@ -127,11 +127,11 @@
                         }
                     },
                     {
-                        width: "10%",
+                        width: "20%",
                         data: 'society_name',
                     },
                     {
-                        width: "35%", // Adjust width as needed
+                        width: "49%", // Adjust width as needed
                         data: null,
                         render: function(data, type, row) {
                             // Concatenate address fields
@@ -161,7 +161,7 @@
                     },
                     {
                         data: 'id',
-                        width: "10%",
+                        width: "20%",
                         orderable: false,
                         className: 'text-center',
                         render: function(data, type, row) {
@@ -208,7 +208,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -243,14 +243,20 @@
                                         },
                                         success: function(response) {
 
-                                            toastr.success(
+                                            if (response.status == 200) {
+                                                toastr.success(
                                                 "Society deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            // getTableData('', 1);
-                                            $('#societyTable').DataTable().clear().draw();
-                                            $('#selectAll').prop('checked', false);
+                                                $('#societyTable').DataTable().clear().draw();
+                                                $('#selectAll').prop('checked', false);
+                                            }
+                                            if (response.status == 300) {
+                                                toastr.error(response.message, 'Error', {
+                                                    timeOut: 5000
+                                                });
+                                            }
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
@@ -275,6 +281,7 @@
 
 
         $('body').on('click', '#AddBtn_Society', function() {
+            $('#SocietyModal').find('form').attr('action', "{{ url('admin/society/add') }}");
             $('#SocietyModal').find('.modal-title').html("Add Society");
             $("#SocietyModal").find('form').trigger('reset');
             $('#id').val("");
@@ -500,7 +507,6 @@
                     dataType: 'json',
                     success: function(result) {
                         // Populate state dropdown
-                        $('#state-dropdown').html('<option value="">Select State</option>');
                         $.each(result.states, function(key, value) {
                             $("#state-dropdown").append('<option data-value="' + value.state_id +
                                 '" value="' + value.state_id + '">' + value.state_name + '</option>');
@@ -518,7 +524,7 @@
                             },
                             dataType: 'json',
                             success: function(result) {
-                                $('#city-dropdown').html('<option value="">Select City</option>');
+                                // Populate city dropdown
                                 $.each(result.cities, function(key, value) {
                                     $("#city-dropdown").append('<option data-value="' + value.city_id +
                                         '" value="' + value.city_id + '">' + value.city_name + '</option>');
@@ -585,8 +591,6 @@
                                     getTableData('', 1);
                                 }
                                 if (res.status == 300) {
-                                    $(btn).find('.loadericonfa').hide();
-                                    $(btn).prop('disabled', false);
                                     toastr.error(res.message, 'Error', {
                                         timeOut: 5000
                                     });

@@ -185,10 +185,9 @@
                         $('#selectAll').prop('checked', allChecked);
                     });
 
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
-                            alert();
                             toastr.error("Please select at least one row to delete.", 'Error', {
                                 timeOut: 5000
                             });
@@ -244,6 +243,7 @@
         }
 
         $('body').on('click', '#AddBtn_Designation', function() {
+            $('#DesignationModal').find('form').attr('action', "{{ url('admin/designation/add') }}");
             $('#DesignationModal').find('.modal-title').html("Add Designation");
             $("#DesignationModal").find('form').trigger('reset');
             $('#id').val("");

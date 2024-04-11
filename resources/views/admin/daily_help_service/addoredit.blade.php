@@ -13,9 +13,9 @@
                     <div class="row">
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Vendor Company Name <span class="text-danger">*</span></label>
+                                <label class="text-label">Service <span class="text-danger">*</span></label>
                                 <input type="text" name="service_name" id="service_name" class="form-control"
-                                    placeholder="Vendor Company Name">
+                                    placeholder="Service">
                                 <div id="service_name-error" class="invalid-feedback animated fadeInDown"
                                     style="display: none;"></div>
                             </div>

@@ -38,7 +38,7 @@
                                         <th>Society Name</th>
                                         {{-- <th>Sub Total</th>
                                         <th>GST Percent</th> --}}
-                                        <th>Total Amount</th>
+                                        <th>Amount</th>
                                         <th>Paid Amount</th>
                                         <th>Outstanding Amount</th>
                                         <th>Order Status</th>
@@ -53,7 +53,7 @@
                                         <th>Society Name</th>
                                         {{-- <th>Sub Total</th>
                                         <th>GST Percent</th> --}}
-                                        <th>Total Amount</th>
+                                        <th> Amount</th>
                                         <th>Paid Amount</th>
                                         <th>Outstanding Amount</th>
                                         <th>Order Status</th>
@@ -159,21 +159,21 @@
                         width: "10%",
                         data: 'total_amount',
                         render: function(data, type, row) {
-                           return 'Rs. '+data
+                           return '&#8377; '+data
                         }
                     },
                     {
                         width: "10%",
                         data: 'total_paid_amount',
                         render: function(data, type, row) {
-                           return 'Rs. '+data
+                           return '&#8377; '+data
                         }
                     },
                     {
                         width: "10%",
                         data: 'total_outstanding_amount',
                         render: function(data, type, row) {
-                           return 'Rs. '+data
+                           return '&#8377; '+data
                         }
                     },
                     {
@@ -250,7 +250,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -310,8 +310,9 @@
 
 
         $('body').on('click', '#AddBtn_Order', function() {
+            $('#OrderModal').find('form').attr('action', "{{ url('admin/subscriptionorder/add') }}");
             $('#OrderModal').find('.modal-title').html("Add Society");
-            //$("#OrderModal").find('form').trigger('reset');
+            $("#OrderModal").find('form').trigger('reset');
             $('#id').val("");
             $('#society_id-error').html("");
             $('#total_flat-error').html("");
@@ -322,13 +323,26 @@
             $('#total_amount-error').html("");
             $('#total_paid_amount-error').html("");
             $('#total_outstanding_amount-error').html("");
-            $('#order_status-dropdown').trigger('change');
-            $('#society-dropdown').trigger('change');
+            $('#order-status-dropdown').trigger('change');
+            $('#payment-type-dropdown').trigger('change');
             $("#OrderModal").find("#save_newBtn").removeAttr('data-action');
             $("#OrderModal").find("#save_closeBtn").removeAttr('data-action');
             $("#OrderModal").find("#save_newBtn").removeAttr('data-id');
             $("#OrderModal").find("#save_closeBtn").removeAttr('data-id');
             $("#society_name").focus();
+    
+            $('#total_flat').prop("readonly", false);
+            $('#amount_per_flat').prop("readonly", false);
+            $('#sub_total_amount').prop("readonly", false);
+            $('#gst_percent').prop("readonly", false);
+            $('#gst_amount').prop("readonly", false);
+            $('#total_amount').prop("readonly", false);
+            $('#total_paid_amount').prop("readonly", false);
+            $('#payment_date').prop("readonly", false);
+            $('#payment_note').prop("readonly", false);
+            $('#total_outstanding_amount').prop("readonly", false);
+            $('select[name="society_id"]').trigger('change').prop("disabled", false);
+            $('select[name="payment_type"]').trigger('change').prop("disabled", false);
         });
 
         $('#orderform').keypress(function(event) {
@@ -450,6 +464,19 @@
                             $("#OrderModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#OrderModal").find("#save_newBtn").removeAttr('data-id');
                             $("#OrderModal").find("#save_closeBtn").removeAttr('data-id');
+
+                            $('#total_flat').prop("readonly", false);
+                            $('#amount_per_flat').prop("readonly", false);
+                            $('#sub_total_amount').prop("readonly", false);
+                            $('#gst_percent').prop("readonly", false);
+                            $('#gst_amount').prop("readonly", false);
+                            $('#total_amount').prop("readonly", false);
+                            $('#total_paid_amount').prop("readonly", false);
+                            $('#payment_date').prop("readonly", false);
+                            $('#payment_note').prop("readonly", false);
+                            $('#total_outstanding_amount').prop("readonly", false);
+                            $('select[name="society_id"]').trigger('change').prop("disabled", false);
+                            $('select[name="payment_type"]').trigger('change').prop("disabled", false);
                             if (res.action == 'add') {
                                 toastr.success("Order Added successfully!", 'Success', {
                                     timeOut: 5000

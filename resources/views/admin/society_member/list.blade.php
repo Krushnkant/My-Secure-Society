@@ -220,7 +220,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -278,6 +278,7 @@
         }
 
         $('body').on('click', '#AddBtn_SocietyMember', function() {
+            $('#SocietyMemberModal').find('form').attr('action', "{{ url('admin/societymember/add') }}");
             $('#SocietyMemberModal').find('.modal-title').html("Add Society Member");
             $("#SocietyMemberModal").find('form').trigger('reset');
             $('#id').val("");

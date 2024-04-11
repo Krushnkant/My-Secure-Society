@@ -68,8 +68,8 @@ class SocietyController extends Controller
             'street_address2' => 'max:255',
             'landmark' => 'required|max:50',
             'pin_code' => 'required|numeric',
-            'latitude' => 'required|numeric|between:-90,90',
-            'longitude' => 'required|numeric|between:-180,180',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'city_id' => 'required',
             'state_id' => 'required',
             'country_id' => 'required',
@@ -141,15 +141,18 @@ class SocietyController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        $societies = Society::whereIn('society_id', $ids)->get();
+        $societies = Society::whereIn('society_id', $ids)->pluck('society_id');
+        $block = Block::whereIn('society_id', $societies)->exists();
+        if ($block) {
+            return response()->json(['status' => '300','message'=>"Societies can't be deleted due to some Societies having blocks."]);
+        }
         foreach ($societies as $societie) {
-            $block = Block::where('society_id', $societie->society_id)->exists();
-            if (!$block) {
+            $societie = Society::where('society_id', $societie)->first();
                 $societie->estatus = 3;
                 $societie->save();
                 $societie->delete();
             }
-        }
+        
         return response()->json(['status' => '200']);
     }
 }

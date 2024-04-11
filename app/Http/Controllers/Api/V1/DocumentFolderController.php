@@ -19,7 +19,7 @@ class DocumentFolderController extends BaseController
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         if($request->folder_id == 0){
@@ -61,7 +61,7 @@ class DocumentFolderController extends BaseController
             'document_folder_id' => 'required|exists:document_folder',
         ]);
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         $folder = DocumentFolder::find($request->document_folder_id);
@@ -79,11 +79,11 @@ class DocumentFolderController extends BaseController
             'document_folder_id' => 'required|exists:document_folder',
         ]);
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $folder = DocumentFolder::where('estatus',1)->first();
+        $folder = DocumentFolder::where('estatus',1)->where('document_folder_id',$request->document_folder_id)->first();
         if (!$folder){
-            return $this->sendError("You can not view this folder", "Invalid folder", []);
+            return $this->sendError(404,"You can not view this folder", "Invalid folder", []);
         }
         $data = array();
         $temp['document_folder_id'] = $folder->document_folder_id;

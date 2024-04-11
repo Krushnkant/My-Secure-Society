@@ -185,7 +185,7 @@
                         $('#selectAll').prop('checked', allChecked);
                     });
 
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -241,7 +241,8 @@
         }
 
         $('body').on('click', '#AddBtn_EmergencyContact', function() {
-            $('#EmergencyContactModal').find('.modal-title').html("Add Designation");
+            $('#EmergencyContactModal').find('form').attr('action', "{{ url('admin/emergencycontact/add') }}");
+            $('#EmergencyContactModal').find('.modal-title').html("Add Emergency Contact");
             $("#EmergencyContactModal").find('form').trigger('reset');
             $('#id').val("");
             $('#name-error').html("");

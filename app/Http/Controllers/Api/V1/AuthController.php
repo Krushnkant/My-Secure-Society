@@ -23,7 +23,7 @@ class AuthController extends BaseController
         ]);
 
         if($validator->fails()){
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         $mobile_no = $request->mobile_no;
@@ -31,7 +31,7 @@ class AuthController extends BaseController
         
         if ($user){
             if($user->estatus != 1){
-                return $this->sendError("Your account is de-activated by admin.", "Account De-active", []);
+                return $this->sendError(403,"Your account is de-activated by admin.", "Account De-active", []);
             }
         }else{
             $user = new User();
@@ -63,18 +63,18 @@ class AuthController extends BaseController
     public function send_otp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'mobile_no' => 'required'
+            'mobile_no' => 'required|digits:10'
         ]);
 
         if($validator->fails()){
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         $mobile_no = $request->mobile_no;
-        $user = User::where('mobile_no',$mobile_no)->where('user_type',4)->first();
+        $user = User::where('mobile_no',$mobile_no)->whereIn('user_type',[2,4])->first();
         if ($user){
             if($user->estatus != 1){
-                return $this->sendError("Your account is de-activated by admin.", "Account De-active", []);
+                return $this->sendError(403,"Your account is de-activated by admin.", "Account De-active", []);
             }
         }
 
@@ -102,10 +102,10 @@ class AuthController extends BaseController
         ]);
 
         if($validator->fails()){
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $user = User::with('societymember')->where('mobile_no',$request->mobile_no)->where('user_type',4)->first();
+        $user = User::with('societymember')->where('mobile_no',$request->mobile_no)->where('user_type',[2,4])->first();
         if($user){
         $user_otp = GeneratedOtp::where('mobile_no',$request->mobile_no)->where('otp_code',$request->otp)->first();
             if ($user_otp && isset($user_otp['expire_time']) ){
@@ -114,23 +114,22 @@ class AuthController extends BaseController
                 $diff = $t1->diff($t2);
                 $user_otp->delete();
                 if($diff->i > 30) {
-                    return $this->sendError('OTP verification Failed.', "verification Failed", []);
+                    return $this->sendError(422,'OTP verification Failed.', "verification Failed", []);
                 }
                 $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
                 $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
                 $data['profile_data'] =  new UserResource($user);
                 $data['isNewUser'] = $user->full_name == "" ? true : false;
-                return $this->sendResponseWithData($data,'OTP verified successfully.');
+                return $this->sendResponseSuccess('OTP verified successfully.');
             }
             else{
-                return $this->sendError('OTP verification Failed.', "verification Failed", []);
+                return $this->sendError(422,'OTP verification Failed.', "verification Failed", []);
             }
         }else{
-            return $this->sendError('Mobile Number Not Found.', "verification Failed", []);
+            return $this->sendError(400,'Mobile Number Not Found.', "verification Failed", []);
         }
     }
 
-   
     public function get_token(){
         $user_id = Auth::id();
         $user = User::with('societymember')->where('user_id',$user_id)->first();
@@ -140,7 +139,7 @@ class AuthController extends BaseController
             return $this->sendResponseWithData($data,'Token get successfully.');
            
         }else{
-            return $this->sendError('User Not Found.', "verification Failed", []);
+            return $this->sendError(400,'User Not Found.', "verification Failed", []);
         }
     }
 
