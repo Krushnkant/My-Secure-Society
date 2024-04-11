@@ -21,69 +21,66 @@
 
         <div class="col-lg-12">
             <div class="card">
-
                 <div class="card-body">
                     <div class="table-responsive">
                         <form class="form-valide" id="permissionForm" action="#" method="post">
-                            {{ csrf_field() }}
-                            <table class="table table-striped table-responsive-sm">
-                                <thead>
+                        {{ csrf_field() }}
+                        <table id="permissionTable" class="display" style="min-width: 845px">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Module</th>
+                                    <th class="text-center"> View <input type="checkbox" id="selectViewAllCheckbox"></th>
+                                    <th class="text-center"> Add <input type="checkbox" id="selectAddAllCheckbox"></th>
+                                    <th class="text-center"> Edit <input type="checkbox" id="selectEditAllCheckbox"></th>
+                                    <th class="text-center"> Delete <input type="checkbox" id="selectDeleteAllCheckbox"></th>
+                                    <th class="text-center"> Print <input type="checkbox" id="selectPrintAllCheckbox"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $i = 1; ?>
+                                @foreach ($designation_permissions as $designation_permission)
                                     
-                                </thead>
-                                <thead class="">
                                     <tr>
-                                        <th class="text-center">#</th>
-                                        <th>Module</th>
-                                        <th class="text-center"> View <input type="checkbox" id="selectViewAllCheckbox"></th>
-                                        <th class="text-center"> Add <input type="checkbox" id="selectAddAllCheckbox"></th>
-                                        <th class="text-center"> Edit <input type="checkbox" id="selectEditAllCheckbox"></th>
-                                        <th class="text-center"> Delete <input type="checkbox" id="selectDeleteAllCheckbox"></th>
-                                        <th class="text-center"> Print <input type="checkbox" id="selectPrintAllCheckbox"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php $i = 1; ?>
-                                    @foreach ($designation_permissions as $designation_permission)
                                         <input type="hidden" value="{{ $designation_permission->company_designation_id }}"
-                                            name="company_designation_id">
-                                        <input type="hidden" class="eAuthority"
-                                            value="{{ $designation_permission->eAuthority }}">
-                                        <tr>
-                                            <th class="text-center">{{ $i }}</th>
-                                            <td>{{ $modules[$i] }}</td>
-                                            <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
-                                                    value="{{ $designation_permission->can_view }}" name="canViewArr[]"
-                                                    {{ $designation_permission->can_view == 1 ? 'checked' : '' }}
-                                                    {{ $designation_permission->can_view == 0 ? 'disabled' : '' }}></td>
-                                            <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
-                                                    value="{{ $designation_permission->can_add }}" name="canAddArr[]"
-                                                    {{ $designation_permission->can_add == 1 ? 'checked' : '' }}
-                                                    {{ $designation_permission->can_add == 0 ? 'disabled' : '' }}></td>
-                                            <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
-                                                    value="{{ $designation_permission->can_edit }}" name="canEditArr[]"
-                                                    {{ $designation_permission->can_edit == 1 ? 'checked' : '' }}
-                                                    {{ $designation_permission->can_edit == 0 ? 'disabled' : '' }}></td>
-                                            <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
-                                                    value="{{ $designation_permission->can_delete }}" name="canDeleteArr[]"
-                                                    {{ $designation_permission->can_delete == 1 ? 'checked' : '' }}
-                                                    {{ $designation_permission->can_delete == 0 ? 'disabled' : '' }}></td>
-                                            <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
-                                                    value="{{ $designation_permission->can_print }}" name="canPrintArr[]"
-                                                    {{ $designation_permission->can_print == 1 ? 'checked' : '' }}
-                                                    {{ $designation_permission->can_print == 0 ? 'disabled' : '' }}></td>
-                                        </tr>
-                                        <?php $i++; ?>
-                                    @endforeach
-                                </tbody>
-
-                            </table>
-                            @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(2)))
-                                <div class="text-right mt-5 btn-page">
-                                    <button type="submit" id="savePermissionBtn" class="btn btn-primary">Save <i
-                                            class="fa fa-circle-o-notch fa-spin loadericonfa"
-                                            style="display:none;"></i></button>
-                                </div>
-                            @endif
+                                        name="company_designation_id">
+                                    <input type="hidden" class="eAuthority"
+                                        value="{{ $designation_permission->eAuthority }}">
+                                        <th class="text-center">{{ $i }}</th>
+                                        <td>{{ $modules[$i] }}</td>
+                                        <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
+                                                value="{{ $designation_permission->can_view }}" name="canViewArr[]"
+                                                {{ $designation_permission->can_view == 1 ? 'checked' : '' }}
+                                                {{ $designation_permission->can_view == 0 ? 'disabled' : '' }}></td>
+                                        <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
+                                                value="{{ $designation_permission->can_add }}" name="canAddArr[]"
+                                                {{ $designation_permission->can_add == 1 ? 'checked' : '' }}
+                                                {{ $designation_permission->can_add == 0 ? 'disabled' : '' }}></td>
+                                        <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
+                                                value="{{ $designation_permission->can_edit }}" name="canEditArr[]"
+                                                {{ $designation_permission->can_edit == 1 ? 'checked' : '' }}
+                                                {{ $designation_permission->can_edit == 0 ? 'disabled' : '' }}></td>
+                                        <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
+                                                value="{{ $designation_permission->can_delete }}" name="canDeleteArr[]"
+                                                {{ $designation_permission->can_delete == 1 ? 'checked' : '' }}
+                                                {{ $designation_permission->can_delete == 0 ? 'disabled' : '' }}></td>
+                                        <td class="text-center"><input type="checkbox" class=" permissionCheckBox"
+                                                value="{{ $designation_permission->can_print }}" name="canPrintArr[]"
+                                                {{ $designation_permission->can_print == 1 ? 'checked' : '' }}
+                                                {{ $designation_permission->can_print == 0 ? 'disabled' : '' }}></td>
+                                    </tr>
+                                    <?php $i++; ?>
+                                @endforeach
+                            </tbody>
+                            
+                        </table>
+                        @if (getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(2)))
+                            <div class="text-right mt-5 btn-page">
+                                <button type="submit" id="savePermissionBtn" class="btn btn-primary">Save <i
+                                        class="fa fa-circle-o-notch fa-spin loadericonfa"
+                                        style="display:none;"></i></button>
+                            </div>
+                        @endif
                         </form>
                     </div>
                 </div>
@@ -96,7 +93,9 @@
 @endsection
 
 @section('js')
-
+     <!-- Datatable -->
+     <script src="{{ asset('/vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
+     <script src="{{ asset('/js/plugins-init/datatables.init.js') }}"></script>
 
     <script type="text/javascript">
         $('#permissionForm').on('submit', function(e) {
@@ -106,12 +105,20 @@
 
             var permissionArray = [];
             $(".eAuthority").each(function() {
+                // var page_id = $(this).val();
+                // var can_view = $(this).next().find('input[name="canViewArr[]"]').val();
+                // var can_add = $(this).next().find('input[name="canAddArr[]"]').val();
+                // var can_edit = $(this).next().find('input[name="canEditArr[]"]').val();
+                // var can_delete = $(this).next().find('input[name="canDeleteArr[]"]').val();
+                // var can_print = $(this).next().find('input[name="canPrintArr[]"]').val();
+
                 var page_id = $(this).val();
-                var can_view = $(this).next().find('input[name="canViewArr[]"]').val();
-                var can_add = $(this).next().find('input[name="canAddArr[]"]').val();
-                var can_edit = $(this).next().find('input[name="canEditArr[]"]').val();
-                var can_delete = $(this).next().find('input[name="canDeleteArr[]"]').val();
-                var can_print = $(this).next().find('input[name="canPrintArr[]"]').val();
+                var row = $(this).closest('tr');
+                var can_view = row.find('input[name="canViewArr[]"]').val();
+                var can_add = row.find('input[name="canAddArr[]"]').val();
+                var can_edit = row.find('input[name="canEditArr[]"]').val();
+                var can_delete = row.find('input[name="canDeleteArr[]"]').val();
+                var can_print = row.find('input[name="canPrintArr[]"]').val();
 
                 var temp = {
                     page_id: page_id,
@@ -232,6 +239,20 @@
             }
         });
     });
+});
+
+$(document).ready(function() {
+    // Check if DataTables is already initialized on the table
+    if (!$.fn.DataTable.isDataTable('#permissionTable')) {
+        $('#permissionTable').DataTable({
+            "paging": false, // Disable pagination
+            "searching": false, // Disable search
+            "info": false, // Disable info text
+            "ordering": false // Disable ordering
+            
+        });
+        
+    }
 });
     </script>
 @endsection

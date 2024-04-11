@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('society_block', function (Blueprint $table) {
             $table->bigIncrements('society_block_id')->index();
             $table->integer('society_id')->index();
-            $table->string('block_name');
+            $table->string('block_name',100);
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();

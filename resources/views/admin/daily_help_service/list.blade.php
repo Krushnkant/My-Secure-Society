@@ -128,7 +128,7 @@
                         }
                     },
                     {
-                        width: "10%",
+                        width: "30%",
                         data: 'service_name',
                     },
                     {
@@ -189,7 +189,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -247,6 +247,7 @@
 
 
         $('body').on('click', '#AddBtn_DailyHelp', function() {
+            $('#DailyHelpModal').find('form').attr('action', "{{ url('admin/dailyhelpservice/add') }}");
             $('#DailyHelpModal').find('.modal-title').html("Add help service");
             $("#DailyHelpModal").find('form').trigger('reset');
             $('#id').val("");

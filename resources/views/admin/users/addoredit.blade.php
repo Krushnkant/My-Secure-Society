@@ -53,7 +53,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-lg-6 mb-2 password-field">
                             <div class="form-group">
                                 <label class="text-label">Password <span class="text-danger">*</span></label>
                                 <div class="input-group">

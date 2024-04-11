@@ -20,7 +20,7 @@ class SocietyMemberController extends BaseController
         ]);
 
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         $society_member = new SocietyMember();
@@ -67,7 +67,7 @@ class SocietyMemberController extends BaseController
             'society_member_id' => 'required|exists:society_member',
         ]);
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         $society_member = SocietyMember::find($request->society_member_id);

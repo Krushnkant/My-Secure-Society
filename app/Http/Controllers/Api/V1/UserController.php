@@ -17,7 +17,7 @@ class UserController extends BaseController
         $user_id = Auth::id();
         $user = User::where('user_id',$user_id)->whereIn('user_type', [2, 4])->where('estatus',1)->first();
         if (!$user){
-            return $this->sendError("You can not get this profile", "Invalid user", []);
+            return $this->sendError(404,"You can not get this profile", "Invalid user", []);
         }
         $data = array();
         array_push($data,new UserResource($user));
@@ -33,9 +33,9 @@ class UserController extends BaseController
             'email' => ['required', 'string', 'email', 'max:191', Rule::unique('user')->where(function ($query) use ($user_id) {
                 return $query->where('user_type', 4)->where('user_id','!=',$user_id)->where('estatus','!=',3);
             })],
-            'mobile_no' => ['required', Rule::unique('user')->where(function ($query) use ($user_id) {
-                return $query->where('user_type', 4)->where('user_id','!=',$user_id)->where('estatus','!=',3);
-            })],
+            // 'mobile_no' => ['required', Rule::unique('user')->where(function ($query) use ($user_id) {
+            //     return $query->where('user_type', 4)->where('user_id','!=',$user_id)->where('estatus','!=',3);
+            // })],
         ];
         
         if (!empty($request->input('blood_group'))) {
@@ -45,17 +45,17 @@ class UserController extends BaseController
         $validator = Validator::make($request->all(), $rules);
 
         if($validator->fails()){
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         $user = User::find($user_id);
         if (!$user)
         {
-            return $this->sendError('User Not Exist.', "Not Found Error", []);
+            return $this->sendError(404,'User Not Exist.', "Not Found Error", []);
         }
         $user->full_name = $request->full_name;
         $user->email = $request->email;
-        $user->mobile_no = $request->mobile_no;
+       // $user->mobile_no = $request->mobile_no;
         $user->gender = $request->gender;
         $user->blood_group  = $request->blood_group;
         $user->save();

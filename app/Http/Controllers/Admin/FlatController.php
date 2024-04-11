@@ -8,6 +8,7 @@ use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class FlatController extends Controller
 {
@@ -52,11 +53,26 @@ class FlatController extends Controller
     public function addorupdate(Request $request){
         $messages = [
             'flat_no.required' =>'Please provide a flat no',
+            'flat_no.unique' => 'The flat no is already taken for this block',
         ];
-
-        $validator = Validator::make($request->all(), [
-            'flat_no' => 'required|integer',
-        ], $messages);
+        if ($request->has('id') && $request->has('flat_no')) {
+            $rules['flat_no'] = [
+                'required',
+                'integer',
+                Rule::unique('block_flat')->where(function ($query) use ($request) {
+                    return $query->where('society_block_id', $request->society_block_id)->where('block_flat_id', '!=', $request->id)->whereNull('deleted_at');
+                }),
+            ];
+        } elseif ($request->has('flat_no')) {
+            $rules['flat_no'] = [
+                'required',
+                'integer',
+                Rule::unique('block_flat')->where(function ($query) use ($request) {
+                    return $query->where('society_block_id', $request->society_block_id)->whereNull('deleted_at');
+                }),
+            ];
+        }
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);

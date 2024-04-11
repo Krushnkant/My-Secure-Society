@@ -190,7 +190,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -224,14 +224,20 @@
                                             ids: selectedIds
                                         },
                                         success: function(response) {
-                                            toastr.success(
+                                            if (response.status == 200) {
+                                                toastr.success(
                                                 "Block deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            // getTableData('', 1);
-                                            $('#blockTable').DataTable().clear().draw();
-                                            $('#selectAll').prop('checked', false);
+                                                $('#blockTable').DataTable().clear().draw();
+                                                $('#selectAll').prop('checked', false);
+                                            }
+                                            if (response.status == 300) {
+                                                toastr.error(response.message, 'Error', {
+                                                    timeOut: 5000
+                                                });
+                                            }
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
@@ -248,6 +254,7 @@
         }
 
         $('body').on('click', '#AddBtn_Block', function() {
+            $('#BlockModal').find('form').attr('action', "{{ url('admin/block/add') }}");
             $('#BlockModal').find('.modal-title').html("Add Block");
             $("#BlockModal").find('form').trigger('reset');
             $('#id').val("");
@@ -433,6 +440,12 @@
                                     timeOut: 5000
                                 });
                                 getTableData('', 1);
+                            }
+
+                            if (res.status == 300) {
+                                toastr.error(res.message, 'Error', {
+                                    timeOut: 5000
+                                });
                             }
 
                             if (res.status == 400) {

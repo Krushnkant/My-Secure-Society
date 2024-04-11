@@ -9,16 +9,16 @@ class BaseController extends Controller
 {
     public function sendResponseWithData($data, $message)
     {
-        return response()->json(array('success'=>true,'status_code' => 1, 'message' => $message, 'data' => $data));
+        return response()->json(array('success'=>true,'status_code' => 200, 'message' => $message, 'data' => $data),200);
     }
 
     public function sendResponseSuccess($message)
     {
-        return response()->json(array('success'=>true,'status_code' => 1, 'message' => $message));
+        return response()->json(array('success'=>true,'status_code' => 200, 'message' => $message),200);
     }
 
-    public function sendError($error = [], $message, $errorMessages = [])
+    public function sendError($httpCode,$error = [], $message, $errorMessages = [])
     {
-        return response()->json(array('success'=>false,'status_code' => 0, 'error' => $error, 'message' => $message, 'data' => $errorMessages));
+        return response()->json(array('success'=>false,'status_code' => $httpCode, 'error' => $error, 'message' => $message, 'data' => $errorMessages),$httpCode);
     }
 }

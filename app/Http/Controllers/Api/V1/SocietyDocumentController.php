@@ -24,7 +24,7 @@ class SocietyDocumentController extends Controller
 
         $society_id = $this->payload['society_id'];
         if($society_id == ""){
-            return $this->sendError('Society Not Found.', "Not Found", []);
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
         $rules = [
@@ -38,7 +38,7 @@ class SocietyDocumentController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         if($request->society_document_id == 0){
@@ -67,7 +67,7 @@ class SocietyDocumentController extends Controller
     {
         $society_id = $this->payload['society_id'];
         if($society_id == ""){
-            return $this->sendError('Society Not Found.', "Not Found", []);
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
         $documents = SocietyDocument::where('estatus',1)->where('society_id',$society_id)->paginate(10);
@@ -92,7 +92,7 @@ class SocietyDocumentController extends Controller
             'society_document_id' => 'required|exists:society_document',
         ]);
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         $folder = SocietyDocument::find($request->society_document_id);
@@ -110,11 +110,11 @@ class SocietyDocumentController extends Controller
             'society_document_id' => 'required|exists:society_document',
         ]);
         if ($validator->fails()) {
-            return $this->sendError($validator->errors(), "Validation Errors", []);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $document = SocietyDocument::where('estatus',1)->first();
+        $document = SocietyDocument::where('estatus',1)->where('society_document_id',$request->society_document_id)->first();
         if (!$document){
-            return $this->sendError("You can not view this document", "Invalid document", []);
+            return $this->sendError(404,"You can not view this document", "Invalid document", []);
         }
         $data = array();
         $temp['society_document_id'] = $document->society_document_id;

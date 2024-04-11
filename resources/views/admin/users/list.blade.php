@@ -203,7 +203,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -263,8 +263,10 @@
 
 
         $('body').on('click', '#AddBtn_User', function() {
+            $('#UserModal').find('form').attr('action', "{{ url('admin/users/add') }}");
             $('#UserModal').find('.modal-title').html("Add User");
             $("#UserModal").find('form').trigger('reset');
+            $('.password-field').show();
             $('#id').val("");
             $('#full_name-error').html("");
             $('#email-error').html("");
@@ -425,8 +427,9 @@
                 $('#full_name').val(data.full_name);
                 $('#email').val(data.email);
                 $('#mobile_no').val(data.mobile_no);
-                $('#password').val(123456);
-                $('#password').prop('disabled', true);
+                // $('#password').val(123456);
+                // $('#password').prop('disabled', true);
+                $('.password-field').hide();
                 $('input[name="gender"][value="' + data.gender + '"]').prop('checked', true);
                 $('select[name="designation"]').val(data.userdesignation.company_designation_id).trigger('change');
                 if(data.profile_pic_url==null){

@@ -190,7 +190,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -223,14 +223,21 @@
                                             ids: selectedIds
                                         },
                                         success: function(response) {
-                                            toastr.success(
+                                            if (response.status == 200) {
+                                                toastr.success(
                                                 "Category deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            // getTableData('', 1);
-                                            $('#businesscategoryTable').DataTable().clear().draw();
-                                            $('#selectAll').prop('checked', false);
+                                                $('#businesscategoryTable').DataTable().clear().draw();
+                                                $('#selectAll').prop('checked', false);
+                                            }
+                                            if (response.status == 300) {
+                                                toastr.error(response.message, 'Error', {
+                                                    timeOut: 5000
+                                                });
+                                            }
+                                            
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
@@ -247,6 +254,7 @@
         }
 
         $('body').on('click', '#AddBtn_BusinessCategory', function() {
+            $('#BusinessCategoryModal').find('form').attr('action', "{{ url('admin/businesscategory/add') }}");
             $('#BusinessCategoryModal').find('.modal-title').html("Add Business Category");
             $("#BusinessCategoryModal").find('form').trigger('reset');
             $('.single-select-placeholder').trigger('change');
@@ -451,8 +459,6 @@
                                     getTableData('', 1);
                                 }
                                 if (res.status == 300) {
-                                    $(btn).find('.loadericonfa').hide();
-                                    $(btn).prop('disabled', false);
                                     toastr.error(res.message, 'Error', {
                                         timeOut: 5000
                                     });

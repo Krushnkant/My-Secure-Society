@@ -193,7 +193,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -252,6 +252,7 @@
 
 
         $('body').on('click', '#AddBtn_ServiceVendor', function() {
+            $('#ServiceVendorModal').find('form').attr('action', "{{ url('admin/servicevendor/add') }}");
             $('#ServiceVendorModal').find('.modal-title').html("Add vendor");
             $("#ServiceVendorModal").find('form').trigger('reset');
             $('#id').val("");

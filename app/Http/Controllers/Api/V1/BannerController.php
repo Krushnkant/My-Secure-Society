@@ -21,7 +21,7 @@ class BannerController extends BaseController
     {
         $society_id = $this->payload['society_id'];
         if($society_id == ""){
-            return $this->sendError('Society Not Found.', "Not Found", []);
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
         $banners = PostBanner::where('estatus',1)->where('society_id',$society_id)->get();
@@ -40,7 +40,7 @@ class BannerController extends BaseController
     {
         $society_member_id = $this->payload['society_member_id'];
         if($society_member_id == ""){
-            return $this->sendError('Society Member Not Found.', "Not Found", []);
+            return $this->sendError(400,'Society Member Not Found.', "Not Found", []);
         }
         
         $banners = PostBanner::where('estatus',1)->get();

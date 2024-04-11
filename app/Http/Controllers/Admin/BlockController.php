@@ -57,16 +57,24 @@ class BlockController extends Controller
             'block_name.unique' => 'The block name is already taken for this society',
         ];
 
-        $validator = Validator::make($request->all(), [
-            'block_name' => [
+        if ($request->has('id') && $request->has('block_name')) {
+            $rules['block_name'] = [
+                'required',
+                'max:100',
+                Rule::unique('society_block')->where(function ($query) use ($request) {
+                    return $query->where('society_id', $request->society_id)->where('society_block_id', '!=', $request->id)->whereNull('deleted_at');
+                }),
+            ];
+        } elseif ($request->has('block_name')) {
+            $rules['block_name'] = [
                 'required',
                 'max:100',
                 Rule::unique('society_block')->where(function ($query) use ($request) {
                     return $query->where('society_id', $request->society_id)->whereNull('deleted_at');
                 }),
-            ],
-        ], $messages);
-
+            ];
+        }
+        $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }
@@ -99,7 +107,7 @@ class BlockController extends Controller
         if ($block){
             $flat = Flat::where('society_block_id', $id)->exists();
             if ($flat) {
-                return response()->json(['status' => '300', 'message' => 'Cannot delete society. It is associated with one or more society block.']);
+                return response()->json(['status' => '300', 'message' => 'Cannot delete block. It is associated with one or more block flat.']);
             }
             $block->estatus = 3;
             $block->save();
@@ -126,14 +134,17 @@ class BlockController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        $blocks = Block::whereIn('society_block_id', $ids)->get();
-        foreach ($blocks as $block) {
-            $flat = Flat::where('society_block_id', $block->society_block_id)->exists();
-            if (!$flat) {
-                $block->estatus = 3;
-                $block->save();
-                $block->delete();
-            }
+        $blocks = Block::whereIn('society_block_id', $ids)->pluck('society_block_id');
+        $flat = Flat::whereIn('society_block_id', $blocks)->exists();
+        if ($flat) {
+            return response()->json(['status' => '300','message'=>"Blocks can't be deleted due to some Blocks having flat"]);
+        }
+        foreach ($blocks as $block) 
+        {
+            $block = Block::where('society_block_id', $block)->first();
+            $block->estatus = 3;
+            $block->save();
+            $block->delete();
         }
         return response()->json(['status' => '200']);
     }
