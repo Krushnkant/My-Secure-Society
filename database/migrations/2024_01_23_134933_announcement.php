@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('announcement', function (Blueprint $table) {
             $table->bigIncrements('announcement_id')->index();
             $table->integer('society_id')->index();
-            $table->string('announcement_description');
+            $table->string('announcement_title', 200);
+            $table->string('announcement_description', 1000);
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();

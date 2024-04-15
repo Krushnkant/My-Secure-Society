@@ -20,7 +20,8 @@ return new class extends Migration
             $table->string('email', 50)->nullable();
             // $table->dateTime('EmailVerifiedAt')->nullable();
             $table->string('password', 255)->nullable();
-            $table->string('profile_pic_url')->nullable();
+            $table->string('profile_pic_url', 1000)->nullable();
+            $table->string('cover_photo_url', 1000)->nullable();
             $table->integer('gender')->default(1)->enum([1, 2])->comment('1 - Female, 2 - Male')->index();
             $table->string('blood_group')->enum(['A+, A-, B+, B-, O+, O-, AB+, AB-'])->nullable()->index();
             $table->string('firebase_id')->nullable();
