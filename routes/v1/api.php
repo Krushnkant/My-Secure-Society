@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\ResidentController;
 use App\Http\Controllers\Api\V1\SocietyController;
 use App\Http\Controllers\api\v1\SocietyDocumentController;
 use App\Http\Controllers\api\v1\SocietyMemberController;
+use App\Http\Controllers\api\v1\AnnouncementController;
 use App\Http\Controllers\Api\V1\UserController;
 
 /*
@@ -61,6 +62,13 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('flat/list',[SocietyController::class,'flat_list']);
 
     Route::post('resident/list',[ResidentController::class,'resident_list']);
+    Route::post('resident/get',[ResidentController::class,'get_resident']);
+    Route::post('resident/change_status',[ResidentController::class,'change_status']);
+
+    Route::post('announcement/save',[AnnouncementController::class,'save_announcement']);
+    Route::post('announcement/list',[AnnouncementController::class,'announcement_list']);
+    Route::post('announcement/delete',[AnnouncementController::class,'delete_announcement']);
+    Route::post('announcement/get',[AnnouncementController::class,'get_announcement']);
 });
 
 Route::get('country/list', [UserController::class, 'get_country']);
