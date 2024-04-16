@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\City;
+use App\Models\Country;
+use App\Models\State;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Carbon\Carbon;
@@ -61,5 +64,90 @@ class UserController extends BaseController
         $user->save();
 
         return $this->sendResponseWithData(new UserResource($user),'User profile updated successfully.');
+    }
+
+    public function update_profilepic(Request $request){ 
+        $user_id = Auth::id();
+        $rules = [
+            'profile_pic' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ];
+        
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()){
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $user = User::find($user_id);
+        if (!$user)
+        {
+            return $this->sendError(404,'User Not Exist.', "Not Found Error", []);
+        }
+        if(isset($user->profile_pic)) {
+            $old_image = public_path('images/profile_pic/' . $user->profile_pic);
+            if (file_exists($old_image)) {
+                unlink($old_image);
+            }
+        }
+
+        $image = $request->file('profile_pic');
+        $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+        $destinationPath = public_path('images/profile_pic');
+        $image->move($destinationPath, $image_name);
+        $image_full_path = 'images/profile_pic/'.$image_name;
+        $user->profile_pic_url =  $image_full_path;
+        $user->save();
+
+        return $this->sendResponseWithData(['profile_pic_url' => url($image_full_path)],'User profile pic updated successfully.');
+    }
+
+    public function update_coverpic(Request $request){ 
+        $user_id = Auth::id();
+        $rules = [
+            'cover_pic' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ];
+        
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()){
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $user = User::find($user_id);
+        if (!$user)
+        {
+            return $this->sendError(404,'User Not Exist.', "Not Found Error", []);
+        }
+        if(isset($user->cover_pic)) {
+            $old_image = public_path('images/cover_pic/' . $user->cover_pic);
+            if (file_exists($old_image)) {
+                unlink($old_image);
+            }
+        }
+
+        $image = $request->file('cover_pic');
+        $image_name = 'proCoverPic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+        $destinationPath = public_path('images/cover_pic');
+        $image->move($destinationPath, $image_name);
+        $image_full_path = 'images/cover_pic/'.$image_name;
+        $user->cover_photo_url =  $image_full_path;
+        $user->save();
+
+        return $this->sendResponseWithData(['cover_pic_url' => url($image_full_path)],'User profile cover pic updated successfully.');
+    }
+
+    public function get_country(){
+        $countries = Country::get(['country_id','country_name']);
+        return $this->sendResponseWithData($countries,"Country Retrieved Successfully.");
+    }
+
+    public function get_state($country_id){
+        $states = State::where('country_id',$country_id)->get(['state_id','state_name']);
+        return $this->sendResponseWithData($states,"State Retrieved Successfully.");
+    }
+
+    public function get_city($state_id){
+        $cities = City::where('state_id',$state_id)->get(['city_id','city_name']);
+        return $this->sendResponseWithData($cities,"City Retrieved Successfully.");
     }
 }

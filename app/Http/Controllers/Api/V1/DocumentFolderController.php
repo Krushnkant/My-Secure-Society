@@ -42,7 +42,8 @@ class DocumentFolderController extends BaseController
   
     public function folder_list()
     {
-        $folders = DocumentFolder::where('estatus',1)->paginate(10);
+        $user_id =  Auth::user()->user_id;
+        $folders = DocumentFolder::where('estatus',1)->where('created_by',$user_id)->paginate(10);
         $folder_arr = array();
         foreach ($folders as $folder) {
             $temp['document_folder_id'] = $folder->document_folder_id;
@@ -75,15 +76,16 @@ class DocumentFolderController extends BaseController
 
     public function get_folder(Request $request)
     {
+        $user_id =  Auth::user()->user_id;
         $validator = Validator::make($request->all(), [
             'document_folder_id' => 'required|exists:document_folder',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $folder = DocumentFolder::where('estatus',1)->where('document_folder_id',$request->document_folder_id)->first();
+        $folder = DocumentFolder::where('estatus',1)->where('created_by',$user_id)->where('document_folder_id',$request->document_folder_id)->first();
         if (!$folder){
-            return $this->sendError(404,"You can not view this folder", "Invalid folder", []);
+            return $this->sendError(404,"You can not delete this folder", "Invalid folder", []);
         }
         $data = array();
         $temp['document_folder_id'] = $folder->document_folder_id;

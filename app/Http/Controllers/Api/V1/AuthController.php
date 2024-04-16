@@ -105,7 +105,7 @@ class AuthController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $user = User::with('societymember')->where('mobile_no',$request->mobile_no)->where('user_type',[2,4])->first();
+        $user = User::with('societymember')->where('mobile_no',$request->mobile_no)->whereIn('user_type',[2,4])->first();
         if($user){
         $user_otp = GeneratedOtp::where('mobile_no',$request->mobile_no)->where('otp_code',$request->otp)->first();
             if ($user_otp && isset($user_otp['expire_time']) ){
@@ -118,9 +118,8 @@ class AuthController extends BaseController
                 }
                 $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
                 $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
-                $data['profile_data'] =  new UserResource($user);
                 $data['isNewUser'] = $user->full_name == "" ? true : false;
-                return $this->sendResponseSuccess('OTP verified successfully.');
+                return $this->sendResponseWithData($data,'OTP verified successfully.');
             }
             else{
                 return $this->sendError(422,'OTP verification Failed.', "verification Failed", []);
