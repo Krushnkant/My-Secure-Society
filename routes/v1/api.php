@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\api\v1\BannerController;
 use App\Http\Controllers\api\v1\DocumentFolderController;
 use App\Http\Controllers\api\v1\FamilyMemberController;
+use App\Http\Controllers\Api\V1\ResidentController;
+use App\Http\Controllers\Api\V1\SocietyController;
 use App\Http\Controllers\api\v1\SocietyDocumentController;
 use App\Http\Controllers\api\v1\SocietyMemberController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -30,6 +32,8 @@ Route::group(['middleware' => 'jwt'], function(){
 
     Route::post('profile/edit',[UserController::class,'edit_profile']);
     Route::get('profile/get',[UserController::class,'get_profile']);
+    Route::post('profile/update_profilepic',[UserController::class,'update_profilepic']);
+    Route::post('profile/update_coverpic',[UserController::class,'update_coverpic']);
 
     Route::post('flat/save',[SocietyMemberController::class,'save_flat']);
     Route::post('flats/list',[SocietyMemberController::class,'flat_list']);
@@ -49,7 +53,16 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('document/delete',[SocietyDocumentController::class,'delete_document']);
     Route::post('document/get',[SocietyDocumentController::class,'get_document']);
 
-    
     Route::get('banner/list',[BannerController::class,'banner_list']);
     Route::get('banner/config/list',[BannerController::class,'banner_config_list']);
-});    
+
+    Route::post('society/list',[SocietyController::class,'society_list']);
+    Route::post('block/list',[SocietyController::class,'block_list']);
+    Route::post('flat/list',[SocietyController::class,'flat_list']);
+
+    Route::post('resident/list',[ResidentController::class,'resident_list']);
+});
+
+Route::get('country/list', [UserController::class, 'get_country']);
+Route::get('state/list/{id}', [UserController::class, 'get_state']);
+Route::get('city/list/{id}', [UserController::class, 'get_city']);
