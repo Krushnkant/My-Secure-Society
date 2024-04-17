@@ -3,14 +3,15 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\api\v1\BannerController;
-use App\Http\Controllers\api\v1\DocumentFolderController;
-use App\Http\Controllers\api\v1\FamilyMemberController;
+use App\Http\Controllers\Api\V1\BannerController;
+use App\Http\Controllers\Api\V1\DocumentFolderController;
+use App\Http\Controllers\Api\V1\FamilyMemberController;
 use App\Http\Controllers\Api\V1\ResidentController;
 use App\Http\Controllers\Api\V1\SocietyController;
-use App\Http\Controllers\api\v1\SocietyDocumentController;
-use App\Http\Controllers\api\v1\SocietyMemberController;
-use App\Http\Controllers\api\v1\AnnouncementController;
+use App\Http\Controllers\Api\V1\SocietyDocumentController;
+use App\Http\Controllers\Api\V1\SocietyMemberController;
+use App\Http\Controllers\Api\V1\AnnouncementController;
+use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\UserController;
 
 /*
@@ -69,6 +70,11 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('announcement/list',[AnnouncementController::class,'announcement_list']);
     Route::post('announcement/delete',[AnnouncementController::class,'delete_announcement']);
     Route::post('announcement/get',[AnnouncementController::class,'get_announcement']);
+
+    Route::post('daily_post/save',[PostController::class,'save_daily_post']);
+    Route::post('daily_post/list',[PostController::class,'daily_post_list']);
+    Route::post('daily_post/delete',[PostController::class,'delete_daily_post']);
+    Route::post('daily_post/get',[PostController::class,'get_daily_post']);
 });
 
 Route::get('country/list', [UserController::class, 'get_country']);

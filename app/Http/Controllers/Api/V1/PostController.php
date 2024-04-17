@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Illuminate\Support\Facades\Auth;
 
-class AnnouncementController extends BaseController
+class PostController extends Controller
 {
     public $payload;
 
@@ -19,7 +18,7 @@ class AnnouncementController extends BaseController
         $this->payload = JWTAuth::decode($token);
     }
 
-    public function save_announcement(Request $request)
+    public function save_daily_post(Request $request)
     {
         $society_id = $this->payload['society_id'];
         if($society_id == ""){
