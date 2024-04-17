@@ -86,6 +86,6 @@ class ResidentController extends BaseController
             $family_member->estatus = $request->status;
         }
         $family_member->save();
-        return $this->sendResponseSuccess($data, "Status Updated Successfully.");
+        return $this->sendResponseSuccess("Status Updated Successfully.");
     }
 }
