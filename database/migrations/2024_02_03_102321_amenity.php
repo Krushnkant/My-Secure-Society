@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('amenity_description', 500)->nullable();
             $table->integer('is_chargeable')->enum([1, 2])->default(1)->comment('1 - True, 2 - false')->index();
             $table->integer('applicable_payment_type')->enum([1, 2, 3])->default(1)->comment('1 - Offline, 2 - Online, 3 - Other')->index();
+            $table->integer('max_booking_per_slot');
+            $table->integer('max_people_per_booking')->comment('0 - Unlimited If max_booking_per_slot is 1');
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
