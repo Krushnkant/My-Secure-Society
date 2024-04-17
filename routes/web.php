@@ -2,22 +2,22 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\admin\BlockController;
-use App\Http\Controllers\admin\BusinessCategoryController;
-use App\Http\Controllers\admin\CountryStateCityController;
+use App\Http\Controllers\Admin\BlockController;
+use App\Http\Controllers\Admin\BusinessCategoryController;
+use App\Http\Controllers\Admin\CountryStateCityController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DesignationController;
-use App\Http\Controllers\admin\FlatController;
+use App\Http\Controllers\Admin\FlatController;
 use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\admin\SocietyController;
+use App\Http\Controllers\Admin\SocietyController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CompanyProfileController;
-use App\Http\Controllers\admin\DailyHelpServiceController;
-use App\Http\Controllers\admin\SubscriptionOrderController;
-use App\Http\Controllers\admin\OrderPaymentController;
-use App\Http\Controllers\admin\EmergencyContactController;
-use App\Http\Controllers\admin\ServiceVendorController;
-use App\Http\Controllers\admin\SocietyMemberController;
+use App\Http\Controllers\Admin\DailyHelpServiceController;
+use App\Http\Controllers\Admin\SubscriptionOrderController;
+use App\Http\Controllers\Admin\OrderPaymentController;
+use App\Http\Controllers\Admin\EmergencyContactController;
+use App\Http\Controllers\Admin\ServiceVendorController;
+use App\Http\Controllers\Admin\SocietyMemberController;
 
 /*
 |--------------------------------------------------------------------------
