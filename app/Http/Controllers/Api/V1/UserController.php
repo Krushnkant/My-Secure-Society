@@ -69,7 +69,7 @@ class UserController extends BaseController
     public function update_profilepic(Request $request){ 
         $user_id = Auth::id();
         $rules = [
-            'profile_pic' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'profile_pic' => 'image|mimes:jpeg,png,jpg|max:2048',
         ];
         
         $validator = Validator::make($request->all(), $rules);
@@ -89,22 +89,26 @@ class UserController extends BaseController
                 unlink($old_image);
             }
         }
-
-        $image = $request->file('profile_pic');
-        $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-        $destinationPath = public_path('images/profile_pic');
-        $image->move($destinationPath, $image_name);
-        $image_full_path = 'images/profile_pic/'.$image_name;
-        $user->profile_pic_url =  $image_full_path;
+        $image_full_path = "";
+        if ($request->hasFile('profile_pic')) { 
+            $image = $request->file('profile_pic');
+            $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+            $destinationPath = public_path('images/profile_pic');
+            $image->move($destinationPath, $image_name);
+            $image_full_path = 'images/profile_pic/'.$image_name;
+            $user->profile_pic_url =  $image_full_path;
+        }else{
+            $user->profile_pic_url =  $image_full_path;
+        }
         $user->save();
 
-        return $this->sendResponseWithData(['profile_pic_url' => url($image_full_path)],'User profile pic updated successfully.');
+        return $this->sendResponseWithData(['profile_pic_url' => $image_full_path == "" ?url($image_full_path):""],'User profile pic updated successfully.');
     }
 
     public function update_coverpic(Request $request){ 
         $user_id = Auth::id();
         $rules = [
-            'cover_pic' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'cover_pic' => 'image|mimes:jpeg,png,jpg|max:2048',
         ];
         
         $validator = Validator::make($request->all(), $rules);
@@ -124,16 +128,20 @@ class UserController extends BaseController
                 unlink($old_image);
             }
         }
-
-        $image = $request->file('cover_pic');
-        $image_name = 'proCoverPic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-        $destinationPath = public_path('images/cover_pic');
-        $image->move($destinationPath, $image_name);
-        $image_full_path = 'images/cover_pic/'.$image_name;
-        $user->cover_photo_url =  $image_full_path;
+        $image_full_path = "";
+        if ($request->hasFile('cover_pic')) { 
+            $image = $request->file('cover_pic');
+            $image_name = 'proCoverPic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+            $destinationPath = public_path('images/cover_pic');
+            $image->move($destinationPath, $image_name);
+            $image_full_path = 'images/cover_pic/'.$image_name;
+            $user->cover_photo_url =  $image_full_path;
+        }else{
+            $user->profile_pic_url =  $image_full_path;
+        }
         $user->save();
 
-        return $this->sendResponseWithData(['cover_pic_url' => url($image_full_path)],'User profile cover pic updated successfully.');
+        return $this->sendResponseWithData(['profile_pic_url' => $image_full_path == "" ?url($image_full_path):""],'User profile cover pic updated successfully.');
     }
 
     public function get_country(){
