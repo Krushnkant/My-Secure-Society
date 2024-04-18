@@ -97,8 +97,8 @@ class AuthController extends BaseController
 
     public function verify_otp(Request $request){
         $validator = Validator::make($request->all(), [
-            'mobile_no' => 'required',
-            'otp' => 'required'
+            'mobile_no' => 'required|digits:10',
+            'otp' => 'required|integer'
         ]);
 
         if($validator->fails()){
