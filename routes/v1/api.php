@@ -32,7 +32,7 @@ Route::post('send_otp',[AuthController::class,'send_otp']);
 Route::group(['middleware' => 'jwt'], function(){
     Route::get('get_token',[AuthController::class,'get_token']);
 
-    Route::post('profile/edit',[UserController::class,'edit_profile']);
+    Route::post('profile/set',[UserController::class,'edit_profile']);
     Route::get('profile/get',[UserController::class,'get_profile']);
     Route::post('profile/update_profilepic',[UserController::class,'update_profilepic']);
     Route::post('profile/update_coverpic',[UserController::class,'update_coverpic']);
@@ -77,6 +77,6 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('daily_post/get',[PostController::class,'get_daily_post']);
 });
 
-Route::get('country/list', [UserController::class, 'get_country']);
-Route::get('state/list/{id}', [UserController::class, 'get_state']);
-Route::get('city/list/{id}', [UserController::class, 'get_city']);
+Route::post('country/list', [UserController::class, 'get_country']);
+Route::post('state/list', [UserController::class, 'get_state']);
+Route::post('city/list', [UserController::class, 'get_city']);

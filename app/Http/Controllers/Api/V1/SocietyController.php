@@ -14,7 +14,7 @@ class SocietyController extends BaseController
     public function society_list(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'search_text' => 'required',
+            'search_text' => 'required|min:3',
         ]);
 
         if($validator->fails()){
