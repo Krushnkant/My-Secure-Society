@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('blood_donate_request_response', function (Blueprint $table) {
-            $table->bigIncrements('blood_donate_request_response_id');
-            $table->integer('blood_donate_request_id')->index();
-            $table->integer('blood_bottle_qty')->default(1);
-            $table->string('message')->nullable();
-            $table->integer('response_status')->enum([1, 2, 3, 4])->default(1)->comment('1 - Confirmed, 3 - Deleted, 4 - Pending')->index();
+        Schema::create('daily_help_provider_work_flat', function (Blueprint $table) {
+            $table->bigIncrements('daily_help_provider_work_flat_id')->index();
+            $table->integer('daily_help_provider_id')->index();
+            $table->integer('block_flat_id')->index();
+            $table->time('work_start_time');
+            $table->time('work_end_time');
+            $table->integer('contract_status')->enum([1, 2, 3, 4])->default(1)->comment('1 - Running, 2 - Ended')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('blood_donate_request_response');
+        Schema::dropIfExists('daily_help_provider_work_flat');
     }
 };

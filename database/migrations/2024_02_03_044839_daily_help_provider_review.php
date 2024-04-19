@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('daily_help_providerReview', function (Blueprint $table) {
-            $table->bigIncrements('daily_help_providerReviewId')->index();
+        Schema::create('daily_help_provider_review', function (Blueprint $table) {
+            $table->bigIncrements('daily_help_provider_review_id')->index();
             $table->integer('given_by_bloack_flat_id')->index();
             $table->integer('review_to_user_id')->index();
             $table->float('number_of_star')->index();
