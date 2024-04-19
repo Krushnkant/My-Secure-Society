@@ -63,7 +63,7 @@ class UserController extends BaseController
         $user->blood_group  = $request->blood_group;
         $user->save();
 
-        return $this->sendResponseWithData(new UserResource($user),'User profile updated successfully.');
+        return $this->sendResponseWithData(new UserResource($user),'Set user profile successfully.');
     }
 
     public function update_profilepic(Request $request){ 
@@ -149,13 +149,30 @@ class UserController extends BaseController
         return $this->sendResponseWithData($countries,"Country Retrieved Successfully.");
     }
 
-    public function get_state($country_id){
-        $states = State::where('country_id',$country_id)->get(['state_id','state_name']);
+    public function get_state(Request $request){
+        $rules = [
+            'country_id' => 'required',
+        ];
+        
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()){
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+        $states = State::where('country_id',$request->country_id)->get(['state_id','state_name']);
         return $this->sendResponseWithData($states,"State Retrieved Successfully.");
     }
 
-    public function get_city($state_id){
-        $cities = City::where('state_id',$state_id)->get(['city_id','city_name']);
+    public function get_city(Request $request){
+        $rules = [
+            'state_id' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()){
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+        $cities = City::where('state_id',$request->state_id)->get(['city_id','city_name']);
         return $this->sendResponseWithData($cities,"City Retrieved Successfully.");
     }
 }

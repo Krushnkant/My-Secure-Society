@@ -23,6 +23,14 @@ class SocietyMemberController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
+        $existingAssociation = SocietyMember::where('user_id', $user_id)
+            ->where('block_flat_id', $request->block_flat_id)
+            ->exists();
+
+        if ($existingAssociation) {
+            return $this->sendError(422, 'User is already associated with this flat.', "Validation Errors", []);
+        }
+
         $society_member = new SocietyMember();
         $society_member->user_id = $user_id;
         $society_member->parent_society_member_id  = 0;
