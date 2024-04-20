@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('daily_help_provider_work_flat', function (Blueprint $table) {
-            $table->bigIncrements('daily_help_provider_work_flat_id')->index();
+            $table->bigIncrements('work_flat_id')->index();
             $table->integer('daily_help_provider_id')->index();
             $table->integer('block_flat_id')->index();
             $table->time('work_start_time');
