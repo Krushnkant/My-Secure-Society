@@ -117,23 +117,18 @@ class PostController extends BaseController
 
     // Method to determine file type based on extension
     public function getFileType($file)
-{
-    $extension = strtolower($file->getClientOriginalExtension());
-    $fileTypes = [
-        'jpg' => 1, 'jpeg' => 1, 'png' => 1, 'gif' => 1, // Image
-        'pdf' => 4, // PDF
-        'mp4' => 2, 'mov' => 2, 'avi' => 2, 'wmv' => 2, 'mkv' => 2 // Video
-        // You can add more file types as needed
-    ];
-
-    // Check if the extension exists in the $fileTypes array
-    if (array_key_exists($extension, $fileTypes)) {
-        return $fileTypes[$extension];
+    {
+        $extension = strtolower($file->getClientOriginalExtension());
+        $fileTypes = [
+            'jpg' => 1, 'jpeg' => 1, 'png' => 1, 'gif' => 1,
+            'pdf' => 4,
+            'mp4' => 2, 'mov' => 2, 'avi' => 2, 'wmv' => 2, 'mkv' => 2
+        ];
+        if (array_key_exists($extension, $fileTypes)) {
+            return $fileTypes[$extension];
+        }
+        return 5;
     }
-
-    // Default to "Other" if the extension is not recognized
-    return 5;
-}
 
     // Method to handle file upload
     public function uploadFile($file)
@@ -169,65 +164,138 @@ class PostController extends BaseController
         return  'images/profile_pic/'.$image_name;
     }
 
-    public function announcement_list(Request $request)
+    public function post_list(Request $request)
     {
         $society_id = $this->payload['society_id'];
         if($society_id == ""){
             return $this->sendError(400,'Flat Not Found.', "Not Found", []);
         }
-        $announcements = Announcement::where('society_id', $society_id)->where('estatus',1);
-        $announcements = $announcements->orderBy('created_at', 'DESC')->paginate(10);
+        $posts = Post::where('society_id', $society_id)->where('estatus',1);
+        $posts = $posts->orderBy('created_at', 'DESC')->paginate(10);
 
-        $announcement_arr = array();
-        foreach ($announcements as $announcement) {
-            $temp['announcement_id'] = $announcement['announcement_id'];
-            $temp['announcement_title'] = $announcement->title;
-            $temp['announcement_description'] = $announcement->description;
-            $temp['date'] = $announcement->created_at;
-            array_push($announcement_arr, $temp);
+        $post_arr = array();
+        foreach ($posts as $post) {
+            $temp['post_id'] = $post->society_daily_post_id;
+            $temp['post_type'] = $post->post_type;
+            $temp['post_description'] = $post->post_description;
+            $temp['bg_color'] = $post->bg_color;
+            $temp['total_like'] = $post->total_like;
+            $temp['total_comment'] = $post->total_comment;
+            $temp['total_shared'] = $post->total_shared;
+            $temp['event_time'] = $post->event_time;
+            $temp['is_like'] = true;
+            $temp['user_id'] = $post->event_time;
+            $temp['full_name'] = $post->event_time;
+            $temp['block_flat_no'] = $post->event_time;
+            $temp['profile_pic'] = $post->event_time;
+            $temp['post_date'] = $post->event_time;
+            $temp['poll_options'] = $post->event_time;
+            $temp['option_id'] = $post->event_time;
+            $temp['option_text'] = $post->event_time;
+            $temp['is_voted'] = true;
+
+            array_push($post_arr, $temp);
         }
 
-        $data['family_members'] = $announcement_arr;
-        $data['total_records'] = $announcements->toArray()['total'];
-        return $this->sendResponseWithData($data, "All Announcement Successfully.");
+        $data['posts'] = $post_arr;
+        $data['total_records'] = $posts->toArray()['total'];
+        return $this->sendResponseWithData($data, "All Post Successfully.");
     }
 
-    public function delete_announcement(Request $request)
+    public function delete_post(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'announcement_id' => 'required|exists:announcement',
+            'society_daily_post_id' => 'required|exists:society_daily_post',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $announcement = Announcement::find($request->announcement_id);
-        if ($announcement) {
-            $announcement->estatus = 3;
-            $announcement->save();
-            $announcement->delete();
+        $post = Post::find($request->society_daily_post_id);
+        if ($post) {
+            $post->estatus = 3;
+            $post->save();
+            $post->delete();
         }
-        return $this->sendResponseSuccess("announcement deleted Successfully.");
+        return $this->sendResponseSuccess("post deleted Successfully.");
     }
 
-    public function get_announcement(Request $request)
+    public function get_post(Request $request)
     {
         $user_id =  Auth::user()->user_id;
         $validator = Validator::make($request->all(), [
-            'announcement_id' => 'required|exists:announcement',
+            'society_daily_post_id' => 'required|exists:society_daily_post',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $announcement = Announcement::where('estatus',1)->where('announcement_id',$request->announcement_id)->first();
-        if (!$announcement){
-            return $this->sendError(404,"You can not delete this folder", "Invalid folder", []);
+        $post = Post::where('estatus',1)->where('society_daily_post_id',$request->society_daily_post_id)->first();
+        if (!$post){
+            return $this->sendError(404,"You can not get this post", "Invalid Post", []);
         }
         $data = array();
-        $temp['announcement_id'] = $announcement['announcement_id'];
-        $temp['announcement_title'] = $announcement->title;
-        $temp['announcement_description'] = $announcement->description;
+        $temp['post_id'] = $post->society_daily_post_id;
+        $temp['post_type'] = $post->post_type;
+        $temp['post_description'] = $post->post_description;
+        $temp['bg_color'] = $post->bg_color;
+        $temp['total_like'] = $post->total_like;
+        $temp['total_comment'] = $post->total_comment;
+        $temp['total_shared'] = $post->total_shared;
+        $temp['event_time'] = $post->event_time;
+        $temp['is_like'] = true;
+        $temp['user_id'] = $post->event_time;
+        $temp['full_name'] = $post->event_time;
+        $temp['block_flat_no'] = $post->event_time;
+        $temp['profile_pic'] = $post->event_time;
+        $temp['post_date'] = $post->event_time;
+        $temp['poll_options'] = $post->event_time;
+        $temp['option_id'] = $post->event_time;
+        $temp['option_text'] = $post->event_time;
+        $temp['is_voted'] = true;
         array_push($data, $temp);
-        return $this->sendResponseWithData($data, "Get Announcement Details Successfully.");
+        return $this->sendResponseWithData($data, "Get Post Details Successfully.");
     }
+
+    public function updateLike(Request $request)
+    {
+        // Validate the request parameters
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required|exists:post,society_daily_post_id', // Assuming your daily posts table is named daily_posts
+            'is_like' => 'required|boolean',
+        ]);
+
+        // If validation fails, return error response
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        // Check if a like entry exists for the post by the current user
+        $existingLike = DailyPostLike::where('society_daily_post_id', $request->post_id)
+                                    ->where('user_id', auth()->id())
+                                    ->first();
+
+        // If is_like is false and an entry exists, delete the like entry
+        if (!$request->is_like && $existingLike) {
+            $existingLike->delete();
+        }
+
+        // If is_like is true and no entry exists, create a new like entry
+        if ($request->is_like && !$existingLike) {
+            DailyPostLike::create([
+                'society_daily_post_id' => $request->post_id,
+                'user_id' => auth()->id(),
+            ]);
+        }
+
+        // Update like count in the daily_post table if necessary
+        if ($request->is_like) {
+            Post::where('society_daily_post_id', $request->post_id)->increment('total_like');
+        }
+
+        // Send notification on like (you can implement this part based on your notification system)
+        return $this->sendResponseSuccess("Like updated successfully.");
+
+    }
+
+    
 }
