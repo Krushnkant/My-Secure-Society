@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\SocietyMember;
 use App\Models\State;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -16,6 +17,8 @@ use Illuminate\Validation\Rule;
 
 class UserController extends BaseController
 {
+    public $payload;
+
     public function get_profile(){
         $user_id = Auth::id();
         $user = User::where('user_id',$user_id)->whereIn('user_type', [2, 4])->where('estatus',1)->first();
@@ -69,7 +72,7 @@ class UserController extends BaseController
     public function update_profilepic(Request $request){ 
         $user_id = Auth::id();
         $rules = [
-            'profile_pic' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'profile_pic' => 'image|mimes:jpeg,png,jpg|max:5024',
         ];
         
         $validator = Validator::make($request->all(), $rules);
@@ -92,17 +95,12 @@ class UserController extends BaseController
         $image_full_path = "";
         if ($request->hasFile('profile_pic')) { 
             $image = $request->file('profile_pic');
-            $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('images/profile_pic');
-            $image->move($destinationPath, $image_name);
-            $image_full_path = 'images/profile_pic/'.$image_name;
-            $user->profile_pic_url =  $image_full_path;
-        }else{
-            $user->profile_pic_url =  $image_full_path;
+            $image_full_path = UploadImage($image,'images/profile_pic');
         }
+        $user->profile_pic_url =  $image_full_path;
         $user->save();
 
-        return $this->sendResponseWithData(['profile_pic_url' => $image_full_path == "" ?url($image_full_path):""],'User profile pic updated successfully.');
+        return $this->sendResponseWithData(['profile_pic_url' => $image_full_path != "" ?url($image_full_path):""],'User profile pic updated successfully.');
     }
 
     public function update_coverpic(Request $request){ 
@@ -131,17 +129,12 @@ class UserController extends BaseController
         $image_full_path = "";
         if ($request->hasFile('cover_pic')) { 
             $image = $request->file('cover_pic');
-            $image_name = 'proCoverPic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('images/cover_pic');
-            $image->move($destinationPath, $image_name);
-            $image_full_path = 'images/cover_pic/'.$image_name;
-            $user->cover_photo_url =  $image_full_path;
-        }else{
-            $user->profile_pic_url =  $image_full_path;
+            $image_full_path = UploadImage($image,'images/cover_pic');
         }
+        $user->cover_photo_url =  $image_full_path;
         $user->save();
 
-        return $this->sendResponseWithData(['profile_pic_url' => $image_full_path == "" ?url($image_full_path):""],'User profile cover pic updated successfully.');
+        return $this->sendResponseWithData(['cover_photo_url' => $image_full_path != "" ?url($image_full_path):""],'User profile cover pic updated successfully.');
     }
 
     public function get_country(){
@@ -175,4 +168,23 @@ class UserController extends BaseController
         $cities = City::where('state_id',$request->state_id)->get(['city_id','city_name']);
         return $this->sendResponseWithData($cities,"City Retrieved Successfully.");
     }
+    
+    public function address_list()
+    {
+        $user_id = Auth::id();
+
+        $members = SocietyMember::where('estatus',1)->where('user_id',$user_id)->get();
+        $member_arr = array();
+        foreach ($members as $member) {
+            $flat_info = getSocietyBlockAndFlatInfo($member['block_flat_id']);
+            $address = $flat_info['block_name'].'-'. $flat_info['flat_no'].','.$flat_info['street_address'];
+            $temp['address'] = $address;
+            $temp['share_address_text'] =  $address;
+            array_push($member_arr, $temp);
+        }
+
+        $data['address_list'] = $member_arr;
+        return $this->sendResponseWithData($data, "All Address Retrieved Successfully.");
+    }
+    
 }

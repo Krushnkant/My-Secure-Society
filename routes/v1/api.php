@@ -36,6 +36,7 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::get('profile/get',[UserController::class,'get_profile']);
     Route::post('profile/update_profilepic',[UserController::class,'update_profilepic']);
     Route::post('profile/update_coverpic',[UserController::class,'update_coverpic']);
+    Route::get('profile/my_address',[UserController::class,'address_list']);
 
     Route::post('flat/save',[SocietyMemberController::class,'save_flat']);
     Route::post('flats/list',[SocietyMemberController::class,'flat_list']);

@@ -73,13 +73,70 @@ function is_print($module_id)
 function UploadImage($image, $path)
 {
     $imageName = Str::random() . '.' . $image->getClientOriginalExtension();
-    $path = $image->move(public_path($path), $imageName);
-    if ($path == true) {
-        return $imageName;
+    $tempName = $image->getPathname();
+    $imageSize = $image->getSize(); 
+
+    if (!file_exists(public_path($path))) {
+        mkdir(public_path($path), 0755, true);
+    }
+
+    if ($image->isValid() && strpos($image->getMimeType(), 'image/') === 0) {
+        $destination = public_path($path) . '/' . $imageName;
+
+        if (file_exists($destination)) {
+            $imageName = Str::random() . '_' . time() . '.' . $image->getClientOriginalExtension();
+            $destination = public_path($path) . '/' . $imageName;
+        }
+
+        if ($imageSize > 100000) { // 100 KB in bytes
+            $file = compressImage($tempName, $destination, 30);
+        } else {
+            $file = $image->move(public_path($path), $imageName);
+        }
+        }else{
+            $file = $image->move(public_path($path), $imageName);
+        }
+
+    if ($file) {
+        return $path.'/'.$imageName;
     } else {
         return null;
     }
 }
+
+function compressImage($source, $destination, $quality) {
+    $imgInfo = getimagesize($source);
+    $mime = $imgInfo['mime'];
+
+    switch ($mime) {
+        case 'image/jpeg':
+            $image = @imagecreatefromjpeg($source);
+            break;
+        case 'image/png':
+            $image = @imagecreatefrompng($source);
+            break;
+        case 'image/gif':
+            $image = @imagecreatefromgif($source);
+            break;
+        default:
+            $image = @imagecreatefromjpeg($source);
+    }
+
+    // Save compressed image with quality parameter
+    if ($mime === 'image/png') {
+        imagejpeg($image, $destination, round(9 * $quality / 100));
+    } else {
+        imagejpeg($image, $destination, $quality);
+    }
+
+    // Destroy the image resource
+    imagedestroy($image);
+
+    // Return compressed image path
+    return $destination;
+}
+
+
 
 function getModulesArray()
 {
@@ -143,9 +200,10 @@ function send_sms($mobile_no, $otp)
 function getSocietyBlockAndFlatInfo($flatId)
 {
     $flatInfo = Flat::with('society_block.society')->findOrFail($flatId);
+    $street_address = isset($flatInfo->society_block->society)?$flatInfo->society_block->society->street_address1:"";
     $society_name = isset($flatInfo->society_block->society)?$flatInfo->society_block->society->society_name:"";
     $block_name = isset($flatInfo->society_block)?$flatInfo->society_block->block_name:"";
     $flat_no = isset($flatInfo)?$flatInfo->flat_no:"";
 
-    return compact('society_name', 'block_name', 'flat_no');
+    return compact('society_name', 'block_name', 'flat_no','street_address');
 }
