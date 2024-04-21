@@ -19,7 +19,7 @@ class UserResource extends JsonResource
             'user_code' => $this->user_code,
             'user_id' => $this->user_id,
             'full_name' => $this->full_name,
-            'profile_pic' => isset($this->profile_pic) ? url($this->profile_pic) : "",
+            'profile_pic' => isset($this->profile_pic_url) ? url($this->profile_pic_url) : "",
             'cover_photo' => isset($this->cover_photo_url) ? url($this->cover_photo_url) : "",
             'mobile_no' => $this->mobile_no,
             'email' => $this->email, 
