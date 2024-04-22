@@ -132,7 +132,7 @@ class FamilyMemberController extends BaseController
     public function delete_family_member(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'society_member_id' => 'required|exists:society_member',
+            'society_member_id' => 'required|exists:society_member,user_id,' . auth()->id(),
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
