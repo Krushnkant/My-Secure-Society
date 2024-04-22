@@ -42,7 +42,7 @@ class ResidentController extends BaseController
             array_push($family_member_arr, $temp);
         }
 
-        $data['family_members'] = $family_member_arr;
+        $data['resident_list'] = $family_member_arr;
         $data['total_records'] = $family_members->toArray()['total'];
         return $this->sendResponseWithData($data, "All Family Member Retrieved Successfully.");
     }
@@ -66,6 +66,11 @@ class ResidentController extends BaseController
             $temp['full_name'] = $family_member->user->full_name;
             $temp['flat_no'] = $family_member->flat->flat_no;
             $temp['profile_pic'] = $family_member->user->profile_pic_url;
+            $temp['gender'] = $family_member->user->gender;
+            $temp['mobile_no'] = $family_member->user->mobile_no;
+            $temp['email'] = $family_member->user->email;
+            $temp['society_designation_id'] = $family_member->resident_designation_id;
+            $temp['society_department_id'] = $family_member->society_department_id;
             $temp['estatus'] = $family_member->estatus;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "All Folder Retrieved Successfully.");
@@ -76,7 +81,7 @@ class ResidentController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'society_member_id' => 'required|exists:society_member',
-            'status' => 'required',
+            'status' => 'required|in:1,2,3,5',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
