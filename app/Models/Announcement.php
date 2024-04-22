@@ -14,4 +14,9 @@ class Announcement extends Model
     protected $table = 'announcement';
     protected $primaryKey = 'announcement_id';
     protected $dates = ['deleted_at'];
+
+    public function announcement_file()
+    {
+        return $this->hasOne(AnnouncementFile::class,'announcement_id', 'announcement_id');
+    }
 }

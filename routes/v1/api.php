@@ -77,6 +77,7 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('daily_post/list',[PostController::class,'daily_post_list']);
     Route::post('daily_post/delete',[PostController::class,'delete_daily_post']);
     Route::post('daily_post/get',[PostController::class,'get_daily_post']);
+    Route::post('daily_post/update_like',[PostController::class,'update_like']);
 });
 
 Route::post('country/list', [UserController::class, 'get_country']);
