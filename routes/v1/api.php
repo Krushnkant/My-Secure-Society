@@ -42,9 +42,9 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('flats/list',[SocietyMemberController::class,'flat_list']);
     Route::post('flat/delete',[SocietyMemberController::class,'delete_flat']);
 
-    Route::post('family/save',[FamilyMemberController::class,'save_family']);
-    Route::post('family/list',[FamilyMemberController::class,'family_list']);
-    Route::post('family/delete',[FamilyMemberController::class,'delete_family_member']);
+    Route::post('family_member/save',[FamilyMemberController::class,'save_family']);
+    Route::post('family_member/list',[FamilyMemberController::class,'family_list']);
+    Route::post('family_member/delete',[FamilyMemberController::class,'delete_family_member']);
 
     Route::post('folder/save',[DocumentFolderController::class,'save_folder']);
     Route::post('folder/list',[DocumentFolderController::class,'folder_list']);

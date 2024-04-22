@@ -43,7 +43,11 @@ class SocietyMemberController extends BaseController
         $society_member->updated_by = Auth::id();
         $society_member->save();
 
-        return $this->sendResponseSuccess("Falt Added Successfully");
+        $data = array();
+        $temp['society_member'] = $society_member->society_member;
+        $temp['request_status'] = $society_member->estatus;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "Falt Added Successfully.");
     }
 
     public function flat_list(Request $request)
