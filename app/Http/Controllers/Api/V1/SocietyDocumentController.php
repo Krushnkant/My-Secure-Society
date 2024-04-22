@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\SocietyDocument;
+use App\Models\SocietyDocumentFile;
+use App\Models\DocumentSharedFlat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use JWTAuth;
 
-class SocietyDocumentController extends Controller
+class SocietyDocumentController extends BaseController
 {
     public $payload;
 
@@ -23,18 +25,18 @@ class SocietyDocumentController extends Controller
     {
 
         $society_id = $this->payload['society_id'];
-        if($society_id == ""){
-            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        if (empty($society_id)) {
+            return $this->sendError(400, 'Society ID not provided.', "Not Found", []);
         }
-
+        
         $rules = [
             'society_document_id' => 'required',
-            'document_folder_id' => 'required|exists:document_folder',
+            'document_folder_id' => 'required|exists:document_folder,document_folder_id', // Validate existence in document_folder table
             'document_type' => 'required',
             'document_name' => 'required',
-            'document_file' => 'required',
+            'document_file' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048', // Validate file upload
         ];
-       
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -42,35 +44,92 @@ class SocietyDocumentController extends Controller
         }
 
         if($request->society_document_id == 0){
-            $folder = New SocietyDocument();
-            $folder->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            $folder->created_by = Auth::user()->user_id;
-            $folder->updated_by = Auth::user()->user_id;
+            $document = New SocietyDocument();
+            $document->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $document->created_by = Auth::user()->user_id;
+            $document->updated_by = Auth::user()->user_id;
             $action = "Added";
         }else{
-            $folder = SocietyDocument::find($request->society_document_id);
-            $folder->updated_by = Auth::user()->user_id;
+            $document = SocietyDocument::find($request->society_document_id);
+            $document->updated_by = Auth::user()->user_id;
             $action = "Updated";
         }
-        $folder->society_id = $society_id;
-        $folder->document_folder_id = $request->document_folder_id;
-        $folder->document_type  = $request->document_type;
-        $folder->document_name  = $request->document_name;
-        $folder->note  = $request->note;
-        $folder->save();
+        $document->society_id = $society_id;
+        $document->document_folder_id = $request->document_folder_id;
+        $document->document_type  = $request->document_type;
+        $document->document_name  = $request->document_name;
+        $document->note  = $request->note;
+        $document->save();
 
-        return $this->sendResponseSuccess("Folder ". $action ." Successfully");
+        if($document){
+            if ($request->hasFile('document_file')) {
+                $file = $request->file('document_file');
+                $fileUrl = UploadImage($file,'images/society_document');
+                $fileType = getFileType($file);
+                $doc_file = new SocietyDocumentFile();
+                $doc_file->society_document_id = $document->society_document_id;
+                $doc_file->file_type = $fileType;
+                $doc_file->file_url = $fileUrl;
+                $doc_file->uploaded_at = now();
+                $doc_file->save();
+            } 
+
+            if (isset($request->shared_flat_list)) {
+                foreach($request->shared_flat_list as $share_flat){
+                    $shared_flat = new DocumentSharedFlat();
+                    $shared_flat->society_document_id = $document->society_document_id;
+                    $shared_flat->block_flat_id = $share_flat;
+                    $shared_flat->updated_at = now();
+                    $shared_flat->updated_by = Auth::user()->user_id;
+                    $shared_flat->save();
+                }
+            } 
+            
+        }
+
+        return $this->sendResponseSuccess("Document ". $action ." Successfully");
     }
 
   
-    public function document_list()
+    public function document_list(Request $request)
     {
         $society_id = $this->payload['society_id'];
         if($society_id == ""){
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
-        $documents = SocietyDocument::where('estatus',1)->where('society_id',$society_id)->paginate(10);
+        $rules = [
+            'document_type' => 'required',
+            'folder_id' => 'required',
+        ];
+
+        if($request->folder_id > 0){
+            $rules = [
+                'folder_id' => ' |exists:document_folder,document_folder_id',
+            ];
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $query = SocietyDocument::where('estatus', 1)->where('society_id', $society_id);
+
+        // Apply folderId filter if provided
+        if ($request->folder_id > 0) {
+            $query->where('document_folder_id', $request->folder_id);
+        }
+
+        // Apply documentType filter if provided
+        if ($request->document_type > 0) {
+            $query->where('document_type', $request->document_type);
+        }
+
+    
+        $perPage = 10;
+        $documents = $query->paginate($perPage);
         $document_arr = array();
         foreach ($documents as $document) {
             $temp['society_document_id'] = $document->society_document_id;

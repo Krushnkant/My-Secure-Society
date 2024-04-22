@@ -136,6 +136,20 @@ function compressImage($source, $destination, $quality) {
     return $destination;
 }
 
+function getFileType($file)
+{
+    $extension = strtolower($file->getClientOriginalExtension());
+    $fileTypes = [
+        'jpg' => 1, 'jpeg' => 1, 'png' => 1, 'gif' => 1,
+        'pdf' => 4,
+        'mp4' => 2, 'mov' => 2, 'avi' => 2, 'wmv' => 2, 'mkv' => 2
+    ];
+    if (array_key_exists($extension, $fileTypes)) {
+        return $fileTypes[$extension];
+    }
+    return 5;
+}
+
 
 
 function getModulesArray()

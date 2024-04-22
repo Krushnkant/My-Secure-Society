@@ -30,6 +30,10 @@ class DocumentFolderController extends BaseController
             $action = "Added";
         }else{
             $folder = DocumentFolder::find($request->folder_id);
+            if (!$folder)
+            {
+                return $this->sendError(404,'Folder Not Exist.', "Not Found Error", []);
+            }
             $folder->updated_by = Auth::user()->user_id;
             $action = "Updated";
         }
@@ -47,7 +51,7 @@ class DocumentFolderController extends BaseController
         $folder_arr = array();
         foreach ($folders as $folder) {
             $temp['document_folder_id'] = $folder->document_folder_id;
-            $temp['full_name'] = $folder->folder_name;
+            $temp['folder_name'] = $folder->folder_name;
             array_push($folder_arr, $temp);
         }
 

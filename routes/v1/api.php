@@ -52,12 +52,13 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('folder/get',[DocumentFolderController::class,'get_folder']);
 
     Route::post('document/save',[SocietyDocumentController::class,'save_document']);
-    Route::post('document/list',[SocietyDocumentController::class,'folder_document']);
+    Route::post('document/list',[SocietyDocumentController::class,'document_list']);
     Route::post('document/delete',[SocietyDocumentController::class,'delete_document']);
     Route::post('document/get',[SocietyDocumentController::class,'get_document']);
 
     Route::get('banner/list',[BannerController::class,'banner_list']);
-    Route::get('banner/config/list',[BannerController::class,'banner_config_list']);
+    Route::get('banner/config/get',[BannerController::class,'get_banner_config']);
+    Route::post('banner/config/set',[BannerController::class,'set_banner_config']);
 
     Route::post('society/list',[SocietyController::class,'society_list']);
     Route::post('block/list',[SocietyController::class,'block_list']);

@@ -59,20 +59,24 @@ class FamilyMemberController extends BaseController
         if($request->user_id == 0){
             $user = New User();
             $user->full_name = $request->full_name;
-            if ($request->hasFile('profile_pic')) {
-                $user->profile_pic_url = $this->uploadProfileImage($request);
+            if ($request->hasFile('profile_pic')) { 
+                $image = $request->file('profile_pic');
+                $user->profile_pic_url = UploadImage($image,'images/profile_pic');
             }
             $user->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
             $user->created_by = Auth::user()->user_id;
             $user->updated_by = Auth::user()->user_id;
+            $action ="Added";
         }else{
             $user = User::find($request->user_id);
             $old_image = $user->profile_pic_url;
             $user->updated_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            if ($request->hasFile('profile_pic')) {
-                $user->profile_pic_url = $this->uploadProfileImage($request,$old_image);
+            if ($request->hasFile('profile_pic')) { 
+                $image = $request->file('profile_pic');
+                $user->profile_pic_url = UploadImage($image,'images/profile_pic');
             }
             $user->updated_by = Auth::user()->user_id;
+            $action ="Updated";
         }
          
         $user->full_name = $request->full_name;
@@ -95,22 +99,10 @@ class FamilyMemberController extends BaseController
             $society_member->save();
         }
 
-        return $this->sendResponseSuccess("Family Member Added Successfully");
+        return $this->sendResponseSuccess("Family Member ".$action." Successfully");
     }
 
-    public function uploadProfileImage($request,$old_image=""){
-        $image = $request->file('profile_pic');
-        $image_name = 'profilePic_' . rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
-        $destinationPath = public_path('images/profile_pic');
-        $image->move($destinationPath, $image_name);
-        if(isset($old_image) && $old_image != "") {
-            $old_image = public_path($old_image);
-            if (file_exists($old_image)) {
-                unlink($old_image);
-            }
-        }
-        return  'images/profile_pic/'.$image_name;
-    }
+   
 
     public function family_list(Request $request)
     {
@@ -124,6 +116,7 @@ class FamilyMemberController extends BaseController
         $family_member_arr = array();
         foreach ($family_members as $family_member) {
             $temp['society_member_id'] = $family_member['society_member_id'];
+            $temp['user_id'] = $family_member['user_id'];
             $temp['full_name'] = $family_member->user->full_name;
             $temp['mobile_no'] = $family_member->user->mobile_no;
             $temp['profile_pic'] = $family_member->user->profile_pic_url;
