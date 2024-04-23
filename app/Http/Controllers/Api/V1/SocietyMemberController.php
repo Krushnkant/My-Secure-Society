@@ -14,7 +14,7 @@ class SocietyMemberController extends BaseController
     {
         $user_id = Auth::id();
         $validator = Validator::make($request->all(), [
-            'society_id' => 'required|exists:society',
+            'society_id' => 'required|exists:society,deleted_at,NULL',
             'block_flat_id' => 'required|exists:block_flat',
             'resident_type' => 'required',
         ]);
@@ -44,10 +44,10 @@ class SocietyMemberController extends BaseController
         $society_member->save();
 
         $data = array();
-        $temp['society_member'] = $society_member->society_member;
+        $temp['society_member_id'] = $society_member->society_member_id;
         $temp['request_status'] = $society_member->estatus;
         array_push($data, $temp);
-        return $this->sendResponseWithData($data, "Falt Added Successfully.");
+        return $this->sendResponseWithData($data, "Flat Added Successfully.");
     }
 
     public function flat_list(Request $request)
@@ -68,7 +68,7 @@ class SocietyMemberController extends BaseController
             array_push($society_member_arr, $temp);
         }
 
-        $data['flats'] = $society_member_arr;
+        $data['flat_list'] = $society_member_arr;
         $data['total_records'] = $society_members->toArray()['total'];
         return $this->sendResponseWithData($data, "All Flats Retrieved Successfully.");
     }
@@ -76,7 +76,7 @@ class SocietyMemberController extends BaseController
     public function delete_flat(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'society_member_id' => 'required|exists:society_member',
+            'society_member_id' => 'required|exists:society_member,society_member_id,user_id,' . auth()->id().',deleted_at,NULL',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
