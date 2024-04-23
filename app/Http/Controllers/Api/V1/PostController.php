@@ -125,64 +125,72 @@ class PostController extends BaseController
     }
 
     public function daily_post_list(Request $request)
-    {
-        $society_id = $this->payload['society_id'];
-        if($society_id == ""){
-            return $this->sendError(400,'Society Not Found.', "Not Found", []);
-        }
-        $post_type = $request->input('post_type');
-        $user_id = $request->input('user_id');
-        $post_id = $request->input('post_id');
-
-        $postsQuery = DailyPost::with('user','poll_options')->where('society_id', $society_id)->where('estatus',1);
-
-        if ($post_type !== null) {
-            $postsQuery->where('post_type', $post_type);
-        }
-    
-        // Filter by user ID if provided
-        if ($user_id !== null) {
-            $postsQuery->where('created_by', $user_id);
-        }
-    
-        // Filter by post ID if provided and non-zero
-        if ($post_id !== null && $post_id != 0) {
-            $post = $postsQuery->find($post_id);
-            if (!$post) {
-                return $this->sendError(400, 'Post Not Found.', "Not Found", []);
-            }
-        }
-        
-        $posts = $postsQuery->orderBy('created_at', 'DESC')->paginate(10);
-        
-        $post_arr = array();
-        foreach ($posts as $post) {
-            $temp['post_id'] = $post->society_daily_post_id;
-            $temp['post_type'] = $post->post_type;
-            $temp['post_description'] = $post->post_description;
-            $temp['bg_color'] = $post->bg_color;
-            $temp['total_like'] = $post->total_like;
-            $temp['total_comment'] = $post->total_comment;
-            $temp['total_shared'] = $post->total_shared;
-            $temp['event_time'] = $post->event_time;
-            $temp['is_like'] = false;
-            $temp['user_id'] = $post->created_by;
-            $temp['full_name'] = $post->user->full_name;
-            $temp['block_flat_no'] = "";
-            $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
-            $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
-            $temp['poll_options'] = $post->poll_options;
-            $temp['option_id'] = "";
-            $temp['option_text'] = "";
-            $temp['is_voted'] = false;
-
-            array_push($post_arr, $temp);
-        }
-
-        $data['posts'] = $post_arr;
-        $data['total_records'] = $posts->toArray()['total'];
-        return $this->sendResponseWithData($data, "All Post Successfully.");
+{
+    $society_id = $this->payload['society_id'];
+    if ($society_id == "") {
+        return $this->sendError(400, 'Society Not Found.', "Not Found", []);
     }
+
+    $post_type = $request->input('post_type');
+    $user_id = $request->input('user_id');
+    $post_id = $request->input('post_id');
+
+    $postsQuery = DailyPost::with('user', 'poll_options')
+                            ->where('society_id', $society_id)
+                            ->where('estatus', 1);
+    
+    if ($post_type !== null) {
+        $postsQuery->where('post_type', $post_type);
+    }
+
+    // Filter by user ID if provided
+    if ($user_id !== null) {
+        $postsQuery->where('created_by', $user_id);
+    }
+
+    // Filter by post ID if provided and non-zero
+    if ($post_id !== null && $post_id != 0) {
+        $post = $postsQuery->find($post_id);
+        if (!$post) {
+            return $this->sendError(400, 'Post Not Found.', "Not Found", []);
+        }
+    }
+
+    $posts = $postsQuery->orderBy('created_at', 'DESC')->paginate(10);
+    
+    $post_arr = [];
+    foreach ($posts as $post) {
+        $option_arr = [];
+        foreach($post->poll_options as $option){
+           $option_temp['option_id'] = $option->daily_post_pole_option_id;
+           $option_temp['option_text'] = $option->option_text;
+           $option_temp['is_voted'] = $option->isVoted();
+           array_push($option_arr, $option_temp);
+        }
+
+        $temp['post_id'] = $post->society_daily_post_id;
+        $temp['post_type'] = $post->post_type;
+        $temp['post_description'] = $post->post_description;
+        $temp['bg_color'] = $post->bg_color;
+        $temp['total_like'] = $post->total_like;
+        $temp['total_comment'] = $post->total_comment;
+        $temp['total_shared'] = $post->total_shared;
+        $temp['event_time'] = $post->event_time;
+        $temp['is_like'] = $post->isLike();
+        $temp['user_id'] = $post->created_by;
+        $temp['full_name'] = $post->user->full_name;
+        $temp['block_flat_no'] = "";
+        $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
+        $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
+        $temp['poll_options'] = $option_arr; 
+
+        array_push($post_arr, $temp);
+    }
+
+    $data['posts'] = $post_arr;
+    $data['total_records'] = $posts->toArray()['total'];
+    return $this->sendResponseWithData($data, "All Post Successfully.");
+}
 
     public function delete_daily_post(Request $request)
     {
@@ -203,19 +211,31 @@ class PostController extends BaseController
     }
 
     public function get_daily_post(Request $request)
-    {
-        $user_id =  Auth::user()->user_id;
-        $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:society_daily_post,society_daily_post_id',
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
-        }
-        $post = DailyPost::with('user','poll_options')->where('estatus',1)->where('society_daily_post_id',$request->post_id)->first();
-        if (!$post){
-            return $this->sendError(404,"You can not get this post", "Invalid Post", []);
-        }
-        $data = array();
+{
+   
+   
+    $validator = Validator::make($request->all(), [
+        'post_id' => 'required|exists:society_daily_post,society_daily_post_id',
+    ]);
+
+    if ($validator->fails()) {
+        return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+    }
+
+    $post = DailyPost::with('user','poll_options')->where('estatus',1)->where('society_daily_post_id',$request->post_id)->first();
+
+    if (!$post){
+        return $this->sendError(404,"You can not get this post", "Invalid Post", []);
+    }
+
+    $option_arr = [];
+
+    foreach($post->poll_options as $option){
+       $option_temp['option_id'] = $option->daily_post_pole_option_id;
+       $option_temp['option_text'] = $option->option_text;
+       $option_temp['is_voted'] = $option->isVoted(); 
+       array_push($option_arr, $option_temp);
+    }
         $temp['post_id'] = $post->society_daily_post_id;
         $temp['post_type'] = $post->post_type;
         $temp['post_description'] = $post->post_description;
@@ -224,16 +244,13 @@ class PostController extends BaseController
         $temp['total_comment'] = $post->total_comment;
         $temp['total_shared'] = $post->total_shared;
         $temp['event_time'] = $post->event_time;
-        $temp['is_like'] = false;
+        $temp['is_like'] = $post->isLike();
         $temp['user_id'] = $post->created_by;
         $temp['full_name'] = $post->user->full_name;
         $temp['block_flat_no'] = "";
         $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
         $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
-        $temp['poll_options'] = $post->poll_options;
-        $temp['option_id'] = "";
-        $temp['option_text'] = "";
-        $temp['is_voted'] = false;
+        $temp['poll_options'] = $option_arr;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Get Post Details Successfully.");
     }

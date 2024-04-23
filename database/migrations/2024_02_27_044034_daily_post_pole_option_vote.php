@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('daily_post_pole_option_vote', function (Blueprint $table) {
             $table->bigIncrements('daily_post_pole_option_vote_id');
-            $table->integer('society_daily_post_pole_option_id');
+            $table->integer('daily_post_pole_option_id')->index();
             $table->integer('user_id');
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });

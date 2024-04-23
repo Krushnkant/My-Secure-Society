@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\SocietyMemberController;
 use App\Http\Controllers\Api\V1\AnnouncementController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\AmenityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +79,11 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('daily_post/delete',[PostController::class,'delete_daily_post']);
     Route::post('daily_post/get',[PostController::class,'get_daily_post']);
     Route::post('daily_post/update_like',[PostController::class,'update_like']);
+
+    Route::post('amenity/save',[AmenityController::class,'save_amenity']);
+    Route::post('amenity/list',[AmenityController::class,'amenity_list']);
+    Route::post('amenity/delete',[AmenityController::class,'delete_amenity']);
+    Route::post('amenity/get',[AmenityController::class,'get_amenity']);
 });
 
 Route::post('country/list', [UserController::class, 'get_country']);
