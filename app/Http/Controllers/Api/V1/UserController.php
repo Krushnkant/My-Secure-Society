@@ -134,7 +134,7 @@ class UserController extends BaseController
         $user->cover_photo_url =  $image_full_path;
         $user->save();
 
-        return $this->sendResponseWithData(['cover_photo_url' => $image_full_path != "" ?url($image_full_path):""],'User profile cover pic updated successfully.');
+        return $this->sendResponseWithData(['cover_pic_url' => $image_full_path != "" ?url($image_full_path):""],'User profile cover pic updated successfully.');
     }
 
     public function get_country(){
