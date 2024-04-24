@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SocietyDocumentFile', function (Blueprint $table) {
-            $table->bigIncrements('SocietyDocumentFileId')->index();
-            $table->integer('SocietyDocumentId')->index();
-            $table->integer('FileType')->enum([1, 4, 5])->comment('1 - Image, 4 - PDF, 5 - Other')->index();
-            $table->string('FileUrl', 500);
-            $table->dateTime('UploadedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+        Schema::create('society_document_file', function (Blueprint $table) {
+            $table->bigIncrements('society_document_file_id')->index();
+            $table->integer('society_document_id')->index();
+            $table->integer('file_type')->enum([1, 4, 5])->comment('1 - Image, 4 - PDF, 5 - Other')->index();
+            $table->string('file_url', 500);
+            $table->dateTime('uploaded_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SocietyDocumentFile');
+        Schema::dropIfExists('society_document_file');
     }
 };

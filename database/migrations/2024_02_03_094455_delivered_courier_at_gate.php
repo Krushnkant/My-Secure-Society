@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('DeliveredCourierAtGate', function (Blueprint $table) {
-            $table->bigIncrements('DeliveredCourierAtGateId')->index();
+        Schema::create('delivered_courier_at_gate', function (Blueprint $table) {
+            $table->bigIncrements('delivered_courier_at_gate_id')->index();
             $table->integer('society_id')->index();
             $table->integer('block_flat_id')->index();
-            $table->integer('ServiceVendorId')->index();
-            $table->integer('CollectionOTP');
-            $table->integer('CourierCollectionStatus')->comment('1 - Pending, 2 - Delivered')->index();
-            $table->integer('CollectedByUserId')->nullable()->index();
-            $table->dateTime('CollectedTime')->nullable();
+            $table->integer('service_vendor_id')->index();
+            $table->integer('total_parcel');
+            $table->string('courier_note', 100)->nullable();
+            $table->integer('collection_otp');
+            $table->integer('courier_collection_status')->comment('1 - Pending, 2 - Delivered')->index();
+            // $table->integer('collected_by_user_id')->nullable()->index();
+            $table->dateTime('collected_time')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('DeliveredCourierAtGate');
+        Schema::dropIfExists('delivered_courier_at_gate');
     }
 };

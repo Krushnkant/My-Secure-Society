@@ -24,7 +24,7 @@ class EmergencyContactController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = EmergencyContact::select('*')->where('contact_type',1);
@@ -53,8 +53,8 @@ class EmergencyContactController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'mobile_no' => 'required',
+            'name' => 'required|max:100',
+            'mobile_no' => 'required|numeric',
         ], $messages);
 
         if ($validator->fails()) {
@@ -120,6 +120,11 @@ class EmergencyContactController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
+        $contacts = EmergencyContact::whereIn('emergency_contact_id', $ids)->get();
+        foreach ($contacts as $contact) {
+            $contact->estatus = 3;
+            $contact->save();
+        }
         EmergencyContact::whereIn('emergency_contact_id', $ids)->delete();
 
         return response()->json(['status' => '200']);

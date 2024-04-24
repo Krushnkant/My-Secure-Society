@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ServiceRequestFile', function (Blueprint $table) {
-            $table->bigIncrements('ServiceRequestFileId')->index();
-            $table->integer('ServiceRequestId')->index();
-            $table->integer('FileType')->enum([1])->default(1)->comment('1 - Image, 2 - Video')->index();
-            $table->string('FileUrl', 500);
-            $table->dateTime('UploadedAt')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+        Schema::create('service_request_file', function (Blueprint $table) {
+            $table->bigIncrements('service_request_file_id')->index();
+            $table->integer('service_request_id')->index();
+            $table->integer('file_type')->enum([1])->default(1)->comment('1 - Image, 2 - Video')->index();
+            $table->string('file_url', 500);
+            $table->dateTime('uploaded_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ServiceRequestFile');
+        Schema::dropIfExists('service_request_file');
     }
 };

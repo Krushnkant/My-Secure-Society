@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('BusinessProfileCategory', function (Blueprint $table) {
-            $table->bigIncrements('BusinessProfileCategoryId')->index();
-            $table->integer('BusinessProfileId')->index();
-            $table->integer('BusinessCategoryId')->index();
-            $table->integer('IsPrimary')->default(2)->index()->comment('1 - True, 2 - False');
+        Schema::create('business_profile_category', function (Blueprint $table) {
+            $table->bigIncrements('business_profile_category_id')->index();
+            $table->integer('business_profile_id')->index();
+            $table->integer('business_category_id')->index();
+            $table->integer('is_primary')->default(2)->index()->comment('1 - True, 2 - False');
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('BusinessProfileCategory');
+        Schema::dropIfExists('business_profile_category');
     }
 };

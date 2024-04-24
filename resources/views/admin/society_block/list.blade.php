@@ -4,8 +4,14 @@
 @section('pageTitleAndBreadcrumb')
     <div class="col-sm-6 p-md-0">
         <div class="welcome-text">
-            <h4>{{ $society->society_name }} Block</h4>
+            <h4>Blocks in {{ $society->society_name }}</h4>
         </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('admin.society.list') }}">Society</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Block</a></li>
+        </ol>
     </div>
 @endsection
 
@@ -98,15 +104,17 @@
                     data: function(data) {
                         data.search = $('input[type="search"]').val();
                         data.tab_type = tab_type;
+                        data.society_id = "{{ $id }}";
                     }
                 },
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.society_block_id}">`;
                         }
@@ -119,6 +127,7 @@
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(8)));
                             if (is_edit) {
@@ -137,8 +146,9 @@
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_view = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_view(9)));
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(8)));
@@ -147,7 +157,7 @@
                             if (is_view) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Blog" id="viewFlat"  data-id="${row.society_block_id}"><i class="fa fa-list color-muted"></i> </a>`;
-                                } 
+                                }
                             if (is_edit) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.society_block_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
@@ -180,7 +190,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -191,7 +201,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Block !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -214,14 +224,20 @@
                                             ids: selectedIds
                                         },
                                         success: function(response) {
-                                            // Handle success response
-                                            console.log(response);
-                                            toastr.success(
+                                            if (response.status == 200) {
+                                                toastr.success(
                                                 "Block deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            getTableData('', 1);
+                                                $('#blockTable').DataTable().clear().draw();
+                                                $('#selectAll').prop('checked', false);
+                                            }
+                                            if (response.status == 300) {
+                                                toastr.error(response.message, 'Error', {
+                                                    timeOut: 5000
+                                                });
+                                            }
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
@@ -238,6 +254,7 @@
         }
 
         $('body').on('click', '#AddBtn_Block', function() {
+            $('#BlockModal').find('form').attr('action', "{{ url('admin/block/add') }}");
             $('#BlockModal').find('.modal-title').html("Add Block");
             $("#BlockModal").find('form').trigger('reset');
             $('#id').val("");
@@ -249,7 +266,12 @@
             $("#block_name").focus();
         });
 
-
+        $('#blockform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_block($('#save_newBtn'), 'save_new');
+            }
+        });
 
         $('body').on('click', '#save_newBtn', function() {
             save_block($(this), 'save_new');
@@ -263,10 +285,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#blockform").serializeArray();
-
+            var formAction = $("#blockform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/block/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -321,6 +343,14 @@
                         getTableData('', 1);
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#BlockModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -349,6 +379,7 @@
             $('#BlockModal').find('.modal-title').html("Edit Block");
             $('#block_name-error').html("");
             $.get("{{ url('admin/block') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#BlockModal').find('form').attr('action', "{{ url('admin/block/update') }}");
                 $('#BlockModal').find('#save_newBtn').attr("data-action", "update");
                 $('#BlockModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#BlockModal').find('#save_newBtn').attr("data-id", edit_id);
@@ -389,7 +420,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                 title: "Are you sure to delete ?",
-                text: "You will not be able to recover this imaginary file !!",
+                text: "You will not be able to recover this Block !!",
                 type: "warning",
                 showCancelButton: !0,
                 confirmButtonColor: "#DD6B55",
@@ -409,6 +440,12 @@
                                     timeOut: 5000
                                 });
                                 getTableData('', 1);
+                            }
+
+                            if (res.status == 300) {
+                                toastr.error(res.message, 'Error', {
+                                    timeOut: 5000
+                                });
                             }
 
                             if (res.status == 400) {

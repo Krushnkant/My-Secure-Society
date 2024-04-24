@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('UserRating', function (Blueprint $table) {
-            $table->bigIncrements('UserRatingId')->index();
+        Schema::create('user_rating', function (Blueprint $table) {
+            $table->bigIncrements('user_rating_id')->index();
             $table->integer('user_id')->index();
-            $table->float('Rating');
-            $table->integer('TotalReviews')->index();
+            $table->float('rating');
+            $table->integer('total_reviews')->index();
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('UserRating');
+        Schema::dropIfExists('user_rating');
     }
 };

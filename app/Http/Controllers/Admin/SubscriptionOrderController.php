@@ -30,7 +30,7 @@ class SubscriptionOrderController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = SubscriptionOrder::select('*')->with('society');
@@ -102,10 +102,11 @@ class SubscriptionOrderController extends Controller
             return response()->json(['errors' => $validator->errors(), 'status' => 'failed']);
         }
         if (!isset($request->id)) {
+            $randomNumber = mt_rand(100000, 999999);
             $subscriptionorder = new SubscriptionOrder();
             $subscriptionorder->created_by = Auth::user()->user_id;
             $subscriptionorder->society_id = $request->society_id;
-            $subscriptionorder->order_id = 'ORD-' . Str::random(6);
+            $subscriptionorder->order_id =  $randomNumber;
             $subscriptionorder->total_flat = $request->total_flat;
             $subscriptionorder->amount_per_flat = $request->amount_per_flat;
             $subscriptionorder->sub_total_amount = $request->sub_total_amount;
@@ -118,17 +119,19 @@ class SubscriptionOrderController extends Controller
             $subscriptionorder->due_date = $request->due_date;
             $subscriptionorder->updated_by = Auth::user()->user_id;
             $subscriptionorder->save();
-    
+
             if($subscriptionorder){
-                $order_payment = New OrderPayment();
-                $order_payment->subscription_order_id = $subscriptionorder->subscription_order_id;
-                $order_payment->payment_type = $request->payment_type;
-                $order_payment->amount_paid = $request->total_paid_amount;
-                $order_payment->payment_note = $request->payment_note;
-                $order_payment->payment_date = $request->payment_date;
-                $order_payment->created_by = Auth::user()->user_id;
-                $order_payment->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-                $order_payment->save();
+                if($request->total_paid_amount > 0){
+                    $order_payment = New OrderPayment();
+                    $order_payment->subscription_order_id = $subscriptionorder->subscription_order_id;
+                    $order_payment->payment_type = $request->payment_type;
+                    $order_payment->amount_paid = $request->total_paid_amount;
+                    $order_payment->payment_note = $request->payment_note;
+                    $order_payment->payment_date = $request->payment_date;
+                    $order_payment->created_by = Auth::user()->user_id;
+                    $order_payment->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+                    $order_payment->save();
+                }
             }
             return response()->json(['status' => '200', 'action' => 'add']);
         } else {
@@ -146,15 +149,13 @@ class SubscriptionOrderController extends Controller
     public function edit($id)
     {
         $subscriptionorder = SubscriptionOrder::with('payment_order')->find($id);
-     
+
         return response()->json($subscriptionorder);
     }
     public function delete($id)
     {
         $subscriptionorder = SubscriptionOrder::find($id);
         if ($subscriptionorder) {
-            $subscriptionorder->estatus = 3;
-            $subscriptionorder->save();
             $subscriptionorder->delete();
             return response()->json(['status' => '200']);
         }
@@ -179,7 +180,7 @@ class SubscriptionOrderController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        SubscriptionOrder::whereIn('user_id', $ids)->delete();
+        SubscriptionOrder::whereIn('subscription_order_id', $ids)->delete();
         return response()->json(['status' => '200']);
     }
 }

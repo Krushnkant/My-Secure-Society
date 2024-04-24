@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-6 col-sm-12 btn-page">
-                            
+
                             @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_add(3)) )
                             <button type="button" id="AddBtn_User" class="btn btn-outline-primary" data-toggle="modal" data-target="#UserModal">Add New</button>
                             @endif
@@ -35,9 +35,7 @@
                                         <th>Profile Image</th>
                                         <th>Full Name</th>
                                         <th>Designation</th>
-                                        <th>User Type</th>
-                                       <th>Email</th>
-                                        <th>Mobile Number</th>
+                                        <th>Contact Info</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -48,9 +46,7 @@
                                         <th>Profile Image</th>
                                         <th>Full Name</th>
                                         <th>Designation</th>
-                                        <th>User Type</th>
-                                       <th>Email</th>
-                                        <th>Mobile Number</th>
+                                        <th>Contact Info</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -111,14 +107,15 @@
                         data.tab_type = tab_type;
                     }
                 },
-                
-                order: ['1', 'DESC'],
+
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.user_id}">`;
                         }
@@ -130,7 +127,7 @@
                         render: function(data, type, row) {
                             var profile_pic = (data != "" && data != null) ? data : '{{ asset("image/avtar.png") }}';
                             return `<div class="media-left">
-                                      <img class="media-object mr-3"  width="50px" height="50px" alt="Profile Pic" src="${profile_pic}" alt="...">
+                                      <img class="media-object mr-3 rounded-circle"  width="50px" height="50px" alt="Profile Pic" src="${profile_pic}" alt="...">
                                 </div>`;
                         }
                     },
@@ -143,21 +140,15 @@
                         data: 'designation',
                     },
                     {
-                        width: "10%",
-                        data: 'user_type_name',
-                    },
-
-                    {
-                        width: "10%",
-                        data: 'email',
-                    },
-                    {
-                        width: "10%",
-                        data: 'mobile_no',
+                        width: "15%",
+                        data: null,
+                        render: function(data, type, row) {
+                            return row.email + '<br>' + row.mobile_no;
+                        }
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
-                        width: "10%",
+                        width: "5%",
                         orderable: false,
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
@@ -176,8 +167,9 @@
                     },
                     {
                         data: 'id',
-                        width: "10%",
+                        width: "5%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(3)));
@@ -188,7 +180,7 @@
                             if(is_delete) {
                               action += `<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Delete" id="deleteBtn" data-id="${row.user_id}"><i class="fa fa-close color-danger"></i></a>`;
                             }
-                            action += `</span>`; 
+                            action += `</span>`;
                             return action;
                         }
                     }
@@ -211,7 +203,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -222,7 +214,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this User !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -251,7 +243,9 @@
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            getTableData('', 1);
+                                            // getTableData('', 1);
+                                            $('#userTable').DataTable().clear().draw();
+                                            $('#selectAll').prop('checked', false);
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
@@ -267,10 +261,12 @@
             });
         }
 
-        
+
         $('body').on('click', '#AddBtn_User', function() {
+            $('#UserModal').find('form').attr('action', "{{ url('admin/users/add') }}");
             $('#UserModal').find('.modal-title').html("Add User");
             $("#UserModal").find('form').trigger('reset');
+            $('.password-field').show();
             $('#id').val("");
             $('#full_name-error').html("");
             $('#email-error').html("");
@@ -286,6 +282,13 @@
             $('#profilepic_image_show').attr('src', default_image);
         });
 
+        $('#userform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_user($('#save_newBtn'), 'save_new');
+            }
+        });
+
         $('body').on('click', '#save_newBtn', function() {
             save_user($(this), 'save_new');
         });
@@ -298,10 +301,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = new FormData($("#userform")[0]);
-
+            var formAction = $("#userform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/users/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -323,6 +326,11 @@
                             $('#mobile_no-error').show().text(res.errors.mobile_no);
                         } else {
                             $('#mobile_no-error').hide();
+                        }
+                        if (res.errors.password) {
+                            $('#password-error').show().text(res.errors.password);
+                        } else {
+                            $('#password-error').hide();
                         }
 
                     }
@@ -374,6 +382,14 @@
                         getTableData('', 1);
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#UserModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -394,7 +410,7 @@
             });
         }
 
-        
+
         $('body').on('click', '#editBtn', function() {
             var edit_id = $(this).attr('data-id');
             $('#UserModal').find('.modal-title').html("Edit User");
@@ -402,7 +418,7 @@
             $('#email-error').html("");
             $('#mobile_no-error').html("");
             $.get("{{ url('admin/users') }}" + '/' + edit_id + '/edit', function(data) {
-               
+                $('#UserModal').find('form').attr('action', "{{ url('admin/users/update') }}");
                 $('#UserModal').find('#save_newBtn').attr("data-action", "update");
                 $('#UserModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#UserModal').find('#save_newBtn').attr("data-id", edit_id);
@@ -411,14 +427,13 @@
                 $('#full_name').val(data.full_name);
                 $('#email').val(data.email);
                 $('#mobile_no').val(data.mobile_no);
-                $('#password').val(123456);
-                $('#password').prop('disabled', true);
+                // $('#password').val(123456);
+                // $('#password').prop('disabled', true);
+                $('.password-field').hide();
                 $('input[name="gender"][value="' + data.gender + '"]').prop('checked', true);
-                $('select[name="blood_group"]').val(data.blood_group).trigger('change');
-                $('select[name="user_type"]').val(data.user_type).trigger('change');
                 $('select[name="designation"]').val(data.userdesignation.company_designation_id).trigger('change');
                 if(data.profile_pic_url==null){
-                    var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                    var default_image = "{{ asset('image/avtar.png') }}";
                     $('#profilepic_image_show').attr('src', default_image);
                 }
                 else{
@@ -460,7 +475,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this User !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",
@@ -480,6 +495,11 @@
                                         timeOut: 5000
                                     });
                                     getTableData('', 1);
+                                }
+                                if (res.status == 403) {
+                                    toastr.error("Unauthorized", 'Error', {
+                                        timeOut: 5000
+                                    });
                                 }
 
                                 if (res.status == 400) {
@@ -505,7 +525,7 @@
             var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
             if ($.inArray(fileType, validImageTypes) < 0) {
                 $('#profilepic-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
-                var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                var default_image = "{{ asset('image/avatar.png') }}";
                 $('#profilepic_image_show').attr('src', default_image);
             }
             else {
@@ -517,6 +537,6 @@
             }
         });
 
-       
+
     </script>
 @endsection

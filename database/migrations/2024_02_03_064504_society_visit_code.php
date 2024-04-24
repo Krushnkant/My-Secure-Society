@@ -11,16 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SocietyVisitCode', function (Blueprint $table) {
-            $table->bigIncrements('SocietyVisitCodeId')->index();
-            $table->integer('VisitorGatepassId')->index();
-            $table->integer('VisitCode')->unique();
-            $table->integer('VerificationStatus')->enum([1, 2, 3])->default(1)->comment('1 - Verified, 2 - Pending, 3 - Cancelled')->index();
-            $table->dateTime('ValidFromTime');
-            $table->dateTime('ValidToTime');
-            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('updated_by')->index();
-        });
+        // Schema::create('society_visit_code', function (Blueprint $table) {
+        //     $table->bigIncrements('society_visit_code_id')->index();
+        //     $table->integer('visitor_type')->comment('1 - Delivery, 2 - Cab, 3 - Guest, 4 - Daily Help')->index();
+        //     $table->integer('master_primary_id')->comment('visitor_gatepass_id / daily_help_provider_id')->index();
+        //     $table->integer('visit_code')->unique();
+        //     $table->integer('verification_status')->enum([1, 2, 3])->default(1)->comment('1 - Verified, 2 - Pending, 3 - Cancelled')->index();
+        //     $table->dateTime('valid_from_time');
+        //     $table->dateTime('valid_to_time');
+        //     $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+        //     $table->integer('updated_by')->index();
+        // });
     }
 
     /**
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SocietyVisitCode');
+        // Schema::dropIfExists('society_visit_code');
     }
 };

@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('DailyPostLike', function (Blueprint $table) {
-            $table->bigIncrements('DailyPostLikeId')->index();
-            $table->integer('SocietyDailyPostId')->index();
+        Schema::create('daily_post_like', function (Blueprint $table) {
+            $table->bigIncrements('daily_post_like_id')->index();
+            $table->integer('society_daily_post_id')->index();
             $table->integer('user_id');
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
@@ -24,6 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('DailyPostLike');
+        Schema::dropIfExists('daily_post_like');
     }
 };
+

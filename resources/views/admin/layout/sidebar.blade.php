@@ -33,7 +33,7 @@
                         <a href="{{ route('admin.company.profile') }}"><i class="ti-id-badge"></i><span class="nav-text">Company Profile</span></a>
                     </li>
                     @endif
-                    @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(11)))
+                    @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(10)))
                     <li>
                         <a href="{{ route('admin.subscriptionorder.list') }}"><i class="fa fa-first-order" aria-hidden="true"></i><span class="nav-text">Order</span></a>
                     </li>

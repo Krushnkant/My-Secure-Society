@@ -7,6 +7,12 @@
             <h4> Order Payment</h4>
         </div>
     </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('admin.subscriptionorder.list') }}">Order</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Order Payment</a></li>
+        </ol>
+    </div>
 @endsection
 
 @section('content')
@@ -64,6 +70,7 @@
     <!-- Datatable -->
     <script src="{{ asset('/vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('/js/plugins-init/datatables.init.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     <script type="text/javascript">
     $(".single-select-placeholder").select2();
@@ -99,9 +106,10 @@
                     data: function(data) {
                         data.search = $('input[type="search"]').val();
                         data.tab_type = tab_type;
+                        data.order_id = "{{ $id }}";
                     }
                 },
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [
@@ -116,6 +124,9 @@
                     {
                         width: "10%",
                         data: 'amount_paid',
+                        render: function(data, type, row) {
+                           return '&#8377; '+data
+                        }
                     },
                     {
                         width: "10%",
@@ -157,11 +168,16 @@
                     {
                         width: "10%",
                         data: 'payment_date',
+                        render: function(data, type, row) {
+                            var formattedDate = moment(row.payment_date).format('DD-MM-YYYY');
+                            return formattedDate;
+                        }
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(11)));
                             var action = `<span>`;
@@ -180,6 +196,7 @@
         }
 
         $('body').on('click', '#AddBtn_OrderPayment', function() {
+            $('#OrderPaymentModel').find('form').attr('action', "{{ url('admin/orderpayment/add') }}");
             $('#OrderPaymentModel').find('.modal-title').html("Add Order Payment");
             $("#OrderPaymentModel").find('form').trigger('reset');
             $('.single-select-placeholder').trigger('change');
@@ -193,7 +210,12 @@
             $("#amount_paid").focus();
         });
 
-
+        $('#orderpaymentform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_order_payment($('#save_newBtn'), 'save_new');
+            }
+        });
 
         $('body').on('click', '#save_newBtn', function() {
             save_order_payment($(this), 'save_new');
@@ -207,10 +229,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#orderpaymentform").serializeArray();
-
+            var formAction = $("#orderpaymentform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/orderpayment/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -282,6 +304,14 @@
                         });
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#OrderPaymentModel").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -311,6 +341,7 @@
             $('#payment_date-error').html("");
             $('#amount_paid-error').html("");
             $.get("{{ url('admin/flat') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#OrderPaymentModel').find('form').attr('action', "{{ url('admin/orderpayment/update') }}");
                 $('#OrderPaymentModel').find('#save_newBtn').attr("data-action", "update");
                 $('#OrderPaymentModel').find('#save_closeBtn').attr("data-action", "update");
                 $('#OrderPaymentModel').find('#save_newBtn').attr("data-id", edit_id);
@@ -327,7 +358,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                 title: "Are you sure to delete ?",
-                text: "You will not be able to recover this imaginary file !!",
+                text: "You will not be able to recover this Order Payment !!",
                 type: "warning",
                 showCancelButton: !0,
                 confirmButtonColor: "#DD6B55",

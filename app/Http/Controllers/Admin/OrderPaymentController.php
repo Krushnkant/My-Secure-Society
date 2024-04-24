@@ -12,6 +12,10 @@ use App\Models\OrderPayment;
 class OrderPaymentController extends Controller
 {
     public function index($id) {
+        $order = SubscriptionOrder::find($id);
+        if($order == null){
+            return view('admin.404');
+        }
         return view('admin.order_payment.list',compact('id'));
     }
 
@@ -23,10 +27,10 @@ class OrderPaymentController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
-        $query = OrderPayment::select('*');
+        $query = OrderPayment::select('*')->where('subscription_order_id',$request->order_id);
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('order_payment_id', 'like', "%".$search."%");
@@ -109,6 +113,18 @@ class OrderPaymentController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
+        $paymentorders = OrderPayment::whereIn('order_payment_id', $ids)->get();
+        foreach ($paymentorders as $paymentorder) {
+            $paymentorder->estatus = 3;
+            $paymentorder->save();
+
+            $subscriptionOrder = SubscriptionOrder::find($paymentorder->subscription_order_id);
+            if ($subscriptionOrder) {
+                $subscriptionOrder->total_paid_amount -= $paymentorder->amount_paid;
+                $subscriptionOrder->total_outstanding_amount += $paymentorder->amount_paid;
+                $subscriptionOrder->save();
+            }
+        }
         OrderPayment::whereIn('order_payment_id', $ids)->delete();
 
         return response()->json(['status' => '200']);

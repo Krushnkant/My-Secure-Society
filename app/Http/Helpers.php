@@ -37,9 +37,9 @@ class Helpers{
     public static function getModulesArray()
     {
         return [
-            1 => 'Company Designation',
-            2 => 'Company Designation Authority',
-            3 => 'Company User & User Designation',
+            1 => 'Designation',
+            2 => 'Designation Authority',
+            3 => 'User & User Designation',
             4 => 'Government Emergency No',
             5 => 'Business Category',
             6 => 'Post Status Banner',

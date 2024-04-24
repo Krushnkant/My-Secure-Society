@@ -114,29 +114,35 @@
                     }
                 },
 
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.society_id}">`;
                         }
                     },
                     {
-                        width: "10%",
+                        width: "20%",
                         data: 'society_name',
                     },
                     {
-                        width: "20%",
-                        data: 'street_address1',
+                        width: "49%", // Adjust width as needed
+                        data: null,
+                        render: function(data, type, row) {
+                            // Concatenate address fields
+                            return `${row.street_address1},${row.landmark}, ${row.city.city_name}, ${row.state.state_name}, ${row.country.country_name}, ${row.pin_code}`;
+                        }
                     },
                     {
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                       className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(7)));
                             if (is_edit) {
@@ -155,17 +161,22 @@
                     },
                     {
                         data: 'id',
-                        width: "10%",
+                        width: "20%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_view = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_view(8)));
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(7)));
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(7)));
                             var action = `<span>`;
+                                if (is_view) {
+                                action +=
+                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Member" id="viewSocietyMember"  data-id="${row.society_id}"><i class="fa fa-users color-muted"></i> </a>`;
+                                }
                             if (is_view) {
                                 action +=
-                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Blog" id="viewBlock"  data-id="${row.society_id}"><i class="fa fa-list color-muted"></i> </a>`;
-                                }    
+                                    `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Society Block" id="viewBlock"  data-id="${row.society_id}"><i class="fa fa-list color-muted"></i> </a>`;
+                                }
                             if (is_edit) {
                                 action +=
                                     `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.society_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
@@ -197,7 +208,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -208,7 +219,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Society !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -231,14 +242,21 @@
                                             ids: selectedIds
                                         },
                                         success: function(response) {
-                                            // Handle success response
-                                            console.log(response);
-                                            toastr.success(
+
+                                            if (response.status == 200) {
+                                                toastr.success(
                                                 "Society deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            getTableData('', 1);
+                                                $('#societyTable').DataTable().clear().draw();
+                                                $('#selectAll').prop('checked', false);
+                                            }
+                                            if (response.status == 300) {
+                                                toastr.error(response.message, 'Error', {
+                                                    timeOut: 5000
+                                                });
+                                            }
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
@@ -254,15 +272,26 @@
             });
         }
 
+        $('#societyform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_society($('#save_newBtn'), 'save_new');
+            }
+        });
+
 
         $('body').on('click', '#AddBtn_Society', function() {
+            $('#SocietyModal').find('form').attr('action', "{{ url('admin/society/add') }}");
             $('#SocietyModal').find('.modal-title').html("Add Society");
             $("#SocietyModal").find('form').trigger('reset');
             $('#id').val("");
             $('#society_name-error').html("");
             $('#street_address1-error').html("");
+            $('#street_address2-error').html("");
             $('#landmark-error').html("");
             $('#pin_code-error').html("");
+            $('#latitude-error').html("");
+            $('#longitude-error').html("");
             $('#city_id-error').html("");
             $('#state_id-error').html("");
             $('#country_id-error').html("");
@@ -288,10 +317,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = new FormData($("#societyform")[0]);
-
+            var formAction = $("#societyform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/society/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -299,7 +328,7 @@
                     if (res.status == 'failed') {
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
-                        
+
                         if (res.errors.society_name) {
                             $('#society_name-error').show().text(res.errors.society_name);
                         } else {
@@ -310,6 +339,11 @@
                         } else {
                             $('#street_address1-error').hide();
                         }
+                        if (res.errors.street_address2) {
+                            $('#street_address2-error').show().text(res.errors.street_address2);
+                        } else {
+                            $('#street_address2-error').hide();
+                        }
                         if (res.errors.landmark) {
                             $('#landmark-error').show().text(res.errors.landmark);
                         } else {
@@ -319,6 +353,16 @@
                             $('#pin_code-error').show().text(res.errors.pin_code);
                         } else {
                             $('#pin_code-error').hide();
+                        }
+                        if (res.errors.latitude) {
+                            $('#latitude-error').show().text(res.errors.latitude);
+                        } else {
+                            $('#latitude-error').hide();
+                        }
+                        if (res.errors.longitude) {
+                            $('#longitude-error').show().text(res.errors.longitude);
+                        } else {
+                            $('#longitude-error').hide();
                         }
                         if (res.errors.city_id) {
                             $('#city_id-error').show().text(res.errors.city_id);
@@ -363,8 +407,11 @@
                             $('#id').val("");
                             $('#society_name-error').html("");
                             $('#street_address1-error').html("");
+                            $('#street_address2-error').html("");
                             $('#landmark-error').html("");
                             $('#pin_code-error').html("");
+                            $('#latitude-error').html("");
+                            $('#longitude-error').html("");
                             $('#city_id-error').html("");
                             $('#state_id-error').html("");
                             $('#country_id-error').html("");
@@ -388,6 +435,14 @@
                             }
                         }
                         getTableData('', 1);
+                    }
+
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
                     }
 
                     if (res.status == 400) {
@@ -416,13 +471,17 @@
             $('#SocietyModal').find('.modal-title').html("Edit Society");
             $('#society_name-error').html("");
             $('#street_address1-error').html("");
+            $('#street_address2-error').html("");
             $('#landmark-error').html("");
             $('#pin_code-error').html("");
+            $('#latitude-error').html("");
+            $('#longitude-error').html("");
             $('#city_id-error').html("");
             $('#state_id-error').html("");
             $('#country_id-error').html("");
-         
+
             $.get("{{ url('admin/society') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#SocietyModal').find('form').attr('action', "{{ url('admin/society/update') }}");
                 $('#SocietyModal').find('#save_newBtn').attr("data-action", "update");
                 $('#SocietyModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#SocietyModal').find('#save_newBtn').attr("data-id", edit_id);
@@ -433,7 +492,9 @@
                 $('#street_address2').val(data.street_address2);
                 $('#landmark').val(data.landmark);
                 $('#pin_code').val(data.pin_code);
-                 
+                $('#latitude').val(data.latitude);
+                $('#longitude').val(data.longitude);
+
                 $('select[name="country_id"]').val(data.country_id).trigger('change');
 
                 $.ajax({
@@ -446,7 +507,6 @@
                     dataType: 'json',
                     success: function(result) {
                         // Populate state dropdown
-                        $('#state-dropdown').html('<option value="">Select State</option>');
                         $.each(result.states, function(key, value) {
                             $("#state-dropdown").append('<option data-value="' + value.state_id +
                                 '" value="' + value.state_id + '">' + value.state_name + '</option>');
@@ -464,13 +524,11 @@
                             },
                             dataType: 'json',
                             success: function(result) {
-                                $('#city-dropdown').html('<option value="">Select City</option>');
+                                // Populate city dropdown
                                 $.each(result.cities, function(key, value) {
                                     $("#city-dropdown").append('<option data-value="' + value.city_id +
                                         '" value="' + value.city_id + '">' + value.city_name + '</option>');
                                 });
-
-                                // Set the selected city in the city dropdown
                                 $('#city-dropdown').val(data.city_id).trigger('change');
                             }
                         });
@@ -511,7 +569,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this Society !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",
@@ -531,6 +589,11 @@
                                         timeOut: 5000
                                     });
                                     getTableData('', 1);
+                                }
+                                if (res.status == 300) {
+                                    toastr.error(res.message, 'Error', {
+                                        timeOut: 5000
+                                    });
                                 }
 
                                 if (res.status == 400) {
@@ -566,7 +629,7 @@
                         $("#state-dropdown").append('<option data-value="' + value.state_id +
                             '" value="' + value.state_id + '">' + value.state_name + '</option>');
                     });
-                    
+
                     // Trigger the change event on state dropdown after updating options
                     $("#state-dropdown").trigger('change');
                 }
@@ -601,6 +664,13 @@
             window.open(url, "_blank");
         });
 
-       
+        $('body').on('click', '#viewSocietyMember', function(e) {
+            // e.preventDefault();
+            var id = $(this).attr('data-id');
+            var url = "{{ url('admin/societymember') }}" + "/" + id;
+            window.open(url, "_blank");
+        });
+
+
     </script>
 @endsection

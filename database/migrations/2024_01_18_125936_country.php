@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('country', function (Blueprint $table) {
             $table->bigIncrements('country_id')->index();
             $table->string('counrty_code', 30);
-            $table->string('counrty_name', 60);
+            $table->string('country_name', 60);
             $table->integer('phone_code');
         });
     }

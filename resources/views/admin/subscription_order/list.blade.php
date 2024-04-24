@@ -38,9 +38,9 @@
                                         <th>Society Name</th>
                                         {{-- <th>Sub Total</th>
                                         <th>GST Percent</th> --}}
-                                        <th>Total Amount</th>
-                                        <th>Total Paid Amount</th>
-                                        <th>Total Outstanding Amount</th>
+                                        <th>Amount</th>
+                                        <th>Paid Amount</th>
+                                        <th>Outstanding Amount</th>
                                         <th>Order Status</th>
                                         <th>Due Date</th>
                                         <th>Action</th>
@@ -53,9 +53,9 @@
                                         <th>Society Name</th>
                                         {{-- <th>Sub Total</th>
                                         <th>GST Percent</th> --}}
-                                        <th>Total Amount</th>
-                                        <th>Total Paid Amount</th>
-                                        <th>Total Outstanding Amount</th>
+                                        <th> Amount</th>
+                                        <th>Paid Amount</th>
+                                        <th>Outstanding Amount</th>
                                         <th>Order Status</th>
                                         <th>Due Date</th>
                                         <th>Action</th>
@@ -79,6 +79,7 @@
     <!-- Datatable -->
     <script src="{{ asset('/vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('/js/plugins-init/datatables.init.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     <script type="text/javascript">
         $("#society-dropdown").select2({
@@ -123,13 +124,14 @@
                     }
                 },
 
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.subscription_order_id}">`;
                         }
@@ -156,14 +158,23 @@
                     {
                         width: "10%",
                         data: 'total_amount',
+                        render: function(data, type, row) {
+                           return '&#8377; '+data
+                        }
                     },
                     {
                         width: "10%",
                         data: 'total_paid_amount',
+                        render: function(data, type, row) {
+                           return '&#8377; '+data
+                        }
                     },
                     {
                         width: "10%",
                         data: 'total_outstanding_amount',
+                        render: function(data, type, row) {
+                           return '&#8377; '+data
+                        }
                     },
                     {
                         data: 'order_status', // Assume 'status' is the field in your database for the status
@@ -187,12 +198,18 @@
                     {
                         width: "10%",
                         data: 'due_date',
+                        render: function(data, type, row) {
+                            // Assuming the 'due_date' is in a format that Moment.js can parse
+                            var formattedDate = moment(row.due_date).format('DD-MM-YYYY');
+                            return formattedDate;
+                        }
 
                     },
                     {
                         data: 'id',
                         width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_view = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_view(11)));
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(10)));
@@ -233,7 +250,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -244,7 +261,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Order !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -267,14 +284,15 @@
                                             ids: selectedIds
                                         },
                                         success: function(response) {
-                                            // Handle success response
-                                            console.log(response);
+
                                             toastr.success(
                                                 "Order deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            getTableData('', 1);
+                                            // getTableData('', 1);
+                                            $('#ordertable').DataTable().clear().draw();
+                                            $('#selectAll').prop('checked', false);
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
@@ -292,8 +310,9 @@
 
 
         $('body').on('click', '#AddBtn_Order', function() {
+            $('#OrderModal').find('form').attr('action', "{{ url('admin/subscriptionorder/add') }}");
             $('#OrderModal').find('.modal-title').html("Add Society");
-            //$("#OrderModal").find('form').trigger('reset');
+            $("#OrderModal").find('form').trigger('reset');
             $('#id').val("");
             $('#society_id-error').html("");
             $('#total_flat-error').html("");
@@ -304,13 +323,33 @@
             $('#total_amount-error').html("");
             $('#total_paid_amount-error').html("");
             $('#total_outstanding_amount-error').html("");
-            $('#order_status-dropdown').trigger('change');
-            $('#society-dropdown').trigger('change');
+            $('#order-status-dropdown').trigger('change');
+            $('#payment-type-dropdown').trigger('change');
             $("#OrderModal").find("#save_newBtn").removeAttr('data-action');
             $("#OrderModal").find("#save_closeBtn").removeAttr('data-action');
             $("#OrderModal").find("#save_newBtn").removeAttr('data-id');
             $("#OrderModal").find("#save_closeBtn").removeAttr('data-id');
             $("#society_name").focus();
+    
+            $('#total_flat').prop("readonly", false);
+            $('#amount_per_flat').prop("readonly", false);
+            $('#sub_total_amount').prop("readonly", false);
+            $('#gst_percent').prop("readonly", false);
+            $('#gst_amount').prop("readonly", false);
+            $('#total_amount').prop("readonly", false);
+            $('#total_paid_amount').prop("readonly", false);
+            $('#payment_date').prop("readonly", false);
+            $('#payment_note').prop("readonly", false);
+            $('#total_outstanding_amount').prop("readonly", false);
+            $('select[name="society_id"]').trigger('change').prop("disabled", false);
+            $('select[name="payment_type"]').trigger('change').prop("disabled", false);
+        });
+
+        $('#orderform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_order($('#save_newBtn'), 'save_new');
+            }
         });
 
         $('body').on('click', '#save_newBtn', function() {
@@ -325,10 +364,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = new FormData($("#orderform")[0]);
-
+            var formAction = $("#orderform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/subscriptionorder/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -425,6 +464,19 @@
                             $("#OrderModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#OrderModal").find("#save_newBtn").removeAttr('data-id');
                             $("#OrderModal").find("#save_closeBtn").removeAttr('data-id');
+
+                            $('#total_flat').prop("readonly", false);
+                            $('#amount_per_flat').prop("readonly", false);
+                            $('#sub_total_amount').prop("readonly", false);
+                            $('#gst_percent').prop("readonly", false);
+                            $('#gst_amount').prop("readonly", false);
+                            $('#total_amount').prop("readonly", false);
+                            $('#total_paid_amount').prop("readonly", false);
+                            $('#payment_date').prop("readonly", false);
+                            $('#payment_note').prop("readonly", false);
+                            $('#total_outstanding_amount').prop("readonly", false);
+                            $('select[name="society_id"]').trigger('change').prop("disabled", false);
+                            $('select[name="payment_type"]').trigger('change').prop("disabled", false);
                             if (res.action == 'add') {
                                 toastr.success("Order Added successfully!", 'Success', {
                                     timeOut: 5000
@@ -437,6 +489,14 @@
                             }
                         }
                         getTableData('', 1);
+                    }
+
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
                     }
 
                     if (res.status == 400) {
@@ -476,6 +536,7 @@
             $('#society-dropdown').trigger('change');
 
             $.get("{{ url('admin/subscriptionorder') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#OrderModal').find('form').attr('action', "{{ url('admin/subscriptionorder/update') }}");
                 $('#OrderModal').find('#save_newBtn').attr("data-action", "update");
                 $('#OrderModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#OrderModal').find('#save_newBtn').attr("data-id", edit_id);
@@ -499,38 +560,12 @@
             });
         });
 
-        function changeStatus(id) {
-            $.ajax({
-                type: 'GET',
-                url: "{{ url('admin/society/changestatus') }}" + '/' + id,
-                success: function(res) {
-                    if (res.status == 200 && res.action == 'deactive') {
-                        $("#statuscheck_" + id).val(2);
-                        $("#statuscheck_" + id).prop('checked', false);
-                        toastr.success("Society deactivated successfully!", 'Success', {
-                            timeOut: 5000
-                        });
-                    }
-                    if (res.status == 200 && res.action == 'active') {
-                        $("#statuscheck_" + id).val(1);
-                        $("#statuscheck_" + id).prop('checked', 1);
-                        toastr.success("Society activated successfully!", 'Success', {
-                            timeOut: 5000
-                        });
-                    }
-                },
-                error: function(data) {
-                    toastr.error("Please try again", 'Error', {
-                        timeOut: 5000
-                    });
-                }
-            });
-        }
+ 
 
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this Order !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",
@@ -543,10 +578,10 @@
                         var remove_id = $(this).attr('data-id');
                         $.ajax({
                             type: 'GET',
-                            url: "{{ url('admin/society') }}" + '/' + remove_id + '/delete',
+                            url: "{{ url('admin/subscriptionorder') }}" + '/' + remove_id + '/delete',
                             success: function(res) {
                                 if (res.status == 200) {
-                                    toastr.success("User deleted successfully!", 'Success', {
+                                    toastr.success("Order deleted successfully!", 'Success', {
                                         timeOut: 5000
                                     });
                                     getTableData('', 1);

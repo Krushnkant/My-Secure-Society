@@ -14,7 +14,11 @@ class Flat extends Model
     protected $table = 'block_flat';
     protected $primaryKey = 'block_flat_id';
     protected $dates = ['deleted_at'];
-
+   
+    public function society_block()
+    {
+        return $this->belongsTo(Block::class, 'society_block_id');
+    }
 
    
 }

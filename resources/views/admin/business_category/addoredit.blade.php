@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="BusinessCategoryModal" tabindex="-1" role="dialog" aria-labelledby="BusinessCategoryModal">
     <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="businesscategoryform" action="#" method="post">
+            <form class="form-valide" id="businesscategoryform" action="{{ url('admin/businesscategory/add') }}" method="post">
             {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title">Add Bussiness Category</h5>

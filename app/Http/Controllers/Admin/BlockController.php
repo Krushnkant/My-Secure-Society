@@ -4,15 +4,20 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Block;
+use App\Models\Flat;
 use App\Models\Society;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class BlockController extends Controller
 {
     public function index($id) {
         $society = Society::find($id);
+        if($society == null){
+            return view('admin.404');
+        }
         return view('admin.society_block.list',compact('society','id'));
     }
 
@@ -24,10 +29,10 @@ class BlockController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
-        $query = Block::select('*');
+        $query = Block::select('*')->where('society_id',$request->society_id);
         $search = $request->search;
         $query = $query->where(function($query) use ($search){
             $query->orWhere('block_name', 'like', "%".$search."%");
@@ -37,7 +42,7 @@ class BlockController extends Controller
         switch($orderColumnIndex){
             case '0':
                 $orderByName = 'block_name';
-                break;  
+                break;
         }
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();
@@ -48,13 +53,28 @@ class BlockController extends Controller
 
     public function addorupdate(Request $request){
         $messages = [
-            'block_name.required' =>'Please provide a block name',
+            'block_name.required' => 'Please provide a block name',
+            'block_name.unique' => 'The block name is already taken for this society',
         ];
 
-        $validator = Validator::make($request->all(), [
-            'block_name' => 'required',
-        ], $messages);
-
+        if ($request->has('id') && $request->has('block_name')) {
+            $rules['block_name'] = [
+                'required',
+                'max:100',
+                Rule::unique('society_block')->where(function ($query) use ($request) {
+                    return $query->where('society_id', $request->society_id)->where('society_block_id', '!=', $request->id)->whereNull('deleted_at');
+                }),
+            ];
+        } elseif ($request->has('block_name')) {
+            $rules['block_name'] = [
+                'required',
+                'max:100',
+                Rule::unique('society_block')->where(function ($query) use ($request) {
+                    return $query->where('society_id', $request->society_id)->whereNull('deleted_at');
+                }),
+            ];
+        }
+        $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status'=>'failed']);
         }
@@ -73,7 +93,7 @@ class BlockController extends Controller
         $block->updated_by = Auth::user()->user_id;
         $block->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
         $block->save();
-        
+
         return response()->json(['status' => '200', 'action' => 'add']);
     }
 
@@ -85,6 +105,10 @@ class BlockController extends Controller
     public function delete($id){
         $block = Block::find($id);
         if ($block){
+            $flat = Flat::where('society_block_id', $id)->exists();
+            if ($flat) {
+                return response()->json(['status' => '300', 'message' => 'Cannot delete block. It is associated with one or more block flat.']);
+            }
             $block->estatus = 3;
             $block->save();
             $block->delete();
@@ -110,8 +134,18 @@ class BlockController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        Block::whereIn('society_block_id', $ids)->delete();
-
+        $blocks = Block::whereIn('society_block_id', $ids)->pluck('society_block_id');
+        $flat = Flat::whereIn('society_block_id', $blocks)->exists();
+        if ($flat) {
+            return response()->json(['status' => '300','message'=>"Blocks can't be deleted due to some Blocks having flat"]);
+        }
+        foreach ($blocks as $block) 
+        {
+            $block = Block::where('society_block_id', $block)->first();
+            $block->estatus = 3;
+            $block->save();
+            $block->delete();
+        }
         return response()->json(['status' => '200']);
     }
 }

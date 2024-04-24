@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('DailyHelpProviderReview', function (Blueprint $table) {
-            $table->bigIncrements('DailyHelpProviderReviewId')->index();
-            $table->integer('GivenByBloackFlatId')->index();
-            $table->integer('ReviewToUserId')->index();
-            $table->float('NumberOfStar')->index();
-            $table->string('ReviewText', 200);
-            $table->integer('ReviewStatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Approved, 2 - Rejected, 3 - Delete, 4 - Pending')->index();
+        Schema::create('daily_help_provider_review', function (Blueprint $table) {
+            $table->bigIncrements('daily_help_provider_review_id')->index();
+            $table->integer('given_by_bloack_flat_id')->index();
+            $table->integer('review_to_user_id')->index();
+            $table->float('number_of_star')->index();
+            $table->string('review_text', 200);
+            $table->integer('review_status')->enum([1, 2, 3, 4])->default(1)->comment('1 - Approved, 2 - Rejected, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('DailyHelpProviderReview');
+        Schema::dropIfExists('daily_help_providerReview');
     }
 };

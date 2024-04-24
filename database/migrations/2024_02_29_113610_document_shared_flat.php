@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('DocumentSharedFlat', function (Blueprint $table) {
-            $table->bigIncrements('DocumentSharedFlatId')->index();
+        Schema::create('document_shared_flat', function (Blueprint $table) {
+            $table->bigIncrements('document_shared_flat_id')->index();
             $table->integer('block_flat_id')->index();
-            $table->integer('SocietyDocumentId')->index();
+            $table->integer('society_document_id')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
         });
@@ -25,6 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('DocumentSharedFlat');
+        Schema::dropIfExists('document_shared_flat');
     }
 };
+

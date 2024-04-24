@@ -8,7 +8,7 @@
         </div>
     </div>
     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
-        
+
     </div>
 @endsection
 
@@ -42,7 +42,7 @@
                             </ul>
                         </div>
                     </div>
-                    
+
                     <div class="tab-content">
                         <div class="table-responsive">
                             <table id="datatable" class="display" style="width:100%">
@@ -121,7 +121,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="col-lg-12 mb-2">
                                                 <div class="form-group">
                                                     <label class="text-label">Select Category*</label>
@@ -205,7 +205,7 @@
                         data.tab_type = tab_type;
                     }
                 },
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: true,
                 aoColumns: [
@@ -232,7 +232,7 @@
         $(".sweet-ajax1").on("click", function() {
             swal({
                 title: "Are you sure to delete ?",
-                text: "You will not be able to recover this imaginary file !!",
+                text: "You will not be able to recover this product !!",
                 type: "warning",
                 showCancelButton: !0,
                 confirmButtonColor: "#DD6B55",
@@ -265,7 +265,7 @@
         });
 
         $(".select2-width-75").select2({
-            
+
         });
 
         $(".single-select-placeholder").select2({

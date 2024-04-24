@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="UserModal" tabindex="-1" role="dialog" aria-labelledby="UserModal">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="userform" method="post" enctype="multipart/form-data">
+            <form class="form-valide" id="userform" method="post" action="{{ url('admin/users/add') }}" enctype="multipart/form-data">
                 {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title">Add User</h5>
@@ -22,10 +22,10 @@
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Email Address <span class="text-danger">*</span></label>
+                                <label class="text-label">Email <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <input type="email" class="form-control" id="email" name="email"
-                                        placeholder="Email Address">
+                                        placeholder="Email">
                                     <div id="email-error" class="invalid-feedback animated fadeInDown"
                                         style="display: none;"></div>
                                 </div>
@@ -44,20 +44,6 @@
                         </div>
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="text-label">User Type <span class="text-danger">*</span></label>
-                                <select class="single-select-placeholder js-states" name="user_type">
-                                    <option value="1">Company Admin User</option>
-                                    <option value="2">Resident App User</option>
-                                    <option value="3">Guard App User</option>
-                                    <option value="4">App User</option>
-                                    <option value="5">Daily Help User</option>
-                                    <option value="6">Staff Member</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
                                 <label class="text-label">Mobile Number <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <input type="number" name="mobile_no" id="mobile_no" class="form-control"
@@ -67,7 +53,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-lg-6 mb-2 password-field">
                             <div class="form-group">
                                 <label class="text-label">Password <span class="text-danger">*</span></label>
                                 <div class="input-group">
@@ -76,22 +62,6 @@
                                     <div id="password-error" class="invalid-feedback animated fadeInDown"
                                         style="display: none;"></div>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-lg-6 mb-2">
-                            <div class="form-group">
-                                <label class="text-label">Blood Group <span class="text-danger">*</span></label>
-                                <select class="single-select-placeholder js-states" name="blood_group">
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
-                                </select>
                             </div>
                         </div>
                         <div class="col-lg-6 mb-2">

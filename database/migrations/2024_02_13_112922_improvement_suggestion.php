@@ -37,11 +37,11 @@ return new class extends Migration
     
     public function up(): void
     {
-        Schema::create('ImprovementSuggestion', function (Blueprint $table) {
-            $table->bigIncrements('ImprovementSuggestionId')->index();
+        Schema::create('improvement_suggestion', function (Blueprint $table) {
+            $table->bigIncrements('improvement_suggestion_id')->index();
             $table->integer('user_id')->index();
-            $table->string('Message');
-            $table->integer('Feature')->enum([1])->default(1)->comment('1 - Blood Donate, 2 - Amenity, 3 - Maintanance, 4 - Staff Management')->index();
+            $table->string('message');
+            $table->integer('feature')->enum([1])->default(1)->comment('1 - Blood Donate, 2 - Amenity, 3 - Maintenance, 4 - Staff Management')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
         });
@@ -52,6 +52,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ImprovementSuggestion');
+        Schema::dropIfExists('improvement_suggestion');
     }
 };

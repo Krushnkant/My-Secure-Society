@@ -20,6 +20,22 @@
                         {{ csrf_field() }}
                             <div class="row">
                                 <div class="col-lg-6 mb-2">
+                                    <div class="form-group ">
+                                        <label class="col-form-label" for="profile_pic">Logo
+                                        </label>
+                                        <input type="file" class="form-control-file" id="profile_pic" name="profile_pic">
+                                        <div id="profile_pic-error" class="invalid-feedback animated fadeInDown"
+                                            style="display: none;"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-2">
+                                    <div class="form-group ">
+                                        <img src="{{ asset(isset($company->logo_url)?$company->logo_url:'image/placeholder.png') }}" class=""
+                                            id="profilepic_image_show" height="100px" width="150px"
+                                            style="margin-top: 10px;">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-2">
                                     <div class="form-group">
                                         <label class="text-label" for="company_name">Company Name <span class="text-danger">*</span></label>
                                         <input type="text" name="company_name" id="company_name" class="form-control"
@@ -78,7 +94,7 @@
                                             <option value=""></option>
                                             @foreach ($countries as $country)
                                                 <option value="{{ $country->country_id }}">
-                                                    {{ $country->counrty_name }}</option>
+                                                    {{ $country->country_name }}</option>
                                             @endforeach
                                         </select>
                                         <div id="country_id-error" class="invalid-feedback animated fadeInDown"
@@ -105,26 +121,17 @@
                                             style="display: none;"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 mb-2">
-                                    <div class="form-group ">
-                                        <label class="col-form-label" for="profile_pic">Logo
-                                        </label>
-                                        <input type="file" class="form-control-file" id="profile_pic" name="profile_pic">
-                                        <div id="profile_pic-error" class="invalid-feedback animated fadeInDown"
-                                            style="display: none;"></div>
-
-                                        <img src="{{ asset(isset($company->logo_url)?$company->logo_url:'image/avtar.png') }}" class=""
-                                            id="profilepic_image_show" height="100px" width="100px"
-                                            style="margin-top: 10px;">
-                                    </div>
-                                </div>
+                                
                             </div>
                             <input type="hidden" name="id" id="id" value="{{ isset($company->company_profile_id)?$company->company_profile_id:'' }}">
                             <input type="hidden" name="country" id="country_id" value="{{ isset($company->country_id)?$company->country_id:'' }}">
                             <input type="hidden" name="state" id="state_id" value="{{ isset($company->state_id)?$company->state_id:'' }}">
                             <input type="hidden" name="city" id="city_id" value="{{ isset($company->city_id)?$company->city_id:'' }}">
                             @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_edit(12)))
-                            <button type="button" id="saveBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
+
+                            <div class="mt-5 btn-page">
+                                <button type="button" id="saveBtn" class="btn btn-primary">Save  <i class="fa fa-circle-o-notch fa-spin loadericonfa" style="display:none;"></i></button>
+                            </div>
                             @endif
                     </form>
                 </div>
@@ -145,6 +152,13 @@
         });
         $("#city-dropdown").select2({
             placeholder: "Select a city"
+        });
+
+        $('#companyform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                $('#saveBtn').click();
+            }
         });
 
         $('body').on('click', '#saveBtn', function() {
@@ -178,6 +192,11 @@
                             $('#street_address1-error').show().text(res.errors.street_address1);
                         } else {
                             $('#street_address1-error').hide();
+                        }
+                        if (res.errors.street_address2) {
+                            $('#street_address2-error').show().text(res.errors.street_address2);
+                        } else {
+                            $('#street_address2-error').hide();
                         }
                         if (res.errors.landmark) {
                             $('#landmark-error').show().text(res.errors.landmark);
@@ -213,6 +232,15 @@
                     if (res.status == 200) {
                         $(btn).find('.loadericonfa').hide();
                         $(btn).prop('disabled', false);
+                        $('#profile_pic-error').html("");
+                        $('#company_name-error').html("");
+                        $('#city_id-error').html("");
+                        $('#gst_in_number-error').html("");
+                        $('#landmark-error').html("");
+                        $('#pin_code-error').html("");
+                        $('#state_id-error').html("");
+                        $('#country_id-error').html("");
+                        $('#street_address1-error').html("");
                         toastr.success("Company updated successfully!", 'Success', {
                             timeOut: 5000
                         });
@@ -335,7 +363,7 @@
             var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
             if ($.inArray(fileType, validImageTypes) < 0) {
                 $('#profile_pic-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
-                var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                var default_image = "{{ asset('image/avatar.png') }}";
                 $('#profilepic_image_show').attr('src', default_image);
             }
             else {

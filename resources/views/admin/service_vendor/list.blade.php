@@ -32,8 +32,8 @@
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
-                                        <th>Vendor Company Name</th>
-                                        <th>Service Type </th>
+                                        <th>Vendor</th>
+                                        <th>Service Type</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -41,8 +41,8 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th>Vendor Company Name</th>
-                                        <th>Service Type </th>
+                                        <th>Vendor</th>
+                                        <th>Service Type</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -104,13 +104,14 @@
                     }
                 },
 
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.service_vendor_id}">`;
                         }
@@ -129,8 +130,6 @@
                                     return '<span class="badge badge-success">Delivery</span>';
                                 case 2:
                                     return '<span class="badge badge-success">Cab</span>';
-                                case 3:
-                                    return '<span class="badge badge-success">Other</span>';
                                 default:
                                     return '';
                             }
@@ -140,8 +139,9 @@
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(13)));
                             if (is_edit) {
                                 var estatus = `<label class="switch">
                                         <input type="checkbox" id="statuscheck_${row.service_vendor_id}" onchange="changeStatus(${row.service_vendor_id})" value="${data}" ${data == 1 ? 'checked' : ''}>
@@ -159,9 +159,10 @@
                         data: 'id',
                         width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(3)));
-                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(3)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(13)));
+                            var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_delete(13)));
                             var action =  `<span>`;
                             if(is_edit) {
                               action += `<a href="javascript:void(0);" class="mr-4" data-toggle="tooltip" title="Edit" id="editBtn"  data-id="${row.service_vendor_id}"><i class="fa fa-pencil color-muted"></i> </a>`;
@@ -192,7 +193,7 @@
                     });
 
                     // Example AJAX code for deleting selected rows
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -203,7 +204,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Vendor !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -226,13 +227,14 @@
                                             ids: selectedIds
                                         },
                                         success: function(response) {
-                                            // Handle success response
-                                            console.log(response);
+
                                             toastr.success("Vendor deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            getTableData('', 1);
+                                            // getTableData('', 1);
+                                            $('#serviceVendorTable').DataTable().clear().draw();
+                                            $('#selectAll').prop('checked', false);
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
@@ -250,20 +252,27 @@
 
 
         $('body').on('click', '#AddBtn_ServiceVendor', function() {
+            $('#ServiceVendorModal').find('form').attr('action', "{{ url('admin/servicevendor/add') }}");
             $('#ServiceVendorModal').find('.modal-title').html("Add vendor");
             $("#ServiceVendorModal").find('form').trigger('reset');
             $('#id').val("");
             $('#vendor_company_name-error').html("");
-
+            $('#file-error').html("");
             $('.single-select-placeholder').trigger('change');
-            $('#password').prop('disabled', false);
             $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-action');
             $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-action');
             $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-id');
             $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
             $("#vendor_company_name").focus();
-            var default_image = "{{ asset('image/avtar.png') }}";
+            var default_image = "{{ asset('image/placeholder.png') }}";
             $('#file_image_show').attr('src', default_image);
+        });
+
+        $('#servicevendorform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_servicevendor($('#save_newBtn'), 'save_new');
+            }
         });
 
         $('body').on('click', '#save_newBtn', function() {
@@ -278,10 +287,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = new FormData($("#servicevendorform")[0]);
-
+            var formAction = $("#servicevendorform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/servicevendor/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -294,10 +303,12 @@
                         } else {
                             $('#vendor_company_name-error').hide();
                         }
-
-
+                        if (res.errors.file) {
+                            $('#file-error').show().text(res.errors.file);
+                        } else {
+                            $('#file-error').hide();
+                        }
                     }
-
                     if (res.status == 200) {
                         if (btn_type == 'save_close') {
                             $("#ServiceVendorModal").modal('hide');
@@ -322,11 +333,12 @@
                             $('.single-select-placeholder').trigger('change');
                             $('#id').val("");
                             $('#vendor_company_name-error').html("");
+                            $('#file-error').html("");
                             $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-action');
                             $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-action');
                             $("#ServiceVendorModal").find("#save_newBtn").removeAttr('data-id');
                             $("#ServiceVendorModal").find("#save_closeBtn").removeAttr('data-id');
-                            var default_image = "{{ asset('image/avtar.png') }}";
+                            var default_image = "{{ asset('image/placeholder.png') }}";
                             $('#file_image_show').attr('src', default_image);
                             $("#vendor_company_name").focus();
                             if (res.action == 'add') {
@@ -341,6 +353,14 @@
                             }
                         }
                         getTableData('', 1);
+                    }
+
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
                     }
 
                     if (res.status == 400) {
@@ -368,9 +388,9 @@
             var edit_id = $(this).attr('data-id');
             $('#ServiceVendorModal').find('.modal-title').html("Edit Vendor");
             $('#vendor_company_name-error').html("");
-            $('#email-error').html("");
-            $('#mobile_no-error').html("");
+            $('#file-error').html("");
             $.get("{{ url('admin/servicevendor') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#ServiceVendorModal').find('form').attr('action', "{{ url('admin/servicevendor/update') }}");
                 $('#ServiceVendorModal').find('#save_newBtn').attr("data-action", "update");
                 $('#ServiceVendorModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#ServiceVendorModal').find('#save_newBtn').attr("data-id", edit_id);
@@ -379,7 +399,7 @@
                 $('#vendor_company_name').val(data.vendor_company_name);
                 $('select[name="service_type"]').val(data.service_type).trigger('change');
                 if(data.service_vendor_file.file_url==null){
-                    var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                    var default_image = "{{ asset('image/placeholder.png') }}";
                     $('#file_image_show').attr('src', default_image);
                 }
                 else{
@@ -421,7 +441,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this Vendor !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",
@@ -466,7 +486,7 @@
             var validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
             if ($.inArray(fileType, validImageTypes) < 0) {
                 $('#file-error').show().text("Please provide a Valid Extension Image(e.g: .jpg .png)");
-                var default_image = "{{ asset('images/default_avatar.jpg') }}";
+                var default_image = "{{ asset('image/placeholder.png') }}";
                 $('#file_image_show').attr('src', default_image);
             }
             else {

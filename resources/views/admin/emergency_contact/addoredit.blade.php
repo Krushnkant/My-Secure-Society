@@ -1,7 +1,7 @@
 <div class="modal modal-right fade" id="EmergencyContactModal" tabindex="-1" role="dialog" aria-labelledby="EmergencyContactModal">
     <div class="modal-dialog modal-ml" role="document">
         <div class="modal-content">
-            <form class="form-valide" id="emergencycontactform" action="#" method="post">
+            <form class="form-valide" id="emergencycontactform" action="{{ url('admin/emergencycontact/add') }}" method="post">
             {{ csrf_field() }}
                 <div class="modal-header">
                     <h5 class="modal-title">Add Emergency Contact</h5>
@@ -13,15 +13,15 @@
                     <div class="row">
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" id="name" class="form-control" placeholder="Name">
+                                <label class="text-label"> Help For <span class="text-danger">*</span></label>
+                                <input type="text" name="name" id="name" class="form-control" placeholder="Help For">
                                 <div id="name-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                             </div>
                         </div>
                         <div class="col-lg-12 mb-2">
                             <div class="form-group">
-                                <label class="text-label">Mobile Number <span class="text-danger">*</span></label>
-                                <input type="number" name="mobile_no" id="mobile_no" class="form-control" placeholder="Mobile No">
+                                <label class="text-label">Help Line No <span class="text-danger">*</span></label>
+                                <input type="number" name="mobile_no" id="mobile_no" class="form-control" placeholder="Help Line No">
                                 <div id="mobile_no-error" class="invalid-feedback animated fadeInDown" style="display: none;"></div>
                             </div>
                         </div>

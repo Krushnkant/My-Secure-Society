@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SocietyCharge', function (Blueprint $table) {
-            $table->bigIncrements('SocietyChargeId')->index();
+        Schema::create('society_charge', function (Blueprint $table) {
+            $table->bigIncrements('society_charge_id')->index();
             $table->integer('society_id')->index();
-            $table->integer('isPenalty')->default(1)->comment('1 - True, 2 - False')->index();
-            $table->integer('ChargeType')->enum([1, 2, 4, 5, 7])->default(1)->comment('1 - Maintenance, 2 - Loan Interest, 4 - Move In, 5 - Move Out, 7 - Payment')->index();
-            $table->string('ChargeName', 100);
-            $table->integer('AmountType')->enum([1, 2])->default(2)->comment('1 - Percentage on Invoice Total Amount, 2 - Fix Amount')->index();
-            $table->decimal('ChargeAmount', 10, 2);
+            $table->integer('is_penalty')->default(1)->comment('1 - True, 2 - False')->index();
+            $table->integer('charge_type')->enum([1, 2, 4, 5, 7])->default(1)->comment('1 - Maintenance, 2 - Loan Interest, 4 - Move In, 5 - Move Out, 7 - Payment')->index();
+            $table->string('charge_name', 100);
+            $table->integer('amount_type')->enum([1, 2])->default(2)->comment('1 - Percentage on Invoice Total Amount, 2 - Fix Amount')->index();
+            $table->decimal('charge_amount', 10, 2);
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SocietyCharge');
+        Schema::dropIfExists('society_charge');
     }
 };

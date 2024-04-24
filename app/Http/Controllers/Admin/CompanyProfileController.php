@@ -25,7 +25,7 @@ class CompanyProfileController extends Controller
             'profile_pic.mimes' =>'Please provide a Valid Extension Image(e.g: .jpg .png)',
             'company_name.required' => 'Please provide a society name',
             'gst_in_number.required' => 'Please provide a gst number',
-            'street_address1.required' => 'Please provide a street address 1',
+            'street_address1.required' => 'Please provide a street address',
             'landmark.required' => 'Please provide a landmark',
             'pin_code.required' => 'Please provide a pin code',
             'city_id.required' => 'Please provide a city',
@@ -36,10 +36,11 @@ class CompanyProfileController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'profile_pic' => 'required|image|mimes:jpeg,png,jpg',
-                'company_name' => 'required',
-                'gst_in_number' => 'required',
-                'street_address1' => 'required',
-                'landmark' => 'required',
+                'company_name' => 'required|max:255',
+                'gst_in_number' => 'required|regex:/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/',
+                'street_address1' => 'required|max:255',
+                'street_address2' => 'max:255',
+                'landmark' => 'required|max:50',
                 'pin_code' => 'required',
                 'city_id' => 'required',
                 'state_id' => 'required',
@@ -47,10 +48,11 @@ class CompanyProfileController extends Controller
             ], $messages);
         }else{
             $validator = Validator::make($request->all(), [
-                'company_name' => 'required',
-                'gst_in_number' => 'required',
-                'street_address1' => 'required',
-                'landmark' => 'required',
+                'company_name' => 'required|max:255',
+                'gst_in_number' => 'required|regex:/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/',
+                'street_address1' => 'required|max:255',
+                'street_address2' => 'max:255',
+                'landmark' => 'required|max:50',
                 'pin_code' => 'required',
                 'city_id' => 'required',
                 'state_id' => 'required',

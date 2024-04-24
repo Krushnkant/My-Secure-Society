@@ -7,10 +7,11 @@ use App\Models\BusinessCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class BusinessCategoryController extends Controller
 {
-    
+
     public function index() {
         $categories = BusinessCategory::where('estatus',1)->get();
         return view('admin.business_category.list',compact('categories'));
@@ -24,7 +25,7 @@ class BusinessCategoryController extends Controller
 
         // Page Order
         $orderColumnIndex = $request->order[0]['column'] ?? '0';
-        $orderBy = $request->order[0]['dir'] ?? 'desc';
+        $orderBy = $request->order[0]['dir'] ?? 'ASC';
 
         // get data from products table
         $query = BusinessCategory::with('parent_category')->select('*');
@@ -37,7 +38,7 @@ class BusinessCategoryController extends Controller
         switch($orderColumnIndex){
             case '0':
                 $orderByName = 'business_category_name';
-                break;  
+                break;
         }
         $query = $query->orderBy($orderByName, $orderBy);
         $recordsFiltered = $recordsTotal = $query->count();
@@ -48,10 +49,18 @@ class BusinessCategoryController extends Controller
     public function addorupdate(Request $request){
         $messages = [
             'business_category_name.required' =>'Please provide a business category name',
+            'business_category_name.max' =>'The category name must not exceed :max characters.',
+            'business_category_name.unique' =>'The category name has already been taken.',
         ];
 
         $validator = Validator::make($request->all(), [
-            'business_category_name' => 'required',
+            'business_category_name' => [
+                'required',
+                'max:50',
+                Rule::unique('business_category', 'business_category_name')
+                    ->ignore($request->id,'business_category_id')
+                    ->whereNull('deleted_at'),
+            ],
         ], $messages);
 
         if ($validator->fails()) {
@@ -89,12 +98,31 @@ class BusinessCategoryController extends Controller
 
     public function ajaxlist(Request $request,$id = null){
 
+
+
         $categories = BusinessCategory::where('estatus',1);
         if ($id !== null) {
+            $childCategories = $this->getAllChildCategories($id);
+
             $categories = $categories->where('business_category_id','!=',$id);
+            $categories = $categories->whereNotIn('business_category_id',$childCategories);
         }
         $categories = $categories->get();
         return response()->json(['categories' => $categories]);
+    }
+
+    private function getAllChildCategories($categoryId)
+    {
+        $categories = BusinessCategory::where('parent_business_category_id', $categoryId)->get();
+
+        $childCategories = [];
+        $childCategories = [$categoryId];
+        foreach ($categories as $category) {
+            $childCategories[] = $category->business_category_id;
+            $childCategories = array_merge($childCategories, $this->getAllChildCategories($category->business_category_id));
+        }
+
+        return $childCategories;
     }
 
     public function edit($id){
@@ -105,6 +133,13 @@ class BusinessCategoryController extends Controller
     public function delete($id){
         $category = BusinessCategory::find($id);
         if ($category){
+
+            $businessProfiles = \DB::table('business_profile_category')
+            ->where('business_category_id', $id)
+            ->exists();
+            if ($businessProfiles) {
+                return response()->json(['status' => '300', 'message' => 'Cannot delete category. It is associated with one or more business profiles.']);
+            }
             $category->estatus = 3;
             $category->save();
             $category->delete();
@@ -130,7 +165,20 @@ class BusinessCategoryController extends Controller
     public function multipledelete(Request $request)
     {
         $ids = $request->input('ids');
-        BusinessCategory::whereIn('business_category_id', $ids)->delete();
+        $categories = BusinessCategory::whereIn('business_category_id', $ids)->pluck('business_category_id');
+        $businessProfiles = \DB::table('business_profile_category')
+            ->whereIn('business_category_id', $categories)
+            ->exists();
+
+        if($businessProfiles) {
+            return response()->json(['status' => '300','message'=>"Categories can't be deleted due to some Categories having profile"]);
+        }    
+        foreach ($categories as $category) {
+            $category = BusinessCategory::where('business_category_id',$category)->first();
+            $category->estatus = 3;
+            $category->save();
+            $category->delete();
+        }
 
         return response()->json(['status' => '200']);
     }

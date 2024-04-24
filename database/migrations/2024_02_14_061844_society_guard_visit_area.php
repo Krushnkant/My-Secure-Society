@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SocietyGuardVisitArea', function (Blueprint $table) {
-            $table->bigIncrements('SocietyGuardVisitAreaId')->index();
-            $table->integer('society_id')->index();
-            $table->string('AreaName', 50);
-            $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
-            $table->dateTime('created_at')->nullable();
-            $table->integer('created_by')->index();
-            $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            $table->integer('updated_by')->index();
-            $table->softDeletes('deleted_at');
-        });
+        // Schema::create('society_guard_visit_area', function (Blueprint $table) {
+        //     $table->bigIncrements('society_guard_visit_area_id')->index();
+        //     $table->integer('society_id')->index();
+        //     $table->string('area_name', 50);
+        //     $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
+        //     $table->dateTime('created_at')->nullable();
+        //     $table->integer('created_by')->index();
+        //     $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+        //     $table->integer('updated_by')->index();
+        //     $table->softDeletes('deleted_at');
+        // });
     }
 
     /**
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SocietyGuardVisitArea');
+        // Schema::dropIfExists('society_guard_visit_area');
     }
 };

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('company_designation', function (Blueprint $table) {
             $table->bigIncrements('company_designation_id')->index();
-            $table->string('designation_name');
+            $table->string('designation_name',60);
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();

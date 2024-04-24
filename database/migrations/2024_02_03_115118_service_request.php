@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ServiceRequest', function (Blueprint $table) {
-            $table->bigIncrements('ServiceRequestId')->index();
+        Schema::create('service_request', function (Blueprint $table) {
+            $table->bigIncrements('service_request_id')->index();
             $table->integer('society_id')->index();
             $table->integer('society_block_id')->index();
-            $table->integer('ServiceCategoryId')->index();
-            $table->integer('AssignedToStaffMemberId')->index();
-            $table->string('ServiceRequestNumber', 30)->unique()->comment('Format: SR-YYYYSocietyId+0001');
-            $table->string('ServiceSubject', 200);
-            $table->string('ServiceDescription', 1000);
-            // $table->integer('ServicePriority')->enum([1, 2, 3])->default(2)->comment('1 - High, 2 - Medium, 3 - Low')->index();
-            $table->integer('ServiceRequestStatus')->enum([1, 2, 3, 4, 5])->default(1)->comment('1 - Closed, 2 - Issue Raised, 3 - In Progress, 4 - ReOpened, 5 - In Hold')->index();
+            $table->integer('service_category_id')->index();
+            $table->integer('assigned_to_staff_member_id')->index();
+            $table->string('service_request_number', 30)->unique()->comment('Format: SR-YYYYSocietyId+0001');
+            $table->string('service_subject', 200);
+            $table->string('service_description', 1000);
+            // $table->integer('service_priority')->enum([1, 2, 3])->default(2)->comment('1 - High, 2 - Medium, 3 - Low')->index();
+            $table->integer('service_request_status')->enum([1, 2, 3, 4, 5])->default(1)->comment('1 - Closed, 2 - Issue Raised, 3 - In Progress, 4 - ReOpened, 5 - In Hold')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ServiceRequest');
+        Schema::dropIfExists('service_request');
     }
 };

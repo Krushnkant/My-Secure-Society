@@ -33,8 +33,8 @@
                                 <thead class="">
                                     <tr>
                                         <th><input type="checkbox" id="selectAll"></th>
-                                        <th>Name</th>
-                                        <th>Mobile No.</th>
+                                        <th>Help Line For</th>
+                                        <th>Help Line No</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -42,8 +42,8 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th>Name</th>
-                                        <th>Mobile No.</th>
+                                        <th>Help Line For</th>
+                                        <th>Help Line No</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -102,13 +102,14 @@
                         data.tab_type = tab_type;
                     }
                 },
-                order: ['1', 'DESC'],
+                order: ['1', 'ASC'],
                 pageLength: 10,
                 searching: 1,
                 aoColumns: [{
-                        width: "5%",
+                        width: "1%",
                         data: 'id',
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="select-checkbox" data-id="${row.emergency_contact_id }">`;
                         }
@@ -125,8 +126,9 @@
                         data: 'estatus', // Assume 'status' is the field in your database for the status
                         width: "10%",
                         orderable: false,
+                       className: 'text-center',
                         render: function(data, type, row) {
-                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(1)));
+                            var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(4)));
                             if (is_edit) {
                                 var estatus = `<label class="switch">
                                         <input type="checkbox" id="statuscheck_${row.emergency_contact_id }" onchange="changeStatus(${row.emergency_contact_id })" value="${data}" ${data == 1 ? 'checked' : ''}>
@@ -143,8 +145,9 @@
                     },
                     {
                         data: 'id',
-                        width: "5%",
+                        width: "10%",
                         orderable: false,
+                        className: 'text-center',
                         render: function(data, type, row) {
                             var is_edit = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 && is_edit(4)));
                             var is_delete = @json(getUserDesignationId() == 1 || (getUserDesignationId() != 1 &&is_delete(4)));
@@ -182,7 +185,7 @@
                         $('#selectAll').prop('checked', allChecked);
                     });
 
-                    $('#deleteSelected').on('click', function() {
+                    $('#deleteSelected').off('click').on('click', function() {
                         var selectedRows = $('.select-checkbox:checked');
                         if (selectedRows.length === 0) {
                             toastr.error("Please select at least one row to delete.", 'Error', {
@@ -193,7 +196,7 @@
                         var selectedIds = [];
                         swal({
                                 title: "Are you sure to delete ?",
-                                text: "You will not be able to recover this imaginary file !!",
+                                text: "You will not be able to recover this Contact !!",
                                 type: "warning",
                                 showCancelButton: !0,
                                 confirmButtonColor: "#DD6B55",
@@ -207,8 +210,6 @@
                                     $('.select-checkbox:checked').each(function() {
                                         selectedIds.push($(this).data('id'));
                                     });
-
-                                    // Perform AJAX request to delete selected rows
                                     $.ajax({
                                         url: "{{ route('admin.emergencycontact.multipledelete') }}",
                                         type: "POST",
@@ -216,14 +217,14 @@
                                             ids: selectedIds
                                         },
                                         success: function(response) {
-                                            // Handle success response
-                                            console.log(response);
                                             toastr.success(
                                                 "Emergency Contact deleted successfully!",
                                                 'Success', {
                                                     timeOut: 5000
                                                 });
-                                            getTableData('', 1);
+                                            // getTableData('', 1);
+                                            $('#emergencycontactTable').DataTable().clear().draw();
+                                            $('#selectAll').prop('checked', false);
                                         },
                                         error: function(xhr, status, error) {
                                             toastr.error("Please try again", 'Error', {
@@ -240,7 +241,8 @@
         }
 
         $('body').on('click', '#AddBtn_EmergencyContact', function() {
-            $('#EmergencyContactModal').find('.modal-title').html("Add Designation");
+            $('#EmergencyContactModal').find('form').attr('action', "{{ url('admin/emergencycontact/add') }}");
+            $('#EmergencyContactModal').find('.modal-title').html("Add Emergency Contact");
             $("#EmergencyContactModal").find('form').trigger('reset');
             $('#id').val("");
             $('#name-error').html("");
@@ -250,6 +252,13 @@
             $("#EmergencyContactModal").find("#save_newBtn").removeAttr('data-id');
             $("#EmergencyContactModal").find("#save_closeBtn").removeAttr('data-id');
             $("#name").focus();
+        });
+
+        $('#emergencycontactform').keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                save_contact($('#save_newBtn'), 'save_new');
+            }
         });
 
         $('body').on('click', '#save_newBtn', function() {
@@ -264,10 +273,10 @@
             $(btn).prop('disabled', 1);
             $(btn).find('.loadericonfa').show();
             var formData = $("#emergencycontactform").serializeArray();
-
+            var formAction = $("#emergencycontactform").attr('action');
             $.ajax({
                 type: 'POST',
-                url: "{{ url('admin/emergencycontact/addorupdate') }}",
+                url: formAction,
                 data: formData,
                 success: function(res) {
                     if (res.status == 'failed') {
@@ -328,6 +337,14 @@
                         getTableData('', 1);
                     }
 
+                    if (res.status == 300) {
+                        $(btn).find('.loadericonfa').hide();
+                        $(btn).prop('disabled', false);
+                        toastr.error(res.message, 'Error', {
+                            timeOut: 5000
+                        });
+                    }
+
                     if (res.status == 400) {
                         $("#EmergencyContactModal").modal('hide');
                         $(btn).find('.loadericonfa').hide();
@@ -354,6 +371,7 @@
             $('#name-error').html("");
             $('#mobile_no-error').html("");
             $.get("{{ url('admin/emergencycontact') }}" + '/' + edit_id + '/edit', function(data) {
+                $('#EmergencyContactModal').find('form').attr('action', "{{ url('admin/emergencycontact/update') }}");
                 $('#EmergencyContactModal').find('#save_newBtn').attr("data-action", "update");
                 $('#EmergencyContactModal').find('#save_closeBtn').attr("data-action", "update");
                 $('#EmergencyContactModal').find('#save_newBtn').attr("data-id", edit_id);
@@ -400,7 +418,7 @@
         $('body').on('click', '#deleteBtn', function() {
             swal({
                     title: "Are you sure to delete ?",
-                    text: "You will not be able to recover this imaginary file !!",
+                    text: "You will not be able to recover this Contact !!",
                     type: "warning",
                     showCancelButton: !0,
                     confirmButtonColor: "#DD6B55",
