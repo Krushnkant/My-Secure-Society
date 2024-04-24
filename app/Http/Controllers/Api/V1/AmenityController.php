@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Amenity;
+use App\Models\AmenityFile;
 use App\Models\AmenitySlot;
 
 class AmenityController extends BaseController
@@ -46,14 +47,22 @@ class AmenityController extends BaseController
         $amenity->max_people_per_booking = $request->max_people_per_booking;
         $amenity->save();
 
-        // Handle file uploads for images
-        foreach ($request->file('image_files') as $image) {
-            // Process and save each image file
+       
+        if ($request->hasFile('image_files')) {
+            $files = $request->file('image_files');
+            foreach ($files as $file) {
+                $fileType = getFileType($file);
+                $fileUrl = UploadImage($file,'images/amenity');
+                $this->storeFileEntry($amenity->amenity_id, $fileType, $fileUrl);
+            }
         }
 
         // Handle file upload for PDF
         if ($request->hasFile('pdf_file')) {
-            // Process and save the PDF file
+            $file = $request->file('pdf_file');
+            $fileType = getFileType($file);
+            $fileUrl = UploadImage($file,'images/amenity');
+            $this->storeFileEntry($amenity->amenity_id, $fileType, $fileUrl);
         }
 
         // Save slot data
@@ -68,5 +77,15 @@ class AmenityController extends BaseController
         }
 
         return response()->json(['message' => 'Amenity saved successfully'], 200);
+    }
+
+    public function storeFileEntry($Id, $fileType, $fileUrl)
+    {
+        $fileEntry = new AmenityFile();
+        $fileEntry->amenity_id = $Id;
+        $fileEntry->file_type = $fileType;
+        $fileEntry->file_url = $fileUrl;
+        $fileEntry->uploaded_at = now(); 
+        $fileEntry->save();
     }
 }
