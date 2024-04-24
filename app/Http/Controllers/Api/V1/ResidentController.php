@@ -57,7 +57,7 @@ class ResidentController extends BaseController
     public function get_resident(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'society_member_id' => 'required|exists:society_member',
+            'society_member_id' => 'required|exists:society_member,society_member_id',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
