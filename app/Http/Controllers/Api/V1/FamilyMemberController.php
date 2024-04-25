@@ -26,8 +26,18 @@ class FamilyMemberController extends BaseController
     {
         $society_member_id = $this->payload['society_member_id'];
         if($society_member_id == ""){
-            return $this->sendError(400,'Flat Not Found.', "Not Found", []);
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
+
+        // Check if the society member's request has been approved
+        $isRequestApproved = SocietyMember::where('society_member_id', $society_member_id)
+        ->where('estatus',1) // Assuming 'approved' is the status for approved requests
+        ->exists();
+    
+        if (!$isRequestApproved) {
+            return $this->sendError(400, 'Society Member request is not approved.', "Not Approved", []);
+        }
+
         $request->merge(['society_member_id'=>$society_member_id]);
         $rules = [
             'profile_pic' => $request->has('profile_pic') ? 'image|mimes:jpeg,png,jpg' : '',
@@ -110,6 +120,15 @@ class FamilyMemberController extends BaseController
         if($society_member_id == ""){
             return $this->sendError(400,'Flat Not Found.', "Not Found", []);
         }
+
+        $isRequestApproved = SocietyMember::where('society_member_id', $society_member_id)
+        ->where('estatus', 1) // Assuming 'approved' is the status for approved requests
+        ->exists();
+    
+        if (!$isRequestApproved) {
+            return $this->sendError(400, 'Society Member request is not approved.', "Not Approved", []);
+        }
+
         $family_members = SocietyMember::with('user')->where('parent_society_member_id', $society_member_id);
         $family_members = $family_members->orderBy('created_at', 'DESC')->paginate(10);
 
@@ -117,7 +136,7 @@ class FamilyMemberController extends BaseController
         foreach ($family_members as $family_member) {
             $temp['society_member_id'] = $family_member['society_member_id'];
             $temp['user_id'] = $family_member['user_id'];
-            $temp['user_code'] = $family_member['user_code'];
+            $temp['user_code'] = $family_member->user->user_code;
             $temp['full_name'] = $family_member->user->full_name;
             $temp['mobile_no'] = $family_member->user->mobile_no;
             $temp['profile_pic'] = $family_member->user->profile_pic_url;
@@ -133,7 +152,21 @@ class FamilyMemberController extends BaseController
     public function delete_family_member(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'society_member_id' => 'required|exists:society_member,society_member_id,user_id,' . auth()->id(),
+            'society_member_id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $user_id = auth()->id();
+    
+                    $exists = SocietyMember::where('society_member_id', $value)
+                        ->where('user_id', $user_id)
+                        ->where('parent_society_member_id', '!=', 0)
+                        ->exists();
+    
+                    if (!$exists) {
+                        $fail('The selected member cannot be deleted directly.');
+                    }
+                }
+            ],
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\SocietyMember;
+use App\Models\Flat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,14 @@ class SocietyMemberController extends BaseController
         $validator = Validator::make($request->all(), [
             'society_id' => 'required|exists:society,society_id,deleted_at,NULL',
             'block_flat_id' => 'required|exists:block_flat,block_flat_id,deleted_at,NULL',
+            function ($attribute, $value, $fail) use ($request) {
+                $societyId = $request->input('society_id');
+                $blockFlat = Flat::find($value);
+        
+                if (!$blockFlat || $blockFlat->society_block->society_id != $societyId) {
+                    $fail('The selected block_flat_id is not associated with the provided society_id.');
+                }
+            },
             'resident_type' => 'required',
         ]);
 
