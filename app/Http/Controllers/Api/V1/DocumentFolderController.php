@@ -63,7 +63,7 @@ class DocumentFolderController extends BaseController
     public function delete_folder(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'document_folder_id' => 'required|exists:document_folder',
+            'document_folder_id' => 'required|exists:document_folder,document_folder_id,deleted_at,NULL',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -82,7 +82,7 @@ class DocumentFolderController extends BaseController
     {
         $user_id =  Auth::user()->user_id;
         $validator = Validator::make($request->all(), [
-            'document_folder_id' => 'required|exists:document_folder',
+            'document_folder_id' => 'required|exists:document_folder,document_folder_id,deleted_at,NULL',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);

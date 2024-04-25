@@ -117,6 +117,7 @@ class FamilyMemberController extends BaseController
         foreach ($family_members as $family_member) {
             $temp['society_member_id'] = $family_member['society_member_id'];
             $temp['user_id'] = $family_member['user_id'];
+            $temp['user_code'] = $family_member['user_code'];
             $temp['full_name'] = $family_member->user->full_name;
             $temp['mobile_no'] = $family_member->user->mobile_no;
             $temp['profile_pic'] = $family_member->user->profile_pic_url;

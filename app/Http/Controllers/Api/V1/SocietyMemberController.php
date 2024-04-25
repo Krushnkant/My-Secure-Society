@@ -15,7 +15,7 @@ class SocietyMemberController extends BaseController
         $user_id = Auth::id();
         $validator = Validator::make($request->all(), [
             'society_id' => 'required|exists:society,society_id,deleted_at,NULL',
-            'block_flat_id' => 'required|exists:block_flat',
+            'block_flat_id' => 'required|exists:block_flat,block_flat_id,deleted_at,NULL',
             'resident_type' => 'required',
         ]);
 

@@ -27,6 +27,22 @@ class ResidentController extends BaseController
         if($society_id == ""){
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
+
+        $rules = [
+            'block_id' => 'required',
+            'status' => 'required|in:0,1,5,4',
+        ];
+
+        if ($request->has('block_id') && $request->input('block_id') != 0) {
+            $rules['block_id'] .= '|exists:society_block,society_block_id,deleted_at,NULL';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+        
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
         $family_members = SocietyMember::with('user')->where('parent_society_member_id',0)->where('society_id',$society_id);
         if($request->status > 0){
             $family_members = $family_members->where('estatus',$request->status);
@@ -56,15 +72,16 @@ class ResidentController extends BaseController
 
     public function get_resident(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'society_member_id' => 'required|exists:society_member,society_member_id',
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
-        }
         $society_id = $this->payload['society_id'];
         if($society_id == ""){
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'society_member_id' => 'required|exists:society_member,society_member_id,deleted_at,NULL',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
         $family_member = SocietyMember::with('user','flat')->where('society_member_id',$request->society_member_id)->first();
         $data = array();

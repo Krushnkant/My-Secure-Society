@@ -25,10 +25,10 @@ class PostController extends BaseController
     public function save_daily_post(Request $request)
     {
         $society_id = $this->payload['society_id'];
-        if($society_id == ""){
-            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
         }
-        $request->merge(['society_id'=>$society_id]);
+        $request->merge(['society_id' => $society_id]);
         $rules = [
             'society_id' => 'required|exists:society',
             'post_id' => 'required|integer',
@@ -42,7 +42,11 @@ class PostController extends BaseController
         ];
 
         if ($request->parent_post_id != 0) {
-            $rules['parent_post_id'] .= '|exists:society_daily_post';
+            $rules['parent_post_id'] .= '|exists:society_daily_post,society_daily_post_id,deleted_at,NULL';
+        }
+
+        if ($request->post_id != 0) {
+            $rules['post_id'] .= '|exists:society_daily_post,society_daily_post_id,deleted_at,NULL';
         }
 
         if ($request->has('poll_options') && $request->post_type == 2) {
@@ -52,11 +56,11 @@ class PostController extends BaseController
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-        if($request->post_id == 0){
-            $post = New DailyPost();
+        if ($request->post_id == 0) {
+            $post = new DailyPost();
             $post->society_id = $society_id;
             $post->created_at = now();
             $post->created_by = Auth::user()->user_id;
@@ -65,7 +69,7 @@ class PostController extends BaseController
             $post->total_comment = 0;
             $post->total_shared = 0;
             $action = "Added";
-        }else{
+        } else {
             $post = DailyPost::find($request->post_id);
             $post->updated_by = Auth::user()->user_id;
             $action = "Updated";
@@ -80,26 +84,25 @@ class PostController extends BaseController
         $post->event_time = $request->event_time;
         $post->save();
 
-        if($post){
+        if ($post) {
             if ($request->hasFile('media_files')) {
                 $files = $request->file('media_files');
                 foreach ($files as $file) {
                     $fileType = getFileType($file);
-                    $fileUrl = UploadImage($file,'images/daily_post');
+                    $fileUrl = UploadImage($file, 'images/daily_post');
                     $this->storeFileEntry($post->society_daily_post_id, $fileType, $fileUrl);
                 }
             }
             if ($request->has('poll_options') && is_array($request->poll_options) && count($request->poll_options) > 0) {
                 foreach ($request->poll_options as $optionText) {
-                    if($optionText != ""){
-                       $this->storePollOption($post->society_daily_post_id, $optionText);
+                    if ($optionText != "") {
+                        $this->storePollOption($post->society_daily_post_id, $optionText);
                     }
                 }
             }
-
         }
 
-        return $this->sendResponseSuccess("Post ".$action." Successfully");
+        return $this->sendResponseSuccess("Post " . $action . " Successfully");
     }
 
     public function storePollOption($postId, $optionText)
@@ -111,7 +114,7 @@ class PostController extends BaseController
         $pollOption->save();
     }
 
-  
+
 
     // Method to store file entry in the database
     public function storeFileEntry($postId, $fileType, $fileUrl)
@@ -125,80 +128,80 @@ class PostController extends BaseController
     }
 
     public function daily_post_list(Request $request)
-{
-    $society_id = $this->payload['society_id'];
-    if ($society_id == "") {
-        return $this->sendError(400, 'Society Not Found.', "Not Found", []);
-    }
-
-    $post_type = $request->input('post_type');
-    $user_id = $request->input('user_id');
-    $post_id = $request->input('post_id');
-
-    $postsQuery = DailyPost::with('user', 'poll_options')
-                            ->where('society_id', $society_id)
-                            ->where('estatus', 1);
-    
-    if ($post_type !== null) {
-        $postsQuery->where('post_type', $post_type);
-    }
-
-    // Filter by user ID if provided
-    if ($user_id !== null) {
-        $postsQuery->where('created_by', $user_id);
-    }
-
-    // Filter by post ID if provided and non-zero
-    if ($post_id !== null && $post_id != 0) {
-        $post = $postsQuery->find($post_id);
-        if (!$post) {
-            return $this->sendError(400, 'Post Not Found.', "Not Found", []);
-        }
-    }
-
-    $posts = $postsQuery->orderBy('created_at', 'DESC')->paginate(10);
-    
-    $post_arr = [];
-    foreach ($posts as $post) {
-        $option_arr = [];
-        foreach($post->poll_options as $option){
-           $option_temp['option_id'] = $option->daily_post_pole_option_id;
-           $option_temp['option_text'] = $option->option_text;
-           $option_temp['is_voted'] = $option->isVoted();
-           array_push($option_arr, $option_temp);
+    {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
         }
 
-        $temp['post_id'] = $post->society_daily_post_id;
-        $temp['post_type'] = $post->post_type;
-        $temp['post_description'] = $post->post_description;
-        $temp['bg_color'] = $post->bg_color;
-        $temp['total_like'] = $post->total_like;
-        $temp['total_comment'] = $post->total_comment;
-        $temp['total_shared'] = $post->total_shared;
-        $temp['event_time'] = $post->event_time;
-        $temp['is_like'] = $post->isLike();
-        $temp['user_id'] = $post->created_by;
-        $temp['full_name'] = $post->user->full_name;
-        $temp['block_flat_no'] = "";
-        $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
-        $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
-        $temp['poll_options'] = $option_arr; 
+        $post_type = $request->input('post_type');
+        $user_id = $request->input('user_id');
+        $post_id = $request->input('post_id');
 
-        array_push($post_arr, $temp);
+        $postsQuery = DailyPost::with('user', 'poll_options')
+            ->where('society_id', $society_id)
+            ->where('estatus', 1);
+
+        if ($post_type !== null) {
+            $postsQuery->where('post_type', $post_type);
+        }
+
+        // Filter by user ID if provided
+        if ($user_id !== null) {
+            $postsQuery->where('created_by', $user_id);
+        }
+
+        // Filter by post ID if provided and non-zero
+        if ($post_id !== null && $post_id != 0) {
+            $post = $postsQuery->find($post_id);
+            if (!$post) {
+                return $this->sendError(400, 'Post Not Found.', "Not Found", []);
+            }
+        }
+
+        $posts = $postsQuery->orderBy('created_at', 'DESC')->paginate(10);
+
+        $post_arr = [];
+        foreach ($posts as $post) {
+            $option_arr = [];
+            foreach ($post->poll_options as $option) {
+                $option_temp['option_id'] = $option->daily_post_pole_option_id;
+                $option_temp['option_text'] = $option->option_text;
+                $option_temp['is_voted'] = $option->isVoted();
+                array_push($option_arr, $option_temp);
+            }
+
+            $temp['post_id'] = $post->society_daily_post_id;
+            $temp['post_type'] = $post->post_type;
+            $temp['post_description'] = $post->post_description;
+            $temp['bg_color'] = $post->bg_color;
+            $temp['total_like'] = $post->total_like;
+            $temp['total_comment'] = $post->total_comment;
+            $temp['total_shared'] = $post->total_shared;
+            $temp['event_time'] = $post->event_time;
+            $temp['is_like'] = $post->isLike();
+            $temp['user_id'] = $post->created_by;
+            $temp['full_name'] = $post->user->full_name;
+            $temp['block_flat_no'] = "";
+            $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
+            $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
+            $temp['poll_options'] = $option_arr;
+
+            array_push($post_arr, $temp);
+        }
+
+        $data['posts'] = $post_arr;
+        $data['total_records'] = $posts->toArray()['total'];
+        return $this->sendResponseWithData($data, "All Post Successfully.");
     }
-
-    $data['posts'] = $post_arr;
-    $data['total_records'] = $posts->toArray()['total'];
-    return $this->sendResponseWithData($data, "All Post Successfully.");
-}
 
     public function delete_daily_post(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:society_daily_post,society_daily_post_id',
+            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL',
         ]);
         if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
         $post = DailyPost::find($request->post_id);
@@ -211,31 +214,31 @@ class PostController extends BaseController
     }
 
     public function get_daily_post(Request $request)
-{
-   
-   
-    $validator = Validator::make($request->all(), [
-        'post_id' => 'required|exists:society_daily_post,society_daily_post_id',
-    ]);
+    {
 
-    if ($validator->fails()) {
-        return $this->sendError(422,$validator->errors(), "Validation Errors", []);
-    }
 
-    $post = DailyPost::with('user','poll_options')->where('estatus',1)->where('society_daily_post_id',$request->post_id)->first();
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL',
+        ]);
 
-    if (!$post){
-        return $this->sendError(404,"You can not get this post", "Invalid Post", []);
-    }
+        if ($validator->fails()) {
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
 
-    $option_arr = [];
+        $post = DailyPost::with('user', 'poll_options')->where('estatus', 1)->where('society_daily_post_id', $request->post_id)->first();
 
-    foreach($post->poll_options as $option){
-       $option_temp['option_id'] = $option->daily_post_pole_option_id;
-       $option_temp['option_text'] = $option->option_text;
-       $option_temp['is_voted'] = $option->isVoted(); 
-       array_push($option_arr, $option_temp);
-    }
+        if (!$post) {
+            return $this->sendError(404, "You can not get this post", "Invalid Post", []);
+        }
+
+        $option_arr = [];
+
+        foreach ($post->poll_options as $option) {
+            $option_temp['option_id'] = $option->daily_post_pole_option_id;
+            $option_temp['option_text'] = $option->option_text;
+            $option_temp['is_voted'] = $option->isVoted();
+            array_push($option_arr, $option_temp);
+        }
         $temp['post_id'] = $post->society_daily_post_id;
         $temp['post_type'] = $post->post_type;
         $temp['post_description'] = $post->post_description;
@@ -259,19 +262,19 @@ class PostController extends BaseController
     {
         // Validate the request parameters
         $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:society_daily_post,society_daily_post_id', // Assuming your daily posts table is named daily_posts
+            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL', // Assuming your daily posts table is named daily_posts
             'is_like' => 'required',
         ]);
 
         // If validation fails, return error response
         if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
         // Check if a like entry exists for the post by the current user
         $existingLike = DailyPostLike::where('society_daily_post_id', $request->post_id)
-                                    ->where('user_id', auth()->id())
-                                    ->first();
+            ->where('user_id', auth()->id())
+            ->first();
 
         // If is_like is false and an entry exists, delete the like entry
         if (!$request->is_like && $existingLike) {
@@ -293,8 +296,5 @@ class PostController extends BaseController
 
         // Send notification on like (you can implement this part based on your notification system)
         return $this->sendResponseSuccess("Like updated successfully.");
-
     }
-
-    
 }
