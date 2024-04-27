@@ -148,6 +148,9 @@ class ResidentController extends BaseController
         $family_member = SocietyMember::where('society_member_id', $request->society_member_id)->firstOrFail();
         $family_member->estatus = $request->status;
         $family_member->save();
+        if($request->status == 3){
+            $family_member->delete();
+        }
 
         return $this->sendResponseSuccess("Status Updated Successfully.");
     }
