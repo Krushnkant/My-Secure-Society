@@ -23,19 +23,25 @@ class SocietyDocumentController extends BaseController
 
     public function save_document(Request $request)
     {
-
+        $user_id = Auth::id();
         $society_id = $this->payload['society_id'];
         if (empty($society_id)) {
             return $this->sendError(400, 'Society ID not provided.', "Not Found", []);
         }
         
         $rules = [
-            'society_document_id' => 'required',
-            'document_folder_id' => 'required|exists:document_folder,document_folder_id', // Validate existence in document_folder table
+            'document_id' => 'required',
+            'folder_id' => 'required', // Validate existence in document_folder table
             'document_type' => 'required',
-            'document_name' => 'required',
+            'document_name' => 'required|max:100',
             'document_file' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048', // Validate file upload
+            'shared_flat_list' => 'array', // Ensure shared_flat_list is an array
+            'shared_flat_list.*' => 'exists:block_flat,block_flat_id',
         ];
+
+        if ($request->input('folder_id') != 0) {
+            $rules['folder_id'] .= '|exists:document_folder,document_folder_id,deleted_at,NULL,created_by,'.$user_id;
+        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -43,19 +49,19 @@ class SocietyDocumentController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        if($request->society_document_id == 0){
+        if($request->document_id == 0){
             $document = New SocietyDocument();
             $document->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
             $document->created_by = Auth::user()->user_id;
             $document->updated_by = Auth::user()->user_id;
             $action = "Added";
         }else{
-            $document = SocietyDocument::find($request->society_document_id);
+            $document = SocietyDocument::find($request->document_id);
             $document->updated_by = Auth::user()->user_id;
             $action = "Updated";
         }
         $document->society_id = $society_id;
-        $document->document_folder_id = $request->document_folder_id;
+        $document->document_folder_id = $request->folder_id;
         $document->document_type  = $request->document_type;
         $document->document_name  = $request->document_name;
         $document->note  = $request->note;
@@ -87,7 +93,10 @@ class SocietyDocumentController extends BaseController
             
         }
 
-        return $this->sendResponseSuccess("Document ". $action ." Successfully");
+        $data = array();
+        $temp['document_id'] = $document->society_document_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "Document ". $action ." Successfully");
     }
 
   
@@ -116,11 +125,8 @@ class SocietyDocumentController extends BaseController
         }
 
         $query = SocietyDocument::where('estatus', 1)->where('society_id', $society_id);
-
-        // Apply folderId filter if provided
-        if ($request->folder_id > 0) {
-            $query->where('document_folder_id', $request->folder_id);
-        }
+        $query->where('document_folder_id', $request->folder_id);
+        
 
         // Apply documentType filter if provided
         if ($request->document_type > 0) {
@@ -132,55 +138,62 @@ class SocietyDocumentController extends BaseController
         $documents = $query->paginate($perPage);
         $document_arr = array();
         foreach ($documents as $document) {
-            $temp['society_document_id'] = $document->society_document_id;
-            $temp['document_folder_id'] = $document->document_folder_id;
+            $temp['document_id'] = $document->society_document_id;
+            $temp['folder_id'] = $document->document_folder_id;
             $temp['document_type'] = $document->document_type;
             $temp['document_name'] = $document->document_name;
             $temp['note'] = $document->note;
+            $temp['is_shared'] = false;
             array_push($document_arr, $temp);
         }
 
-        $data['documents'] = $document_arr;
+        $data['document_list'] = $document_arr;
         $data['total_records'] = $documents->toArray()['total'];
         return $this->sendResponseWithData($data, "All Document Retrieved Successfully.");
     }
 
     public function delete_document(Request $request)
     {
+        $user_id = Auth::id();
         $validator = Validator::make($request->all(), [
-            'society_document_id' => 'required|exists:society_document',
+            'document_id' => 'required|exists:society_document,society_document_id,deleted_at,Null,created_by,'.$user_id,
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $folder = SocietyDocument::find($request->society_document_id);
+        $folder = SocietyDocument::find($request->document_id);
         if ($folder) {
+            $shares = DocumentSharedFlat::where('society_document_id',$request->document_id)->get();
+            foreach($shares as $share){
+                $share->delete();
+            }
             $folder->estatus = 3;
             $folder->save();
             $folder->delete();
         }
-        return $this->sendResponseSuccess("folder deleted Successfully.");
+        return $this->sendResponseSuccess("document deleted Successfully.");
     }
 
     public function get_document(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'society_document_id' => 'required|exists:society_document',
+            'document_id' => 'required|exists:society_document,society_document_id,deleted_at,Null',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $document = SocietyDocument::where('estatus',1)->where('society_document_id',$request->society_document_id)->first();
+        $document = SocietyDocument::where('estatus',1)->where('society_document_id',$request->document_id)->first();
         if (!$document){
             return $this->sendError(404,"You can not view this document", "Invalid document", []);
         }
         $data = array();
-        $temp['society_document_id'] = $document->society_document_id;
-        $temp['document_folder_id'] = $document->document_folder_id;
+        $temp['document_id'] = $document->society_document_id;
+        $temp['folder_id'] = $document->document_folder_id;
         $temp['document_type'] = $document->document_type;
         $temp['document_name'] = $document->document_name;
         $temp['note'] = $document->note;
+        $temp['shared_flat_list '] = $document->note;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "All Folder Retrieved Successfully.");
     }

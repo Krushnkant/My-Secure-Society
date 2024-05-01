@@ -35,7 +35,7 @@ class FamilyMemberController extends BaseController
         ->exists();
     
         if (!$isRequestApproved) {
-            return $this->sendError(400, 'Society Member request is not approved.', "Not Approved", []);
+            return $this->sendError(401, ' You are not authorized.', "Unauthorized", []);
         }
 
         $request->merge(['society_member_id'=>$society_member_id]);
@@ -109,7 +109,10 @@ class FamilyMemberController extends BaseController
             $society_member->save();
         }
 
-        return $this->sendResponseSuccess("Family Member ".$action." Successfully");
+        $data = array();
+        $temp['society_member_id'] = $society_member->society_member_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "Family Member ".$action." Successfully");
     }
 
    
@@ -126,7 +129,7 @@ class FamilyMemberController extends BaseController
         ->exists();
     
         if (!$isRequestApproved) {
-            return $this->sendError(400, 'Society Member request is not approved.', "Not Approved", []);
+            return $this->sendError(401, 'You are not authorized.', "Unauthorized", []);
         }
 
         $family_members = SocietyMember::with('user')->where('parent_society_member_id', $society_member_id);

@@ -31,7 +31,7 @@ Route::post('verify_otp',[AuthController::class,'verify_otp']);
 Route::post('send_otp',[AuthController::class,'send_otp']);
 
 Route::group(['middleware' => 'jwt'], function(){
-    Route::get('get_token',[AuthController::class,'get_token']);
+    Route::post('get_token',[AuthController::class,'get_token']);
 
     Route::post('profile/set',[UserController::class,'edit_profile']);
     Route::get('profile/get',[UserController::class,'get_profile']);
@@ -39,9 +39,9 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('profile/update_coverpic',[UserController::class,'update_coverpic']);
     Route::get('profile/my_address',[UserController::class,'address_list']);
 
-    Route::post('flats/save',[SocietyMemberController::class,'save_flat']);
-    Route::post('flats/list',[SocietyMemberController::class,'flat_list']);
-    Route::post('flats/delete',[SocietyMemberController::class,'delete_flat']);
+    Route::post('users/flat/save',[SocietyMemberController::class,'save_flat']);
+    Route::post('users/flat/list',[SocietyMemberController::class,'flat_list']);
+    Route::post('users/flat/delete',[SocietyMemberController::class,'delete_flat']);
 
     Route::post('family_member/save',[FamilyMemberController::class,'save_family']);
     Route::post('family_member/list',[FamilyMemberController::class,'family_list']);

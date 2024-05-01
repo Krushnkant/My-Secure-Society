@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\SocietyMember;
 use App\Models\Flat;
+use App\Models\SocietyVisitor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -13,25 +14,27 @@ class SocietyMemberController extends BaseController
 {
     public function save_flat(Request $request)
     {
+        
         $user_id = Auth::id();
         $validator = Validator::make($request->all(), [
             'society_id' => 'required|exists:society,society_id,deleted_at,NULL',
             'block_flat_id' => 'required|exists:block_flat,block_flat_id,deleted_at,NULL',
-            function ($attribute, $value, $fail) use ($request) {
-                $societyId = $request->input('society_id');
-                $blockFlat = Flat::find($value);
-        
-                if (!$blockFlat || $blockFlat->society_block->society_id != $societyId) {
-                    $fail('The selected block_flat_id is not associated with the provided society_id.');
-                }
-            },
+            
             'resident_type' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
+        $societyId = $request->input('society_id');
+        $blockFlat = Flat::with('society_block')->find($request->block_flat_id); // Ensure the relationship is eager loaded
+
+        if (!$blockFlat || $blockFlat->society_block->society_id != $societyId) {
+            
+            return $this->sendError(422, 'The selected block_flat_id is not associated with the provided society_id.', "Validation Errors", []);
+        }
+    
         $existingAssociation = SocietyMember::where('user_id', $user_id)
             ->where('block_flat_id', $request->block_flat_id)
             ->exists();
@@ -93,6 +96,14 @@ class SocietyMemberController extends BaseController
 
         $society_member = SocietyMember::find($request->society_member_id);
         if ($society_member) {
+            $family_members = SocietyMember::where('parent_society_member_id',$request->society_member_id)->get();
+            foreach($family_members as $family_member){
+                $society_visitors = SocietyVisitor::where('block_flat_id',$family_member->block_flat_id)->where('visitor_status',3)->get();
+                foreach($society_visitors as $society_visitor){
+                    $society_visitor->estatus = 3;
+                    $society_visitor->save();
+                }
+            }
             $society_member->estatus = 3;
             $society_member->save();
             $society_member->delete();

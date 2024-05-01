@@ -83,7 +83,10 @@ class ResidentController extends BaseController
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $family_member = SocietyMember::with('user','flat')->where('society_member_id',$request->society_member_id)->first();
+        $family_member = SocietyMember::with('user','flat')->where('society_member_id',$request->society_member_id)->where('society_id',$society_id)->first();
+        if (!$family_member) {
+            return $this->sendError(404, 'Society member not found.', "Not Found", []);
+        }
         $data = array();
             $flat_info = getSocietyBlockAndFlatInfo($family_member['block_flat_id']);
             $temp['society_member_id'] = $family_member['society_member_id'];
@@ -101,29 +104,11 @@ class ResidentController extends BaseController
         return $this->sendResponseWithData($data, "Resident Detail Retrieved Successfully.");
     }
 
-
-    // public function change_status(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'society_member_id' => 'required|exists:society_member',
-    //         'status' => 'required|in:1,2,3,5',
-    //     ]);
-    //     if ($validator->fails()) {
-    //         return $this->sendError(422,$validator->errors(), "Validation Errors", []);
-    //     }
-    //     $family_member = SocietyMember::where('society_member_id',$request->society_member_id)->first();
-    //     if($family_member){
-    //         $family_member->estatus = $request->status;
-    //     }
-    //     $family_member->save();
-    //     return $this->sendResponseSuccess("Status Updated Successfully.");
-    // }
-
     public function change_status(Request $request)
     {
         // Validation rules
         $validator = Validator::make($request->all(), [
-            'society_member_id' => 'required|exists:society_member,society_member_id',
+            'society_member_id' => 'required|exists:society_member,society_member_id,deleted_at,Null',
             'status' => [
                 'required',
                 function ($attribute, $value, $fail) use ($request) {

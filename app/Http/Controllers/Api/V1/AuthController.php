@@ -130,14 +130,26 @@ class AuthController extends BaseController
         }
     }
 
-    public function get_token(){
+    public function get_token(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'block_flat_id' => 'required|integer|exists:block_flat,block_flat_id,deleted_at,NULL'
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
         $user_id = Auth::id();
-        $user = User::with('societymember')->where('user_id',$user_id)->first();
+        $block_flat_id = $request->block_flat_id;
+        //$user = User::with('societymember')->where('user_id',$user_id)->first();
+        $user = User::with(['societymember' => function($query) use ($block_flat_id) {
+            $query->where('block_flat_id', $block_flat_id);
+        }])->where('user_id', $user_id)->first();
         if($user){
             $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
             $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
             return $this->sendResponseWithData($data,'Token get successfully.');
-           
         }else{
             return $this->sendError(400,'User Not Found.', "verification Failed", []);
         }

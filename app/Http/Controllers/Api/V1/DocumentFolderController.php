@@ -40,7 +40,10 @@ class DocumentFolderController extends BaseController
         $folder->folder_name = $request->folder_name;
         $folder->save();
 
-        return $this->sendResponseSuccess("Folder ". $action ." Successfully");
+        $data = array();
+        $temp['folder_id'] = $folder->document_folder_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "Folder ". $action ." Successfully");
     }
 
   
@@ -50,12 +53,12 @@ class DocumentFolderController extends BaseController
         $folders = DocumentFolder::where('estatus',1)->where('created_by',$user_id)->paginate(10);
         $folder_arr = array();
         foreach ($folders as $folder) {
-            $temp['document_folder_id'] = $folder->document_folder_id;
+            $temp['folder_id'] = $folder->document_folder_id;
             $temp['folder_name'] = $folder->folder_name;
             array_push($folder_arr, $temp);
         }
 
-        $data['folders'] = $folder_arr;
+        $data['folder_list'] = $folder_arr;
         $data['total_records'] = $folders->toArray()['total'];
         return $this->sendResponseWithData($data, "All Folder Retrieved Successfully.");
     }
@@ -63,13 +66,13 @@ class DocumentFolderController extends BaseController
     public function delete_folder(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'document_folder_id' => 'required|exists:document_folder,document_folder_id,deleted_at,NULL',
+            'folder_id' => 'required|exists:document_folder,document_folder_id,deleted_at,NULL',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $folder = DocumentFolder::find($request->document_folder_id);
+        $folder = DocumentFolder::find($request->folder_id);
         if ($folder) {
             $folder->estatus = 3;
             $folder->save();
@@ -82,17 +85,17 @@ class DocumentFolderController extends BaseController
     {
         $user_id =  Auth::user()->user_id;
         $validator = Validator::make($request->all(), [
-            'document_folder_id' => 'required|exists:document_folder,document_folder_id,deleted_at,NULL',
+            'folder_id' => 'required|exists:document_folder,document_folder_id,deleted_at,NULL',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $folder = DocumentFolder::where('estatus',1)->where('created_by',$user_id)->where('document_folder_id',$request->document_folder_id)->first();
+        $folder = DocumentFolder::where('estatus',1)->where('created_by',$user_id)->where('document_folder_id',$request->folder_id)->first();
         if (!$folder){
-            return $this->sendError(404,"You can not delete this folder", "Invalid folder", []);
+            return $this->sendError(404,"You can not view this folder", "Invalid folder", []);
         }
         $data = array();
-        $temp['document_folder_id'] = $folder->document_folder_id;
+        $temp['folder_id'] = $folder->document_folder_id;
         $temp['full_name'] = $folder->folder_name;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "All Folder Retrieved Successfully.");
