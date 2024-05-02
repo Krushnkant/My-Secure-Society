@@ -44,7 +44,9 @@ class ResidentController extends BaseController
         }
 
         $family_members = SocietyMember::with('user')->where('parent_society_member_id',0)->where('society_id',$society_id);
-        if($request->status > 0){
+        if(getResidentDesignationId() == 3){
+            $family_members = $family_members->where('estatus',1);
+        }else if($request->status > 0){
             $family_members = $family_members->where('estatus',$request->status);
         }
         if(isset($request->block_id) && $request->block_id > 0 && $request->block_id != null){
@@ -108,7 +110,7 @@ class ResidentController extends BaseController
     {
         // Validation rules
         $validator = Validator::make($request->all(), [
-            'society_member_id' => 'required|exists:society_member,society_member_id,deleted_at,Null',
+            'society_member_id' => 'required|exists:society_member,society_member_id,deleted_at,NULL',
             'status' => [
                 'required',
                 function ($attribute, $value, $fail) use ($request) {
@@ -155,5 +157,27 @@ class ResidentController extends BaseController
             default:
                 return false; // Invalid current status
         }
+    }
+
+
+    public function update_designation(Request $request)
+    {
+        // Validation rules
+        $validator = Validator::make($request->all(), [
+            'society_member_id' => 'required|exists:society_member,society_member_id,deleted_at,NULL',
+            'designation_id' => 'required|exists:resident_designation,resident_designation_id,deleted_at,NULL',
+        ]);
+
+        // If validation fails, return the validation errors
+        if ($validator->fails()) {
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
+
+      
+        $family_member = SocietyMember::where('society_member_id', $request->society_member_id)->firstOrFail();
+        $family_member->resident_designation_id = $request->designation_id;
+        $family_member->save();
+       
+        return $this->sendResponseSuccess("Designation Updated Successfully.");
     }
 }

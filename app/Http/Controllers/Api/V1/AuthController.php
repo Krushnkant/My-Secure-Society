@@ -106,7 +106,7 @@ class AuthController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $user = User::with('societymember')->where('mobile_no',$request->mobile_no)->whereIn('user_type',[2,4])->first();
+        $user = User::with('societymember.residentdesignationauthority')->where('mobile_no',$request->mobile_no)->whereIn('user_type',[2,4])->first();
         if($user){
         $user_otp = GeneratedOtp::where('mobile_no',$request->mobile_no)->where('otp_code',$request->otp)->first();
             if ($user_otp && isset($user_otp['expire_time']) ){
@@ -117,7 +117,7 @@ class AuthController extends BaseController
                 if($diff->i > 30) {
                     return $this->sendError(422,'OTP verification Failed.', "verification Failed", []);
                 }
-                $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
+                $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> isset($user->societymember)?$user->societymember->residentdesignationauthority:[] ];
                 $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
                 $data['isNewUser'] = $user->full_name == "" ? true : false;
                 return $this->sendResponseWithData($data,'OTP verified successfully.');
@@ -143,11 +143,11 @@ class AuthController extends BaseController
         $user_id = Auth::id();
         $block_flat_id = $request->block_flat_id;
         //$user = User::with('societymember')->where('user_id',$user_id)->first();
-        $user = User::with(['societymember' => function($query) use ($block_flat_id) {
+        $user = User::with(['societymember.residentdesignationauthority','societymember' => function($query) use ($block_flat_id) {
             $query->where('block_flat_id', $block_flat_id);
         }])->where('user_id', $user_id)->first();
         if($user){
-            $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> []];
+            $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> isset($user->societymember)?$user->societymember->residentdesignationauthority:[] ];
             $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
             return $this->sendResponseWithData($data,'Token get successfully.');
         }else{

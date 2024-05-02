@@ -2,12 +2,13 @@
 
 use App\Models\CompanyDesignationAuthority;
 use App\Models\Flat;
+use App\Models\ResidentDesignationAuthority;
+use App\Models\SocietyMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Auth;
-
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 function getUserDesignationId()
 {
@@ -220,4 +221,67 @@ function getSocietyBlockAndFlatInfo($flatId)
     $flat_no = isset($flatInfo)?$flatInfo->flat_no:"";
 
     return compact('society_name', 'block_name', 'flat_no','street_address');
+}
+
+
+function getResidentDesignationId()
+{
+    $token = JWTAuth::parseToken()->getToken();
+    $payload = JWTAuth::decode($token);
+    $society_member_id = $payload['society_member_id'];
+    $society_member = SocietyMember::where('society_member_id',$society_member_id)->where('estatus',1)->first();
+    if ($society_member) {
+        return $society_member->resident_designation_id;
+    }
+    return null;
+}
+
+function is_view_resident($module_id)
+{
+    $resident_designation_id = getResidentDesignationId();
+    $is_view = ResidentDesignationAuthority::where('resident_designation_id', $resident_designation_id)->where('eAuthority', $module_id)->where('can_view', 1)->first();
+    if ($is_view) {
+        return 1;
+    }
+    return 0;
+}
+
+function is_add_resident($module_id)
+{
+    $resident_designation_id = getResidentDesignationId();
+    $is_add = ResidentDesignationAuthority::where('resident_designation_id', $resident_designation_id)->where('eAuthority', $module_id)->where('can_add', 1)->first();
+    if ($is_add) {
+        return 1;
+    }
+    return 0;
+}
+
+function is_edit_resident($module_id)
+{
+    $resident_designation_id = getResidentDesignationId();
+    $is_edit = ResidentDesignationAuthority::where('resident_designation_id', $resident_designation_id)->where('eAuthority', $module_id)->where('can_edit', 1)->first();
+    if ($is_edit) {
+        return 1;
+    }
+    return 0;
+}
+
+function is_delete_resident($module_id)
+{
+    $resident_designation_id = getResidentDesignationId();
+    $is_delete = ResidentDesignationAuthority::where('resident_designation_id', $resident_designation_id)->where('eAuthority', $module_id)->where('can_delete', 1)->first();
+    if ($is_delete) {
+        return 1;
+    }
+    return 0;
+}
+
+function is_print_resident($module_id)
+{
+    $resident_designation_id = getResidentDesignationId();
+    $is_print = ResidentDesignationAuthority::where('resident_designation_id', $resident_designation_id)->where('eAuthority', $module_id)->where('can_print', 1)->first();
+    if ($is_print) {
+        return 1;
+    }
+    return 0;
 }

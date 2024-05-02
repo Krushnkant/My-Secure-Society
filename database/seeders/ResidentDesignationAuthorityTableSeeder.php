@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ResidentDesignationAuthorityTableSeeder extends Seeder
 {
@@ -25,8 +26,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -37,8 +38,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -49,8 +50,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -61,8 +62,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -73,8 +74,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -85,8 +86,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -97,8 +98,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -109,8 +110,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -121,8 +122,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -133,8 +134,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -145,8 +146,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -157,8 +158,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -169,8 +170,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -181,8 +182,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -193,8 +194,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -205,8 +206,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -217,8 +218,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -229,8 +230,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -241,8 +242,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -253,8 +254,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -265,8 +266,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -277,8 +278,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -289,8 +290,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -301,8 +302,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -313,8 +314,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
 
@@ -327,8 +328,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -339,8 +340,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -351,8 +352,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -363,8 +364,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 0, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -375,8 +376,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -387,8 +388,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -399,8 +400,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -411,8 +412,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -423,8 +424,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 0, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -435,8 +436,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -447,8 +448,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -459,8 +460,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -471,8 +472,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -483,8 +484,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -495,8 +496,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -507,8 +508,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -519,8 +520,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -531,8 +532,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -543,8 +544,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -555,8 +556,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -567,8 +568,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -579,8 +580,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -591,8 +592,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -603,8 +604,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -615,8 +616,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 2, 
                 "can_delete" => 2, 
                 "can_print" => 2, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
 
@@ -629,8 +630,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -641,8 +642,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1,  
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -653,8 +654,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -665,8 +666,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -677,8 +678,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -689,8 +690,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -701,8 +702,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -713,8 +714,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -725,8 +726,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -737,8 +738,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -749,8 +750,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -761,8 +762,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -773,8 +774,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 0, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -785,8 +786,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -797,8 +798,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -809,8 +810,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -821,8 +822,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -833,8 +834,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -845,8 +846,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -857,8 +858,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -869,8 +870,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -881,8 +882,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -893,8 +894,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -905,8 +906,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -917,8 +918,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -929,8 +930,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -941,8 +942,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -953,8 +954,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -965,8 +966,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 0, 
                 "can_delete" => 0, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -977,8 +978,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -989,8 +990,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
             array( 
@@ -1001,8 +1002,8 @@ class ResidentDesignationAuthorityTableSeeder extends Seeder
                 "can_edit" => 1, 
                 "can_delete" => 1, 
                 "can_print" => 1, 
-                "estatus" => 1,
-                "updated_at" => Carbon::now(), 
+                
+                "updated_at" => now(), 
                 "updated_by" => 1
             ),
         );

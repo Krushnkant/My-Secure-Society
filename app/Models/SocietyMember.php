@@ -27,4 +27,11 @@ class SocietyMember extends Model
         return $this->belongsTo(Society::class, 'society_id', 'society_id');
     }
 
+    public function residentdesignationauthority()
+    {
+        return $this->hasMany(ResidentDesignationAuthority::class,'resident_designation_id', 'resident_designation_id')->select('resident_designation_id','eauthority','can_view','can_add','can_edit','can_delete','can_print');
+    }
+
+   
+
 }

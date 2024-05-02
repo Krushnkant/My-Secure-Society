@@ -68,6 +68,7 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('resident/list',[ResidentController::class,'resident_list']);
     Route::post('resident/get',[ResidentController::class,'get_resident']);
     Route::post('resident/change_status',[ResidentController::class,'change_status']);
+    Route::post('resident/update_designation',[ResidentController::class,'update_designation']);
 
     Route::post('announcement/save',[AnnouncementController::class,'save_announcement']);
     Route::post('announcement/list',[AnnouncementController::class,'announcement_list']);

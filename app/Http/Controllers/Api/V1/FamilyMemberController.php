@@ -35,7 +35,7 @@ class FamilyMemberController extends BaseController
         ->exists();
     
         if (!$isRequestApproved) {
-            return $this->sendError(401, ' You are not authorized.', "Unauthorized", []);
+            return $this->sendError(401, 'You are not authorized.', "Unauthorized", []);
         }
 
         $request->merge(['society_member_id'=>$society_member_id]);

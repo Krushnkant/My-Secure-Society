@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             CountryTableSeeder::class,
             StateTableSeeder::class,
             UsersTableSeeder::class,
-            ResidentDesignationTableSeeder::class,
+            //ResidentDesignationTableSeeder::class,
             // Add other seeder classes here
         ]);
         
