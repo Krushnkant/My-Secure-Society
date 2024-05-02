@@ -5,6 +5,8 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Block;
 use App\Models\Country;
+use App\Models\ResidentDesignation;
+use App\Models\ResidentDesignationAuth;
 use App\Models\Society;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -100,6 +102,23 @@ class SocietyController extends Controller
         $society->country_id = $request->country_id;
         $society->updated_by = Auth::user()->user_id;
         $society->save();
+
+        if($action == "add"){
+             $resident_designation = new ResidentDesignation();
+             $resident_designation->society_id = $society->society_id;
+             $resident_designation->designation_name = 'Committee Member';
+             $resident_designation->can_update_authority_claims = 1;
+             $resident_designation->society_id = $society->society_id;
+             $resident_designation->created_by = Auth::user()->user_id;
+             $resident_designation->updated_by = Auth::user()->user_id;
+             $resident_designation->save();
+
+             if($resident_designation){
+                // $resident_designation_auth = new ResidentDesignationAuth();
+                // $resident_designation_auth->society_id = $society->society_id;
+                // $resident_designation_auth->save();
+             }
+        }
         return response()->json(['status' => '200', 'action' => $action]);
     }
     public function edit($id)
