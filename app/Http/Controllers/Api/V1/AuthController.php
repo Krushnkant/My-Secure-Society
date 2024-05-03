@@ -117,7 +117,15 @@ class AuthController extends BaseController
                 if($diff->i > 30) {
                     return $this->sendError(422,'OTP verification Failed.', "verification Failed", []);
                 }
-                $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> isset($user->societymember)?$user->societymember->residentdesignationauthority:[] ];
+                $authority_array = [];
+                if(isset($user->societymember->residentdesignationauthority)){
+                    foreach($user->societymember->residentdesignationauthority as $r_auth){
+                    $temp['auth'] = $r_auth->auth;
+                    $temp['p'] = $r_auth->v.','.$r_auth->a.','.$r_auth->e.','.$r_auth->d.','.$r_auth->p;
+                    array_push($authority_array, $temp);
+                    }
+                }
+                $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'designation_id'=> isset($user->societymember)?$user->societymember->resident_designation_id:"",'authority'=> $authority_array ];
                 $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
                 $data['isNewUser'] = $user->full_name == "" ? true : false;
                 return $this->sendResponseWithData($data,'OTP verified successfully.');
@@ -147,7 +155,15 @@ class AuthController extends BaseController
             $query->where('block_flat_id', $block_flat_id);
         }])->where('user_id', $user_id)->first();
         if($user){
-            $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'authority'=> isset($user->societymember)?$user->societymember->residentdesignationauthority:[] ];
+            $authority_array = [];
+            if(isset($user->societymember->residentdesignationauthority)){
+                foreach($user->societymember->residentdesignationauthority as $r_auth){
+                $temp['auth'] = $r_auth->auth;
+                $temp['p'] = $r_auth->v.','.$r_auth->a.','.$r_auth->e.','.$r_auth->d.','.$r_auth->p;
+                array_push($authority_array, $temp);
+                }
+            }
+            $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'designation_id'=> isset($user->societymember)?$user->societymember->resident_designation_id:"",'authority'=> $authority_array ];
             $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
             return $this->sendResponseWithData($data,'Token get successfully.');
         }else{

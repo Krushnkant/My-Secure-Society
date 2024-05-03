@@ -29,7 +29,7 @@ class SocietyMember extends Model
 
     public function residentdesignationauthority()
     {
-        return $this->hasMany(ResidentDesignationAuthority::class,'resident_designation_id', 'resident_designation_id')->select('resident_designation_id','eauthority','can_view','can_add','can_edit','can_delete','can_print');
+        return $this->hasMany(ResidentDesignationAuthority::class,'resident_designation_id', 'resident_designation_id')->select('resident_designation_id','eauthority as auth','can_view as v','can_add as a','can_edit as e','can_delete as d','can_print as p');
     }
 
    
