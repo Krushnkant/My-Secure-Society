@@ -37,9 +37,9 @@ class JwtMiddleware extends BaseMiddleware
             $v1 = 'api/v1/';
             $message = 'You are not authorized';
           
-            if($request->route()->uri()== $v1.'users/flat/list' && is_view_resident(1) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message1' => $message), 401);
-            }
+            // if($request->route()->uri()== $v1.'users/flat/list' && is_view_resident(1) == 0){
+            //     return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message1' => $message), 401);
+            // }
             // if($request->route()->uri()==$v1.'users/flat/save' && is_add_resident(1) == 0){
             //     return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message2' => $message), 401);
             // }if($request->route()->uri()==$v1.'users/flat/delete' && is_delete_resident(1) == 0){
