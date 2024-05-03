@@ -13,4 +13,14 @@ class SocietyDocument extends Model
     protected $table = 'society_document';
     protected $primaryKey = 'society_document_id';
     protected $dates = ['deleted_at'];
+
+    public function sharedocumentflat()
+    {
+        return $this->hasMany('App\Models\DocumentSharedFlat', 'society_document_id');
+    }
+
+    public function document_file()
+    {
+        return $this->hasOne('App\Models\SocietyDocumentFile', 'society_document_id');
+    }
 }

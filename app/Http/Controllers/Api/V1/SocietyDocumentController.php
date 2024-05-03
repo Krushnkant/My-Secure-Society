@@ -107,6 +107,12 @@ class SocietyDocumentController extends BaseController
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
+        $user_id = Auth::id();
+        $block_flat_id = $this->payload['block_flat_id'];
+        if (empty($block_flat_id)) {
+            return $this->sendError(400, 'Block Flat ID not provided.', "Not Found", []);
+        }
+
         $rules = [
             'document_type' => 'required',
             'folder_id' => 'required',
@@ -114,7 +120,7 @@ class SocietyDocumentController extends BaseController
 
         if($request->folder_id > 0){
             $rules = [
-                'folder_id' => ' |exists:document_folder,document_folder_id',
+                'folder_id' => ' |exists:document_folder,document_folder_id,deleted_at,NULL',
             ];
         }
 
@@ -124,8 +130,13 @@ class SocietyDocumentController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $query = SocietyDocument::where('estatus', 1)->where('society_id', $society_id);
-        $query->where('document_folder_id', $request->folder_id);
+        $query = SocietyDocument::where('estatus', 1)->where('society_id', $society_id)->where('document_folder_id', $request->folder_id)->where('created_by', $user_id)
+        ->orWhere(function ($query) use ($block_flat_id) {
+            $query->whereHas('sharedocumentflat', function ($query) use ($block_flat_id) {
+                $query->where('block_flat_id', $block_flat_id);
+            });
+        })
+        ->with('sharedocumentflat','document_file');
         
 
         // Apply documentType filter if provided
@@ -142,8 +153,9 @@ class SocietyDocumentController extends BaseController
             $temp['folder_id'] = $document->document_folder_id;
             $temp['document_type'] = $document->document_type;
             $temp['document_name'] = $document->document_name;
+            $temp['document_file'] = $document->document_file;
             $temp['note'] = $document->note;
-            $temp['is_shared'] = false;
+            $temp['is_shared'] = $document->sharedocumentflat->isNotEmpty();
             array_push($document_arr, $temp);
         }
 
@@ -156,7 +168,7 @@ class SocietyDocumentController extends BaseController
     {
         $user_id = Auth::id();
         $validator = Validator::make($request->all(), [
-            'document_id' => 'required|exists:society_document,society_document_id,deleted_at,Null,created_by,'.$user_id,
+            'document_id' => 'required|exists:society_document,society_document_id,deleted_at,NULL,created_by,'.$user_id,
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -177,13 +189,33 @@ class SocietyDocumentController extends BaseController
 
     public function get_document(Request $request)
     {
+
+        $user_id = Auth::id();
+        $block_flat_id = $this->payload['block_flat_id'];
+        if (empty($block_flat_id)) {
+            return $this->sendError(400, 'Block Flat ID not provided.', "Not Found", []);
+        }
+
         $validator = Validator::make($request->all(), [
-            'document_id' => 'required|exists:society_document,society_document_id,deleted_at,Null',
+            'document_id' => 'required|exists:society_document,society_document_id,deleted_at,NULL',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $document = SocietyDocument::where('estatus',1)->where('society_document_id',$request->document_id)->first();
+
+        $userdocument = SocietyDocument::where('society_document_id',$request->document_id)->where('created_by', $user_id)
+        ->orWhere(function ($query) use ($block_flat_id) {
+            $query->whereHas('sharedocumentflat', function ($query) use ($block_flat_id) {
+                $query->where('block_flat_id', $block_flat_id);
+            });
+        })
+        ->with('sharedocumentflat')->first();
+        if (!$userdocument){
+            return $this->sendError(404,"You can not view this document", "Invalid document", []);
+        }
+
+
+        $document = SocietyDocument::with('document_file')->where('estatus',1)->where('society_document_id',$request->document_id)->first();
         if (!$document){
             return $this->sendError(404,"You can not view this document", "Invalid document", []);
         }
@@ -192,8 +224,9 @@ class SocietyDocumentController extends BaseController
         $temp['folder_id'] = $document->document_folder_id;
         $temp['document_type'] = $document->document_type;
         $temp['document_name'] = $document->document_name;
+        $temp['document_file'] = $document->document_file;
         $temp['note'] = $document->note;
-        $temp['shared_flat_list '] = $document->note;
+        $temp['shared_flat_list'] = $userdocument->sharedocumentflat;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "All Folder Retrieved Successfully.");
     }
