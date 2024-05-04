@@ -16,6 +16,14 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends BaseController
 {
+    public $payload;
+
+    public function __construct()
+    {
+        $token = JWTAuth::parseToken()->getToken();
+        $this->payload = JWTAuth::decode($token);
+    }
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -50,7 +58,7 @@ class AuthController extends BaseController
             return $this->sendResponseWithData($data, 'OTP send successfully.');
         }
 
-        $data['otp'] =  strval(mt_rand(100000,999999));
+        $data['otp'] = (int) strval(mt_rand(100000,999999));
         $user_otp = new GeneratedOtp();
         $user_otp->mobile_no = $mobile_no;
         $user_otp->otp_code = $data['otp'];
@@ -106,7 +114,9 @@ class AuthController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $user = User::with('societymember.residentdesignationauthority')->where('mobile_no',$request->mobile_no)->whereIn('user_type',[2,4])->first();
+        $user = User::with(['societymember.residentdesignationauthority','societymember' => function($query) {
+            $query->where('estatus',1);
+        }])->where('mobile_no',$request->mobile_no)->whereIn('user_type',[2,4])->first();
         if($user){
         $user_otp = GeneratedOtp::where('mobile_no',$request->mobile_no)->where('otp_code',$request->otp)->first();
             if ($user_otp && isset($user_otp['expire_time']) ){
@@ -127,7 +137,7 @@ class AuthController extends BaseController
                 }
                 $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'designation_id'=> isset($user->societymember)?$user->societymember->resident_designation_id:"",'authority'=> $authority_array ];
                 $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
-                $data['isNewUser'] = $user->full_name == "" ? true : false;
+                $data['is_new_user'] = $user->full_name == "" ? true : false;
                 return $this->sendResponseWithData($data,'OTP verified successfully.');
             }
             else{
@@ -139,6 +149,10 @@ class AuthController extends BaseController
     }
 
     public function get_token(Request $request){
+        // $society_id = $this->payload['society_id'];
+        // if($society_id == ""){
+        //     return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        // }
 
         $validator = Validator::make($request->all(), [
             'block_flat_id' => 'required|integer|exists:block_flat,block_flat_id,deleted_at,NULL'
@@ -147,11 +161,18 @@ class AuthController extends BaseController
         if($validator->fails()){
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-
         $user_id = Auth::id();
         $block_flat_id = $request->block_flat_id;
+
+        // if(!isFlatInSociety($block_flat_id,$society_id)){
+        //     return $this->sendError(422, 'The selected Flat is not associated with the provided Society.', "Validation Errors", []);
+        // }
+
+        
         //$user = User::with('societymember')->where('user_id',$user_id)->first();
-        $user = User::with(['societymember.residentdesignationauthority'])->where('user_id', $user_id)->first();
+        $user = User::with(['societymember.residentdesignationauthority','societymember' => function($query) use ($block_flat_id) {
+            $query->where('block_flat_id', $block_flat_id)->where('estatus',1);
+        }])->where('user_id', $user_id)->first();
         if($user){
             $authority_array = [];
             if(isset($user->societymember->residentdesignationauthority)){

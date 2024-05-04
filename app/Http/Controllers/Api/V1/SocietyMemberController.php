@@ -31,7 +31,6 @@ class SocietyMemberController extends BaseController
         $blockFlat = Flat::with('society_block')->find($request->block_flat_id); // Ensure the relationship is eager loaded
 
         if (!$blockFlat || $blockFlat->society_block->society_id != $societyId) {
-            
             return $this->sendError(422, 'The selected Flat is not associated with the provided Society.', "Validation Errors", []);
         }
     

@@ -3,6 +3,7 @@
 use App\Models\CompanyDesignationAuthority;
 use App\Models\Flat;
 use App\Models\ResidentDesignationAuthority;
+use App\Models\Society;
 use App\Models\SocietyMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -284,4 +285,15 @@ function is_print_resident($module_id)
         return 1;
     }
     return 0;
+}
+
+
+function isFlatInSociety($flatId, $societyId)
+{
+    // Retrieve the flat by ID and check if it belongs to the given society
+    return Flat::where('block_flat_id', $flatId)
+        ->whereHas('society_block', function ($query) use ($societyId) {
+            $query->where('society_id', $societyId);
+        })
+        ->exists();
 }

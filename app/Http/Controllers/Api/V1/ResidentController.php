@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Flat;
 use App\Models\SocietyMember;
+use App\Models\SocietyVisitor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
@@ -113,16 +114,6 @@ class ResidentController extends BaseController
             'society_member_id' => 'required|exists:society_member,society_member_id,deleted_at,NULL',
             'status' => [
                 'required',
-                function ($attribute, $value, $fail) use ($request) {
-                    // Retrieve the current status
-                    $currentStatus = SocietyMember::where('society_member_id', $request->input('society_member_id'))->value('estatus');
-                    
-                    // Validate the status transition
-                    $validTransitions = $this->validateStatusTransition($currentStatus, $value);
-                    if (!$validTransitions) {
-                        $fail("Invalid status transition from $currentStatus to $value.");
-                    }
-                },
             ],
         ]);
 
@@ -131,6 +122,12 @@ class ResidentController extends BaseController
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
+        $currentStatus = SocietyMember::where('society_member_id', $request->input('society_member_id'))->value('estatus');
+        $validTransitions = $this->validateStatusTransition($currentStatus, $request->status);
+        if (!$validTransitions) {
+            return $this->sendError(422, "Invalid status transition from " . $this->getStatusName($currentStatus) . " to " . $this->getStatusName($request->status) . ".", "Validation Errors", []);
+        }
+    
         // Update the status
         $society_member = SocietyMember::where('society_member_id', $request->society_member_id)->firstOrFail();
         $society_member->estatus = $request->status;
@@ -158,11 +155,11 @@ class ResidentController extends BaseController
     {
         switch ($currentStatus) {
             case 4: // Pending
-                return in_array($newStatus, [1, 5]); // Allowed transitions to Active or Rejected
+                return in_array($newStatus, [1,3,5]); // Allowed transitions to Active or Rejected
             case 1: // Active
                 return in_array($newStatus, [2, 3]); // Allowed transitions to Inactive or Delete
             case 2: // Inactive
-                return $newStatus == 3; // Allowed transition to Delete
+                return in_array($newStatus, [1, 3]); // Allowed transition to Delete or Active
             case 3: // Delete
             case 5: // Rejected
                 return false; // No allowed transitions from Delete or Rejected
@@ -195,5 +192,23 @@ class ResidentController extends BaseController
         $family_member->save();
        
         return $this->sendResponseSuccess("Designation Updated Successfully.");
+    }
+
+    private function getStatusName($statusNumber)
+    {
+        switch ($statusNumber) {
+            case 1:
+                return "Active";
+            case 2:
+                return "Inactive";
+            case 3:
+                return "Delete";
+            case 4:
+                return "Pending";
+            case 5:
+                return "Rejected";
+            default:
+                return "Unknown";
+        }
     }
 }

@@ -73,12 +73,16 @@ class DocumentFolderController extends BaseController
         }
 
         $folder = DocumentFolder::find($request->folder_id);
-        if ($folder) {
-            $folder->estatus = 3;
+
+        // Check if the folder exists and doesn't contain any documents
+        if ($folder && $folder->documents->isEmpty()) {
+            $folder->estatus = 3; // Set status to 'Delete'
             $folder->save();
             $folder->delete();
+            return $this->sendResponseSuccess("Folder deleted successfully.");
         }
-        return $this->sendResponseSuccess("folder deleted Successfully.");
+
+        return $this->sendError(422, "Cannot delete folder as it contains documents.", "Validation Errors", []);
     }
 
     public function get_folder(Request $request)

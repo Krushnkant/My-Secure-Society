@@ -13,4 +13,9 @@ class DocumentFolder extends Model
     protected $table = 'document_folder';
     protected $primaryKey = 'document_folder_id';
     protected $dates = ['deleted_at'];
+
+    public function documents()
+    {
+        return $this->hasMany(SocietyDocument::class, 'document_folder_id');
+    }
 }
