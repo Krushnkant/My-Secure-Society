@@ -85,6 +85,9 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('amenity/list',[AmenityController::class,'amenity_list']);
     Route::post('amenity/delete',[AmenityController::class,'delete_amenity']);
     Route::post('amenity/get',[AmenityController::class,'get_amenity']);
+
+    Route::post('amenity/booking/create',[AmenityController::class,'create_amenity_booking']);
+    Route::post('amenity/booking/list',[AmenityController::class,'amenity_booking_list']);
 });
 
 Route::post('country/list', [UserController::class, 'get_country']);

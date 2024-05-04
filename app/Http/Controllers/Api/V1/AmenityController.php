@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Amenity;
 use App\Models\AmenityFile;
 use App\Models\AmenitySlot;
+use App\Models\AmenityBooking;
 
 class AmenityController extends BaseController
 {
@@ -117,10 +118,7 @@ class AmenityController extends BaseController
         if ($society_id == "") {
             return $this->sendError(400, 'Society Not Found.', "Not Found", []);
         }
-    
         $search_text = $request->input('search_text');
-
-   
         $AmenitiesQuery = Amenity::with('amenity_images','amenity_pdf')
                                 ->where('society_id', $society_id)
                                 ->where('estatus', 1);
@@ -158,7 +156,7 @@ class AmenityController extends BaseController
     public function delete_amenity(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:society_daily_post,society_daily_post_id',
+            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -175,8 +173,13 @@ class AmenityController extends BaseController
     
     public function get_amenity(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
         $validator = Validator::make($request->all(), [
-            'amenity_id' => 'required|exists:amenity,amenity_id',
+            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id'.$society_id,
         ]);
     
         if ($validator->fails()) {
@@ -212,6 +215,47 @@ class AmenityController extends BaseController
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Get Amenity Details Successfully.");
     }
-    
+
+    public function create_amenity_booking(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+        $request->merge(['society_id'=>$society_id]);
         
+        $validator = Validator::make($request->all(), [
+            'amenity_id' => 'required|integer',
+            'slot_id' => 'required|integer',
+            'start_date' => 'date',
+            'end_date' => 'date',
+            'total_amount' => 'required|numeric',
+            // 'booking_status' => 'required|integer|in:1,2,3',
+            // 'payment_status' => 'required|integer|in:1,2,3,4,5',
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Handle the request data and save the amenity details
+        $amenity = new AmenityBooking();
+        $amenity->user_id = Auth::id();
+        $amenity->amenity_id = $request->amenity_id;
+        $amenity->amenity_slot_id = $request->slot_id;
+        $amenity->start_date = $request->start_date;
+        $amenity->end_date = $request->end_date;
+        $amenity->total_amount = $request->total_amount;
+        $amenity->created_by = Auth::user()->user_id;
+        $amenity->updated_by = Auth::user()->user_id;
+        $amenity->save();
+
+
+        $data = array();
+        $temp['amenity_booking_id'] = $amenity->amenity_booking_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "Amenity Booking Successfully.");
+    }
+    
+      
 }
