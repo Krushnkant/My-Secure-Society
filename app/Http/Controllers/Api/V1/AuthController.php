@@ -16,13 +16,13 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends BaseController
 {
-    public $payload;
+    // public $payload;
 
-    public function __construct()
-    {
-        $token = JWTAuth::parseToken()->getToken();
-        $this->payload = JWTAuth::decode($token);
-    }
+    // public function __construct()
+    // {
+    //     $token = JWTAuth::parseToken()->getToken();
+    //     $this->payload = JWTAuth::decode($token);
+    // }
 
     public function login(Request $request)
     {
@@ -36,7 +36,7 @@ class AuthController extends BaseController
 
         $mobile_no = $request->mobile_no;
         $user = User::where('mobile_no',$mobile_no)->whereIn('user_type', [2, 4])->first();
-        
+
         if ($user){
             if($user->estatus != 1){
                 return $this->sendError(403,"Your account is de-activated by admin.", "Account De-active", []);
@@ -168,7 +168,7 @@ class AuthController extends BaseController
         //     return $this->sendError(422, 'The selected Flat is not associated with the provided Society.', "Validation Errors", []);
         // }
 
-        
+
         //$user = User::with('societymember')->where('user_id',$user_id)->first();
         $user = User::with(['societymember.residentdesignationauthority','societymember' => function($query) use ($block_flat_id) {
             $query->where('block_flat_id', $block_flat_id)->where('estatus',1);
