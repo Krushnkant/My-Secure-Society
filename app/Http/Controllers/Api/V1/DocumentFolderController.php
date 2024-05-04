@@ -82,7 +82,7 @@ class DocumentFolderController extends BaseController
             return $this->sendResponseSuccess("Folder deleted successfully.");
         }
 
-        return $this->sendError(422, "Cannot delete folder as it contains documents.", "Validation Errors", []);
+        return $this->sendError(422, "You can't delete folder as it contains documents.", "Validation Errors", []);
     }
 
     public function get_folder(Request $request)

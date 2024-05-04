@@ -39,11 +39,16 @@ class SocietyDocumentController extends BaseController
             'shared_flat_list.*' => 'exists:block_flat,block_flat_id',
         ];
 
+        // Custom error messages for validation rules
+        $messages = [
+            'shared_flat_list.*.exists' => 'The selected flat is not exist.',
+        ];
+
         if ($request->input('folder_id') != 0) {
             $rules['folder_id'] .= '|exists:document_folder,document_folder_id,deleted_at,NULL,created_by,'.$user_id;
         }
 
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -144,18 +149,25 @@ class SocietyDocumentController extends BaseController
             $query->where('document_type', $request->document_type);
         }
 
-    
+        $query->orderBy('created_at', 'DESC');
         $perPage = 10;
         $documents = $query->paginate($perPage);
         $document_arr = array();
         foreach ($documents as $document) {
+            $tempfile = [];
+            if(isset($document->document_file)){
+               
+                $tempfile['society_document_file_id'] = $document->document_file->society_document_file_id; 
+                $tempfile['file_type'] = $document->document_file->file_type; 
+                $tempfile['file_url'] = url($document->document_file->file_url); 
+            }
             $temp['document_id'] = $document->society_document_id;
             $temp['folder_id'] = $document->document_folder_id;
             $temp['document_type'] = $document->document_type;
             $temp['document_name'] = $document->document_name;
-            $temp['document_file'] = $document->document_file;
+            $temp['document_file'] = $tempfile;
             $temp['note'] = $document->note;
-            $temp['is_shared'] = $document->sharedocumentflat->isNotEmpty();
+            $temp['is_shared'] = ($user_id == $document->created_by) ? False : True;
             array_push($document_arr, $temp);
         }
 
@@ -213,21 +225,35 @@ class SocietyDocumentController extends BaseController
         if (!$userdocument){
             return $this->sendError(404,"You can not view this document", "Invalid document", []);
         }
-
-
         $document = SocietyDocument::with('document_file')->where('estatus',1)->where('society_document_id',$request->document_id)->first();
         if (!$document){
             return $this->sendError(404,"You can not view this document", "Invalid document", []);
         }
         $data = array();
+        $tempfile = [];
+        if(isset($document->document_file)){
+            $tempfile['society_document_file_id'] = $document->document_file->society_document_file_id; 
+            $tempfile['file_type'] = $document->document_file->file_type; 
+            $tempfile['file_url'] = url($document->document_file->file_url); 
+        }
+
+        $flatshareArray = [];
+        if(isset($document->document_file)){
+            foreach($userdocument->sharedocumentflat as $sharedocumentflat){
+                $flatshare['document_shared_flat_id'] = $sharedocumentflat->document_shared_flat_id;
+                $flatshare['block_flat_id'] = $sharedocumentflat->block_flat_id;
+                array_push($flatshareArray, $flatshare);
+            } 
+        }
+
         $temp['document_id'] = $document->society_document_id;
         $temp['folder_id'] = $document->document_folder_id;
         $temp['document_type'] = $document->document_type;
         $temp['document_name'] = $document->document_name;
-        $temp['document_file'] = $document->document_file;
+        $temp['document_file'] = $tempfile;
         $temp['note'] = $document->note;
-        $temp['shared_flat_list'] = $userdocument->sharedocumentflat;
+        $temp['shared_flat_list'] = $flatshareArray;
         array_push($data, $temp);
-        return $this->sendResponseWithData($data, "All Folder Retrieved Successfully.");
+        return $this->sendResponseWithData($data, "All Document Retrieved Successfully.");
     }
 }
