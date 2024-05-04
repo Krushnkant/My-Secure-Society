@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\SocietyMember;
 use App\Models\User;
+use App\Models\ResidentDesignation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -97,11 +98,12 @@ class FamilyMemberController extends BaseController
 
         if($user && $request->user_id == 0){
             $main_society_member = SocietyMember::find($society_member_id);
+            $designation = ResidentDesignation::select('resident_designation_id')->where('society_id', $main_society_member->society_id)->where('designation_name', 'Society Member')->first();
             $society_member = new SocietyMember();
             $society_member->user_id = $user->user_id;
             $society_member->parent_society_member_id  = $main_society_member->society_member_id;
             $society_member->society_id = $main_society_member->society_id;
-            $society_member->resident_designation_id = 3;
+            $society_member->resident_designation_id = $designation->resident_designation_id;
             $society_member->block_flat_id = $main_society_member->block_flat_id;
             $society_member->resident_type = $main_society_member->resident_type;
             $society_member->created_by = Auth::id();
@@ -154,17 +156,20 @@ class FamilyMemberController extends BaseController
 
     public function delete_family_member(Request $request)
     {
+        $society_member_id = $this->payload['society_member_id'];
+        if($society_member_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
         $validator = Validator::make($request->all(), [
             'society_member_id' => [
                 'required',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($society_member_id) {
                     $user_id = auth()->id();
     
                     $exists = SocietyMember::where('society_member_id', $value)
-                        ->where('user_id', $user_id)
+                        ->where('parent_society_member_id', $society_member_id)
                         ->where('parent_society_member_id', '!=', 0)
                         ->exists();
-    
                     if (!$exists) {
                         $fail('The selected member cannot be deleted directly.');
                     }

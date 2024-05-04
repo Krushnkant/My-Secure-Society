@@ -50,7 +50,7 @@ class DocumentFolderController extends BaseController
     public function folder_list()
     {
         $user_id =  Auth::user()->user_id;
-        $folders = DocumentFolder::where('estatus',1)->where('created_by',$user_id)->paginate(10);
+        $folders = DocumentFolder::where('estatus',1)->where('created_by',$user_id)->orderBy('folder_name', 'ASC')->paginate(10);
         $folder_arr = array();
         foreach ($folders as $folder) {
             $temp['folder_id'] = $folder->document_folder_id;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\SocietyMember;
 use App\Models\Flat;
+use App\Models\ResidentDesignation;
 use App\Models\SocietyVisitor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +20,6 @@ class SocietyMemberController extends BaseController
         $validator = Validator::make($request->all(), [
             'society_id' => 'required|exists:society,society_id,deleted_at,NULL',
             'block_flat_id' => 'required|exists:block_flat,block_flat_id,deleted_at,NULL',
-            
             'resident_type' => 'required',
         ]);
 
@@ -32,7 +32,7 @@ class SocietyMemberController extends BaseController
 
         if (!$blockFlat || $blockFlat->society_block->society_id != $societyId) {
             
-            return $this->sendError(422, 'The selected block_flat_id is not associated with the provided society_id.', "Validation Errors", []);
+            return $this->sendError(422, 'The selected Flat is not associated with the provided Society.', "Validation Errors", []);
         }
     
         $existingAssociation = SocietyMember::where('user_id', $user_id)
@@ -43,11 +43,12 @@ class SocietyMemberController extends BaseController
             return $this->sendError(422, 'User is already associated with this flat.', "Validation Errors", []);
         }
 
+        $designation = ResidentDesignation::select('resident_designation_id')->where('society_id', $societyId)->where('designation_name', 'Society Member')->first();
         $society_member = new SocietyMember();
         $society_member->user_id = $user_id;
         $society_member->parent_society_member_id  = 0;
         $society_member->society_id = $request->society_id;
-        $society_member->resident_designation_id = 3;
+        $society_member->resident_designation_id = $designation->resident_designation_id;
         $society_member->block_flat_id = $request->block_flat_id;
         $society_member->resident_type = $request->resident_type;
         $society_member->estatus  = 4;
@@ -98,11 +99,15 @@ class SocietyMemberController extends BaseController
         if ($society_member) {
             $family_members = SocietyMember::where('parent_society_member_id',$request->society_member_id)->get();
             foreach($family_members as $family_member){
-                $society_visitors = SocietyVisitor::where('block_flat_id',$family_member->block_flat_id)->where('visitor_status',3)->get();
-                foreach($society_visitors as $society_visitor){
-                    $society_visitor->estatus = 3;
-                    $society_visitor->save();
-                }
+                $family_member->estatus = 3;
+                $family_member->save();
+                $family_member->delete();
+            }
+
+            $society_visitors = SocietyVisitor::where('block_flat_id',$society_member->block_flat_id)->where('visitor_status',3)->get();
+            foreach($society_visitors as $society_visitor){
+                $society_visitor->estatus = 3;
+                $society_visitor->save();
             }
             $society_member->estatus = 3;
             $society_member->save();

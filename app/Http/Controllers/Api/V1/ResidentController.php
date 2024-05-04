@@ -132,11 +132,23 @@ class ResidentController extends BaseController
         }
 
         // Update the status
-        $family_member = SocietyMember::where('society_member_id', $request->society_member_id)->firstOrFail();
-        $family_member->estatus = $request->status;
-        $family_member->save();
+        $society_member = SocietyMember::where('society_member_id', $request->society_member_id)->firstOrFail();
+        $society_member->estatus = $request->status;
+        $society_member->save();
         if($request->status == 3){
-            $family_member->delete();
+            $family_members = SocietyMember::where('parent_society_member_id',$request->society_member_id)->get();
+            foreach($family_members as $family_member){
+                $family_member->estatus = 3;
+                $family_member->save();
+                $family_member->delete();
+            }
+
+            $society_visitors = SocietyVisitor::where('block_flat_id',$society_member->block_flat_id)->where('visitor_status',3)->get();
+            foreach($society_visitors as $society_visitor){
+                $society_visitor->estatus = 3;
+                $society_visitor->save();
+            }
+            $society_member->delete();
         }
 
         return $this->sendResponseSuccess("Status Updated Successfully.");
@@ -162,10 +174,14 @@ class ResidentController extends BaseController
 
     public function update_designation(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
         // Validation rules
         $validator = Validator::make($request->all(), [
             'society_member_id' => 'required|exists:society_member,society_member_id,deleted_at,NULL',
-            'designation_id' => 'required|exists:resident_designation,resident_designation_id,deleted_at,NULL',
+            'designation_id' => 'required|exists:resident_designation,resident_designation_id,deleted_at,NULL,society_id,'.$society_id,
         ]);
 
         // If validation fails, return the validation errors

@@ -151,9 +151,7 @@ class AuthController extends BaseController
         $user_id = Auth::id();
         $block_flat_id = $request->block_flat_id;
         //$user = User::with('societymember')->where('user_id',$user_id)->first();
-        $user = User::with(['societymember.residentdesignationauthority','societymember' => function($query) use ($block_flat_id) {
-            $query->where('block_flat_id', $block_flat_id);
-        }])->where('user_id', $user_id)->first();
+        $user = User::with(['societymember.residentdesignationauthority'])->where('user_id', $user_id)->first();
         if($user){
             $authority_array = [];
             if(isset($user->societymember->residentdesignationauthority)){
