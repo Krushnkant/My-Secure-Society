@@ -76,7 +76,7 @@ function UploadImage($image, $path)
 {
     $imageName = Str::random() . '.' . $image->getClientOriginalExtension();
     $tempName = $image->getPathname();
-    $imageSize = $image->getSize(); 
+    $imageSize = $image->getSize();
 
     if (!file_exists(public_path($path))) {
         mkdir(public_path($path), 0755, true);
@@ -296,4 +296,32 @@ function isFlatInSociety($flatId, $societyId)
             $query->where('society_id', $societyId);
         })
         ->exists();
+}
+
+function generateTransactionNumber() {
+    // You can generate a transaction number using various strategies, such as combining timestamp with random digits.
+    return  time() . rand(1000, 9999);
+}
+
+/**
+ * Generate a unique invoice number.
+ *
+ * @return string
+ */
+function generateInvoiceNumber($societyId) {
+    // Get the current year
+    $currentYear = date('Y');
+
+    // Construct the invoice number format: YYYY+SocietyId+0001
+    $invoiceNumber = $currentYear . '+' . $societyId . '+0001';
+
+    // You may adjust the format or the logic to ensure uniqueness as needed
+
+    return $invoiceNumber;
+}
+
+function calculateDueDate() {
+    // Example: Due date is 30 days from the current date
+    //return date('Y-m-d', strtotime('+30 days'));
+    return date('Y-m-d');
 }
