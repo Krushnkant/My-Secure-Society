@@ -45,11 +45,11 @@ class BannerController extends BaseController
         if($block_flat_id == ""){
             return $this->sendError(400,'Flat Not Found.', "Not Found", []);
         }
-       
+
         $rules = [
             'banner_for' => 'required|in:1,2',
             'society_member_id' => 'required_if:banner_for,2|int',
-            'business_profile_id' => 'required_if:banner_for,1|int',
+            'business_profile_id' => 'required_if:banner_for,1|int|exists:	business_profile,business_profile_id',
             'is_display_mobile_no' => 'required|in:1,2',
             'is_display_address' => 'required|in:1,2',
         ];
@@ -75,7 +75,7 @@ class BannerController extends BaseController
 
         return $this->sendResponseSuccess("Banner Config Set Successfully");
     }
-    
+
 
     public function get_banner_config()
     {
@@ -83,18 +83,22 @@ class BannerController extends BaseController
         if($block_flat_id == ""){
             return $this->sendError(400,'Flat Not Found.', "Not Found", []);
         }
-        
+        $data = array();
         $config = PostBannerConfig::where('estatus',1)->where('block_flat_id',$block_flat_id)->first();
         if (!$config){
-            return $this->sendError(404,"You can not get this config", "Invalid config", []);
+            $temp['banner_for'] = null;
+            $temp['business_profile_id'] = null;
+            $temp['society_member_id'] = null;
+            $temp['is_display_mobile_no'] = null;
+            $temp['is_display_address'] = null;
+        }else{
+            $temp['banner_for'] = $config->create_banner_for;
+            $temp['business_profile_id'] = $config->create_banner_for==1?$config->master_item_id:0;
+            $temp['society_member_id'] = $config->create_banner_for==2?$config->master_item_id:0;
+            $temp['is_display_mobile_no'] = $config->is_display_mobile_no;
+            $temp['is_display_address'] = $config->is_display_address;
         }
-        $data = array();
-        $temp['banner_for'] = $config->create_banner_for;
-        $temp['business_profile_id'] = $config->create_banner_for==1?$config->master_item_id:0;
-        $temp['society_member_id'] = $config->create_banner_for==2?$config->master_item_id:0;
-        $temp['is_display_mobile_no'] = $config->is_display_mobile_no;
-        $temp['is_display_address'] = $config->is_display_address;
-        array_push($data, $temp); 
+        array_push($data, $temp);
         return $this->sendResponseWithData($data, "Get Banner Config Successfully.");
     }
 }

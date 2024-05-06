@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Flat;
 use App\Models\SocietyMember;
 use App\Models\SocietyVisitor;
+use App\Models\ResidentDesignation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
@@ -29,6 +30,11 @@ class ResidentController extends BaseController
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
+        $designation_id = $this->payload['designation_id'];
+        if($designation_id == ""){
+            return $this->sendError(400,'designation Not Found.', "Not Found", []);
+        }
+
         $rules = [
             'block_id' => 'required',
             'status' => 'required|in:0,1,5,4',
@@ -39,13 +45,16 @@ class ResidentController extends BaseController
         }
 
         $validator = Validator::make($request->all(), $rules);
-        
+
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $family_members = SocietyMember::with('user')->where('parent_society_member_id',0)->where('society_id',$society_id);
-        if(getResidentDesignationId() == 3){
+        $resident_designation = ResidentDesignation::find($designation_id);
+
+        $family_members = SocietyMember::with('user','residentdesignation')->where('parent_society_member_id',0)->where('society_id',$society_id);
+
+        if($resident_designation->designation_name == "Society Member"){
             $family_members = $family_members->where('estatus',1);
         }else if($request->status > 0){
             $family_members = $family_members->where('estatus',$request->status);
@@ -127,7 +136,7 @@ class ResidentController extends BaseController
         if (!$validTransitions) {
             return $this->sendError(422, "Invalid status transition from " . $this->getStatusName($currentStatus) . " to " . $this->getStatusName($request->status) . ".", "Validation Errors", []);
         }
-    
+
         // Update the status
         $society_member = SocietyMember::where('society_member_id', $request->society_member_id)->firstOrFail();
         $society_member->estatus = $request->status;
@@ -186,11 +195,11 @@ class ResidentController extends BaseController
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-      
+
         $family_member = SocietyMember::where('society_member_id', $request->society_member_id)->firstOrFail();
         $family_member->resident_designation_id = $request->designation_id;
         $family_member->save();
-       
+
         return $this->sendResponseSuccess("Designation Updated Successfully.");
     }
 
