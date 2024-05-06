@@ -8,7 +8,7 @@ use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 
 class JwtMiddleware extends BaseMiddleware
 {
-    
+
 
     public function handle($request, Closure $next)
     {
@@ -25,18 +25,11 @@ class JwtMiddleware extends BaseMiddleware
         }
 
 
-    
-        $designation_id =  getResidentDesignationId();
-        if ($designation_id==1){
-            return $next($request);
-        }
-        // else if($designation_id == Null){
-        //     return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message1' => 'You are not authorized'), 401);
-        // }
-        else{
+            $designation_id =  getResidentDesignationId();
+
             $v1 = 'api/v1/';
             $message = 'You are not authorized';
-          
+
             // if($request->route()->uri()== $v1.'users/flat/list' && is_view_resident(1) == 0){
             //     return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message1' => $message), 401);
             // }
@@ -62,8 +55,6 @@ class JwtMiddleware extends BaseMiddleware
             if($request->route()->uri()== $v1.'banner/list' && is_view_resident(3) == 0){
                 return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message4' => $message), 401);
             }
-
-          
 
             if($request->route()->uri()== $v1.'banner/config/get' && is_view_resident(4) == 0){
                 return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message1' => $message), 401);
@@ -146,7 +137,7 @@ class JwtMiddleware extends BaseMiddleware
             else{
                 return $next($request);
             }
-        }
+
 
         return $next($request);
     }

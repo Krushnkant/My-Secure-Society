@@ -11,6 +11,9 @@ use App\Models\Amenity;
 use App\Models\AmenityFile;
 use App\Models\AmenitySlot;
 use App\Models\AmenityBooking;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
+use App\Models\PaymentTransaction;
 
 class AmenityController extends BaseController
 {
@@ -30,7 +33,7 @@ class AmenityController extends BaseController
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
         $request->merge(['society_id'=>$society_id]);
-        
+
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:100',
             'description' => 'required|string|max:500',
@@ -65,7 +68,7 @@ class AmenityController extends BaseController
         $amenity->updated_by = Auth::user()->user_id;
         $amenity->save();
 
-       
+
         if ($request->hasFile('image_files')) {
             $files = $request->file('image_files');
             foreach ($files as $file) {
@@ -108,7 +111,7 @@ class AmenityController extends BaseController
         $fileEntry->amenity_id = $Id;
         $fileEntry->file_type = $fileType;
         $fileEntry->file_url = $fileUrl;
-        $fileEntry->uploaded_at = now(); 
+        $fileEntry->uploaded_at = now();
         $fileEntry->save();
     }
 
@@ -122,19 +125,19 @@ class AmenityController extends BaseController
         $AmenitiesQuery = Amenity::with('amenity_images','amenity_pdf')
                                 ->where('society_id', $society_id)
                                 ->where('estatus', 1);
-        
+
         if ($search_text) {
-            $announcements->where(function ($query) use ($search_text) {
+            $AmenitiesQuery->where(function ($query) use ($search_text) {
                 $query->where('amenity_name', 'like', '%' . $search_text . '%')
                     ->orWhere('amenity_description', 'like', '%' . $search_text . '%');
             });
         }
-    
+
         $amenities = $AmenitiesQuery->orderBy('created_at', 'DESC')->paginate(10);
-        
+
         $amenity_arr = [];
         foreach ($amenities as $amenity) {
-        
+
             $temp['amenity_id'] = $amenity->amenity_id;
             $temp['title'] = $amenity->amenity_name;
             $temp['description'] = $amenity->amenity_description;
@@ -144,15 +147,15 @@ class AmenityController extends BaseController
             $temp['max_people_per_booking'] = $amenity->max_people_per_booking;
             $temp['image_urls'] = $amenity->amenity_images;
             $temp['pdf_url'] = $amenity->amenity_pdf;
-          
+
             array_push($amenity_arr, $temp);
         }
-    
+
         $data['amenity_list'] = $amenity_arr;
         $data['total_records'] = $amenities->toArray()['total'];
         return $this->sendResponseWithData($data, "All Amenity Successfully.");
     }
-    
+
     public function delete_amenity(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -162,7 +165,7 @@ class AmenityController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $post = DailyPost::find($request->post_id);
+        $post = Amenity::find($request->amenity_id);
         if ($post) {
             $post->estatus = 3;
             $post->save();
@@ -170,7 +173,7 @@ class AmenityController extends BaseController
         }
         return $this->sendResponseSuccess("post deleted Successfully.");
     }
-    
+
     public function get_amenity(Request $request)
     {
         $society_id = $this->payload['society_id'];
@@ -181,17 +184,17 @@ class AmenityController extends BaseController
         $validator = Validator::make($request->all(), [
             'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id'.$society_id,
         ]);
-    
+
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-    
+
         $amenity = Amenity::with('amenity_images','amenity_pdf','amenity_slots')->where('estatus',1)->where('amenity_id',$request->amenity_id)->first();
-    
+
         if (!$amenity){
             return $this->sendError(404,"You can not get this amenity", "Invalid amenity", []);
         }
-    
+
         $slot_arr = [];
         foreach($amenity->amenity_slots as $slot){
             $slot_temp['slot_id'] = $slot->amenity_slot_id;
@@ -222,18 +225,23 @@ class AmenityController extends BaseController
         if($society_id == ""){
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
-        $request->merge(['society_id'=>$society_id]);
-        
+
+        $block_flat_id = $this->payload['block_flat_id'];
+        if($block_flat_id == ""){
+            return $this->sendError(400,'Block flat Not Found.', "Not Found", []);
+        }
+
         $validator = Validator::make($request->all(), [
-            'amenity_id' => 'required|integer',
-            'slot_id' => 'required|integer',
+            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id,'.$society_id,
+            'slot_id' => 'required|exists:amenity_slot,amenity_slot_id,deleted_at,NULL,amenity_id'.$request->amenity_id,
             'start_date' => 'date',
             'end_date' => 'date',
             'total_amount' => 'required|numeric',
-            // 'booking_status' => 'required|integer|in:1,2,3',
-            // 'payment_status' => 'required|integer|in:1,2,3,4,5',
+            'gateway_name' => 'required', // Gateway name is required
+            'payment_mode' => 'required|in:1,2,3', // Payment mode must be required and can only be 1, 2, or 3
+            'payment_status' => 'required|in:1,2,3,4,5,6', // Payment status must be required and can only be 1, 2, 3, 4, 5, or 6
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
@@ -251,11 +259,110 @@ class AmenityController extends BaseController
         $amenity->save();
 
 
+        if ($amenity) {
+            // Create invoice
+            $invoice = new Invoice();
+            $invoice->invoice_type = 6; // Amenity Booking
+            $invoice->invoice_to_user_type = 1; // Assuming it's a society member
+            $invoice->block_flat_id = $block_flat_id;
+            $invoice->invoice_to_user_id = Auth::user()->user_id;
+            $invoice->invoice_user_name = Auth::user()->full_name;
+            $invoice->invoice_no = generateInvoiceNumber($society_id);// You may have a function to generate invoice numbers
+            $invoice->invoice_period_start_date = $request->start_date;
+            $invoice->invoice_period_end_date = $request->end_date;
+            $invoice->due_date = $request->start_date; // You may have a function to calculate due date
+            $invoice->invoice_amount = $request->total_amount;
+            $invoice->created_by = Auth::user()->user_id;
+            $invoice->updated_by = Auth::user()->user_id;
+            $invoice->save();
+
+            // Create invoice item
+            $invoiceItem = new InvoiceItem();
+            $invoiceItem->invoice_id = $invoice->invoice_id;
+            $invoiceItem->invoice_item_type = 6; // Amenity Booking
+            $invoiceItem->invoice_item_master_id = $amenity->amenity_booking_id;
+            $invoiceItem->invoice_item_description = "Amenity Booking";
+            $invoiceItem->invoice_item_amount = $request->total_amount;
+            $invoiceItem->save();
+
+            // Create payment transaction
+            $paymentTransaction = new PaymentTransaction();
+            $paymentTransaction->invoice_id = $invoice->invoice_id;
+            $paymentTransaction->transaction_no = generateTransactionNumber();
+            $paymentTransaction->payment_currency = "INR";
+            $paymentTransaction->transaction_amount = $request->total_amount;
+            $paymentTransaction->gateway_name = $request->gateway_name;
+            $paymentTransaction->payment_mode = $request->payment_mode;
+            $paymentTransaction->payment_status = $request->payment_status;
+            $paymentTransaction->created_by = Auth::user()->user_id;
+            $paymentTransaction->updated_by = Auth::user()->user_id;
+            $paymentTransaction->save();
+        }
+
+
         $data = array();
         $temp['amenity_booking_id'] = $amenity->amenity_booking_id;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Amenity Booking Successfully.");
     }
-    
-      
+
+    public function amenity_booking_list(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:user,user_id,deleted_at,NULL',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $startDate = $request->input('start_date', now()->subMonth()); // Default to one month ago if start_date is not provided
+        $endDate = $request->input('end_date', now()); // Default to current date if end_date is not provided
+
+
+        $amenities_booking = AmenityBooking::with('amenity.amenity_images')->where('society_id', $society_id)
+                                ->where('society_id', $society_id)
+                                ->where('user_id', $request->user_id);
+
+        if ($request->filled('start_date')) {
+            $amenities_booking->whereDate('start_date', '>=', $startDate);
+        }
+
+        if ($request->filled('end_date')) {
+            $amenities_booking->whereDate('end_date', '<=', $endDate);
+        }
+        $amenities_booking = $amenities_booking->orderBy('created_at', 'DESC')->paginate(10);
+
+        $amenity_booking_arr = [];
+        foreach ($amenities_booking as $booking) {
+            $temp['booking_id'] = $booking->booking_id;
+            $temp['user_id'] = $booking->user_id;
+            $temp['amenity_id'] = $booking->amenity_id;
+            $temp['amenity_name'] = $booking->amenity->title;
+            $temp['amenity_description'] = $booking->amenity->amenity_description;
+            $temp['image_files'] = $booking->amenity->amenity_images;
+            $temp['start_date'] = $booking->start_date;
+            $temp['end_date'] = $booking->end_date;
+            $temp['entry_time'] = $booking->start_date;
+            $temp['exit_time'] = $booking->end_date;
+            $temp['total_amount'] = $booking->total_amount;
+            $temp['booking_status'] = $booking->booking_status;
+            array_push($amenity_booking_arr, $temp);
+        }
+
+        $data['amenity_booking_list'] = $amenity_booking_arr;
+        $data['total_records'] = $amenities_booking->toArray()['total'];
+        return $this->sendResponseWithData($data, "All Amenity Booking Successfully.");
+    }
+
+
+
+
 }

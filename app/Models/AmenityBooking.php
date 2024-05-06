@@ -10,4 +10,9 @@ class AmenityBooking extends Model
     use HasFactory;
     protected $table = 'amenity_booking';
     protected $primaryKey = 'amenity_booking_id';
+
+    public function amenity()
+    {
+        return $this->hasOne(Amenity::class,'amenity_id', 'amenity_id');
+    }
 }
