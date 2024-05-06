@@ -88,6 +88,16 @@ Route::group(['middleware' => 'jwt'], function(){
 
     Route::post('amenity/booking/create',[AmenityController::class,'create_amenity_booking']);
     Route::post('amenity/booking/list',[AmenityController::class,'amenity_booking_list']);
+
+    Route::post('emergency_contact/save',[EmergencyContactController::class,'save_emergency_contact']);
+    Route::post('emergency_contact/list',[EmergencyContactController::class,'emergency_contact_list']);
+    Route::post('emergency_contact/delete',[EmergencyContactController::class,'delete_emergency_contact']);
+    Route::post('emergency_contact/get',[EmergencyContactController::class,'get_emergency_contact']);
+
+    Route::post('emergency_alert/save',[EmergencyAlertController::class,'save_emergency_alert']);
+    Route::post('emergency_alert/list',[EmergencyAlertController::class,'emergency_alert_list']);
+    Route::post('emergency_alert/delete',[EmergencyAlertController::class,'delete_emergency_alert']);
+    Route::post('emergency_alert/get',[EmergencyAlertController::class,'get_emergency_alert']);
 });
 
 Route::post('country/list', [UserController::class, 'get_country']);
