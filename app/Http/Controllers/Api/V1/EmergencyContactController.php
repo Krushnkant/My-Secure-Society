@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EmergencyContact;
 use App\Models\SocietyMember;
@@ -9,85 +10,124 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
-class EmergencyContactController extends Controller
+class EmergencyContactController extends BaseController
 {
-    public function saveEmergencyContact(Request $request)
+    public $payload;
+
+    public function __construct()
     {
-        // Validate the incoming request
-        $validator = Validator::make($request->all(), [
-            'contact_id' => 'required|exists:emergency_contacts,id',
+        $token = JWTAuth::parseToken()->getToken();
+        $this->payload = JWTAuth::decode($token);
+    }
+    public function save_emergency_contact(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if (empty($society_id)) {
+            return $this->sendError(400, 'Society ID not provided.', "Not Found", []);
+        }
+
+        $rules = [
+            'contact_id' => 'required',
             'contact_type' => 'required|in:2,3',
             'name' => 'required|string|max:100',
             'mobile_no' => 'required|string|max:13',
-        ]);
+        ];
 
-        // Check if validation fails
+        if ($request->input('contact_id') != 0) {
+            $rules['contact_id'] .= '|exists:emergency_contact,emergency_contact_id,deleted_at,NULL';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        // Check if the user is authorized to save emergency contacts
-        $isRequestApproved = EmergencyContact::where('society_id', Auth::user()->society_id)
-            ->where('estatus', 1)
-            ->exists();
-
-        if (!$isRequestApproved) {
-            return response()->json(['message' => 'You are not authorized.'], 401);
-        }
-
-        // Save or update the emergency contact
         $emergencyContact = EmergencyContact::find($request->contact_id);
+        $action = "updated";
         if (!$emergencyContact) {
             $emergencyContact = new EmergencyContact();
+            $action = "saved";
         }
-
+        if($request->contact_type == 2){
+            $emergencyContact->master_id = $society_id;
+        }else{
+            $emergencyContact->master_id = $user_id = Auth::id();
+        }
         $emergencyContact->contact_type = $request->contact_type;
         $emergencyContact->name = $request->name;
         $emergencyContact->mobile_no = $request->mobile_no;
+        $emergencyContact->created_by = Auth::user()->user_id;
+        $emergencyContact->updated_by = Auth::user()->user_id;
         $emergencyContact->save();
 
-        return response()->json(['message' => 'Emergency contact saved successfully.']);
+        $data = array();
+        $temp['contact_id'] = $emergencyContact->emergency_contact_id;
+        array_push($data, $temp);
+
+        return $this->sendResponseWithData($data, 'Emergency contact '.$action.' successfully.');
     }
 
-    public function getEmergencyContact(Request $request)
+    public function emergency_contact_list(Request $request)
     {
-        $contactId = $request->input('contact_id');
-
-        // Fetch the emergency contact
-        $emergencyContact = EmergencyContact::find($contactId);
-
-        if (!$emergencyContact) {
-            return response()->json(['message' => 'Emergency contact not found.'], 404);
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
-        return response()->json($emergencyContact);
-    }
+        $rules = [
+            'contact_type' => 'required|in:1,2,3',
+        ];
 
-    public function listEmergencyContacts(Request $request)
-    {
-        $contactType = $request->input('contact_type');
+        $validator = Validator::make($request->all(), $rules);
 
-        // Fetch emergency contacts based on the type
-        $emergencyContacts = EmergencyContact::where('contact_type', $contactType)->get();
-
-        return response()->json($emergencyContacts);
-    }
-
-    public function deleteEmergencyContact(Request $request)
-    {
-        $contactId = $request->input('contact_id');
-
-        // Fetch the emergency contact
-        $emergencyContact = EmergencyContact::find($contactId);
-
-        if (!$emergencyContact) {
-            return response()->json(['message' => 'Emergency contact not found.'], 404);
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        // Delete the emergency contact
-        $emergencyContact->delete();
+        $query = EmergencyContact::where('estatus', 1);
 
-        return response()->json(['message' => 'Emergency contact deleted successfully.']);
+        if ($request->contact_type == 1) {
+            $query->where('contact_type', $request->contact_type);
+        }else if($request->contact_type == 2){
+            $query->where('contact_type', $request->contact_type)->where('master_id', $society_id);
+        }else{
+            $query->where('contact_type', $request->contact_type)->where('master_id', $user_id = Auth::id());
+        }
+
+        $contacts = $query->paginate(10);
+        $contact_arr = array();
+        foreach ($contacts as $contact) {
+            $temp['contact_id'] = $contact->emergency_contact_id;
+            $temp['name'] = $contact->name;
+            $temp['mobile_no'] = $contact->mobile_no;
+            array_push($contact_arr, $temp);
+        }
+
+        $data['contact_list'] = $contact_arr;
+        $data['total_records'] = $contacts->toArray()['total'];
+        return $this->sendResponseWithData($data, "All Contact Retrieved Successfully.");
     }
+
+    public function delete_emergency_contact(Request $request)
+    {
+        $user_id = Auth::id();
+        $validator = Validator::make($request->all(), [
+            'contact_id' => 'required|exists:emergency_contact,emergency_contact_id,deleted_at,NULL',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $contact = EmergencyContact::find($request->contact_id);
+        if ($contact) {
+            $contact->estatus = 3;
+            $contact->save();
+            $contact->delete();
+        }
+        return $this->sendResponseSuccess("contact deleted Successfully.");
+    }
+
 }

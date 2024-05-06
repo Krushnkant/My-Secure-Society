@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\V1\AnnouncementController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\AmenityController;
+use App\Http\Controllers\Api\V1\EmergencyContactController;
+use App\Http\Controllers\Api\V1\EmergencyAlertController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,12 +94,11 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('emergency_contact/save',[EmergencyContactController::class,'save_emergency_contact']);
     Route::post('emergency_contact/list',[EmergencyContactController::class,'emergency_contact_list']);
     Route::post('emergency_contact/delete',[EmergencyContactController::class,'delete_emergency_contact']);
-    Route::post('emergency_contact/get',[EmergencyContactController::class,'get_emergency_contact']);
 
-    Route::post('emergency_alert/save',[EmergencyAlertController::class,'save_emergency_alert']);
-    Route::post('emergency_alert/list',[EmergencyAlertController::class,'emergency_alert_list']);
+    Route::post('emergency_alert/create',[EmergencyAlertController::class,'save_emergency_alert']);
+    Route::get('emergency_alert/list',[EmergencyAlertController::class,'emergency_alert_list']);
     Route::post('emergency_alert/delete',[EmergencyAlertController::class,'delete_emergency_alert']);
-    Route::post('emergency_alert/get',[EmergencyAlertController::class,'get_emergency_alert']);
+
 });
 
 Route::post('country/list', [UserController::class, 'get_country']);

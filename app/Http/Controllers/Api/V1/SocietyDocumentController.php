@@ -28,7 +28,7 @@ class SocietyDocumentController extends BaseController
         if (empty($society_id)) {
             return $this->sendError(400, 'Society ID not provided.', "Not Found", []);
         }
-        
+
         $rules = [
             'document_id' => 'required',
             'folder_id' => 'required', // Validate existence in document_folder table
@@ -83,7 +83,7 @@ class SocietyDocumentController extends BaseController
                 $doc_file->file_url = $fileUrl;
                 $doc_file->uploaded_at = now();
                 $doc_file->save();
-            } 
+            }
 
             if (isset($request->shared_flat_list)) {
                 foreach($request->shared_flat_list as $share_flat){
@@ -94,8 +94,8 @@ class SocietyDocumentController extends BaseController
                     $shared_flat->updated_by = Auth::user()->user_id;
                     $shared_flat->save();
                 }
-            } 
-            
+            }
+
         }
 
         $data = array();
@@ -104,7 +104,7 @@ class SocietyDocumentController extends BaseController
         return $this->sendResponseWithData($data, "Document ". $action ." Successfully");
     }
 
-  
+
     public function document_list(Request $request)
     {
         $society_id = $this->payload['society_id'];
@@ -142,7 +142,7 @@ class SocietyDocumentController extends BaseController
             });
         })
         ->with('sharedocumentflat','document_file');
-        
+
 
         // Apply documentType filter if provided
         if ($request->document_type > 0) {
@@ -156,10 +156,10 @@ class SocietyDocumentController extends BaseController
         foreach ($documents as $document) {
             $tempfile = [];
             if(isset($document->document_file)){
-               
-                $tempfile['society_document_file_id'] = $document->document_file->society_document_file_id; 
-                $tempfile['file_type'] = $document->document_file->file_type; 
-                $tempfile['file_url'] = url($document->document_file->file_url); 
+
+                $tempfile['society_document_file_id'] = $document->document_file->society_document_file_id;
+                $tempfile['file_type'] = $document->document_file->file_type;
+                $tempfile['file_url'] = url($document->document_file->file_url);
             }
             $temp['document_id'] = $document->society_document_id;
             $temp['folder_id'] = $document->document_folder_id;
@@ -232,18 +232,20 @@ class SocietyDocumentController extends BaseController
         $data = array();
         $tempfile = [];
         if(isset($document->document_file)){
-            $tempfile['society_document_file_id'] = $document->document_file->society_document_file_id; 
-            $tempfile['file_type'] = $document->document_file->file_type; 
-            $tempfile['file_url'] = url($document->document_file->file_url); 
+            $tempfile['society_document_file_id'] = $document->document_file->society_document_file_id;
+            $tempfile['file_type'] = $document->document_file->file_type;
+            $tempfile['file_url'] = url($document->document_file->file_url);
         }
 
         $flatshareArray = [];
         if(isset($document->document_file)){
+            $flat_info = getSocietyBlockAndFlatInfo($sharedocumentflat->block_flat_id);
             foreach($userdocument->sharedocumentflat as $sharedocumentflat){
                 $flatshare['document_shared_flat_id'] = $sharedocumentflat->document_shared_flat_id;
                 $flatshare['block_flat_id'] = $sharedocumentflat->block_flat_id;
+                $flatshare['block_id'] = $flat_info['block_id'];
                 array_push($flatshareArray, $flatshare);
-            } 
+            }
         }
 
         $temp['document_id'] = $document->society_document_id;

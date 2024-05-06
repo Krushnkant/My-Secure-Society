@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('emergency_alert', function (Blueprint $table) {
             $table->bigIncrements('emergency_alert_id')->index();
+            $table->integer('society_member_id')->index();
             $table->integer('alert_reason_type')->index()->comment('1 - Fire, 2 - Stuck in Lift, 3 - Animal Threat, 4 - Other');
             $table->string('alert_message');
             $table->dateTime('created_at')->nullable();

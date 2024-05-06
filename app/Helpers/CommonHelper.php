@@ -219,6 +219,7 @@ function getSocietyBlockAndFlatInfo($flatId)
     $street_address = isset($flatInfo->society_block->society)?$flatInfo->society_block->society->street_address1:"";
     $society_name = isset($flatInfo->society_block->society)?$flatInfo->society_block->society->society_name:"";
     $block_name = isset($flatInfo->society_block)?$flatInfo->society_block->block_name:"";
+    $block_id = isset($flatInfo->society_block)?$flatInfo->society_block->society_block_id:"";
     $flat_no = isset($flatInfo)?$flatInfo->flat_no:"";
 
     return compact('society_name', 'block_name', 'flat_no','street_address');
