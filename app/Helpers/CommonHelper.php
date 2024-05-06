@@ -222,7 +222,7 @@ function getSocietyBlockAndFlatInfo($flatId)
     $block_id = isset($flatInfo->society_block)?$flatInfo->society_block->society_block_id:"";
     $flat_no = isset($flatInfo)?$flatInfo->flat_no:"";
 
-    return compact('society_name', 'block_name', 'flat_no','street_address');
+    return compact('society_name', 'block_name', 'flat_no','street_address','block_id');
 }
 
 

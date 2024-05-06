@@ -238,9 +238,9 @@ class SocietyDocumentController extends BaseController
         }
 
         $flatshareArray = [];
-        if(isset($document->document_file)){
-            $flat_info = getSocietyBlockAndFlatInfo($sharedocumentflat->block_flat_id);
+        if(isset($userdocument->sharedocumentflat)){
             foreach($userdocument->sharedocumentflat as $sharedocumentflat){
+                $flat_info = getSocietyBlockAndFlatInfo($sharedocumentflat->block_flat_id);
                 $flatshare['document_shared_flat_id'] = $sharedocumentflat->document_shared_flat_id;
                 $flatshare['block_flat_id'] = $sharedocumentflat->block_flat_id;
                 $flatshare['block_id'] = $flat_info['block_id'];
