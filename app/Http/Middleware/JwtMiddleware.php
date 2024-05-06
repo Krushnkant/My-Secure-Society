@@ -134,6 +134,13 @@ class JwtMiddleware extends BaseMiddleware
                 return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message6' => $message), 401);
             }
 
+            if($request->route()->uri()== $v1.'amenity/booking/list' && is_view_resident(12) == 0){
+                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message4' => $message), 401);
+            }
+            if($request->route()->uri()==$v1.'amenity/booking/create' && is_view_resident(12) == 0){
+                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message5' => $message), 401);
+            }
+
             else{
                 return $next($request);
             }
