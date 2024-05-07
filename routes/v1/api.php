@@ -90,6 +90,7 @@ Route::group(['middleware' => 'jwt'], function(){
 
     Route::post('amenity/booking/create',[AmenityController::class,'create_amenity_booking']);
     Route::post('amenity/booking/list',[AmenityController::class,'amenity_booking_list']);
+    Route::post('amenity/booking/change_status',[AmenityController::class,'amenity_booking_change_status']);
 
     Route::post('emergency_contact/save',[EmergencyContactController::class,'save_emergency_contact']);
     Route::post('emergency_contact/list',[EmergencyContactController::class,'emergency_contact_list']);

@@ -362,6 +362,50 @@ class AmenityController extends BaseController
         return $this->sendResponseWithData($data, "All Amenity Booking Successfully.");
     }
 
+    public function amenity_booking_change_status(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'booking_id' => 'required|exists:amenity_booking,amenity_booking_id,deleted_at,NULL',
+            'booking_status' => 'required|in:1,3',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Retrieve the booking
+        $booking = AmenityBooking::find($request->input('booking_id'));
+
+        if (!$booking) {
+            return $this->sendError(404,'Booking not found.', "Not Found", []);
+        }
+
+        if ($booking->status === 'Pending') {
+            $newStatus = $request->input('booking_status');
+
+            if ($newStatus == 1) {
+                $booking->status = 'Confirmed';
+            } elseif ($newStatus == 3) {
+                $entryTime = strtotime($booking->created_at);
+                $currentTime = time();
+                // Check if cancellation is allowed before 3 hours of entry time
+                if (($entryTime - $currentTime) > (3 * 3600)) {
+                    $booking->status = 'Cancelled';
+                    // Invoice::where('invoice_type',6)->
+                } else {
+                    return response()->json(['error' => 'Cannot cancel booking less than 3 hours before entry time'], 400);
+                }
+            }
+
+            // Save the updated booking status
+            $booking->save();
+            return $this->sendResponseSuccess("Booking status updated successfully.");
+        } else {
+            return $this->sendError(400,'Booking status cannot be changed from Pending.', "Invalid", []);
+        }
+    }
+
 
 
 
