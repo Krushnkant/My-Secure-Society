@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\AmenityController;
 use App\Http\Controllers\Api\V1\EmergencyContactController;
 use App\Http\Controllers\Api\V1\EmergencyAlertController;
+use App\Http\Controllers\Api\V1\BusinessProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +100,8 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('emergency_alert/create',[EmergencyAlertController::class,'save_emergency_alert']);
     Route::get('emergency_alert/list',[EmergencyAlertController::class,'emergency_alert_list']);
     Route::post('emergency_alert/delete',[EmergencyAlertController::class,'delete_emergency_alert']);
+
+    Route::post('business_category/get',[BusinessProfileController::class,'get_business_category']);
 
 });
 
