@@ -49,7 +49,7 @@ class BannerController extends BaseController
         $rules = [
             'banner_for' => 'required|in:1,2',
             'society_member_id' => 'required_if:banner_for,2|int',
-            'business_profile_id' => 'required_if:banner_for,1|int|exists:	business_profile,business_profile_id',
+            'business_profile_id' => 'required_if:banner_for,1|int|exists:business_profile,business_profile_id',
             'is_display_mobile_no' => 'required|in:1,2',
             'is_display_address' => 'required|in:1,2',
         ];
