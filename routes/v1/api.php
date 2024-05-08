@@ -103,6 +103,11 @@ Route::group(['middleware' => 'jwt'], function(){
 
     Route::post('business_category/get',[BusinessProfileController::class,'get_business_category']);
 
+    Route::post('business_profile/save',[BusinessProfileController::class,'save_business_profilet']);
+    Route::post('business_profile/list',[BusinessProfileController::class,'business_profile_list']);
+    Route::post('business_profile/get',[BusinessProfileController::class,'get_emergency_contact']);
+    Route::post('business_profile/delete',[BusinessProfileController::class,'delete_business_profile']);
+
 });
 
 Route::post('country/list', [UserController::class, 'get_country']);

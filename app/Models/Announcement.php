@@ -19,4 +19,9 @@ class Announcement extends Model
     {
         return $this->hasOne(AnnouncementFile::class,'announcement_id', 'announcement_id');
     }
+
+    public function user()
+    {
+        return $this->hasOne(User::class,'user_id', 'created_by');
+    }
 }

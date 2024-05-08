@@ -41,6 +41,11 @@ class BannerController extends BaseController
 
     public function set_banner_config(Request $request)
     {
+        $society_member_id = $this->payload['society_member_id'];
+        if($society_member_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+
         $block_flat_id = $this->payload['block_flat_id'];
         if($block_flat_id == ""){
             return $this->sendError(400,'Flat Not Found.', "Not Found", []);
@@ -48,11 +53,32 @@ class BannerController extends BaseController
 
         $rules = [
             'banner_for' => 'required|in:1,2',
-            'society_member_id' => 'required_if:banner_for,2|int',
-            'business_profile_id' => 'required_if:banner_for,1|int|exists:business_profile,business_profile_id',
+            'society_member_id' => 'required',
+            'business_profile_id' => 'required',
             'is_display_mobile_no' => 'required|in:1,2',
             'is_display_address' => 'required|in:1,2',
         ];
+
+        if($request->banner_for == 1){
+            $rules['business_profile_id'] .= '|exists:business_profile,business_profile_id,deleted_at,NULL';
+        }
+        if($request->banner_for == 2){
+            if ($request->banner_for == 2) {
+                $rules['society_member_id'] = [
+                    'required',
+                    function ($attribute, $value, $fail) use ($request,$society_member_id) {
+                        $validMemberIds = SocietyMember::where(function ($query) use ($request) {
+                            $query->where('society_member_id', $society_member_id) // User's own ID
+                                  ->orWhere('parent_society_member_id', $society_member_id); // User's family member IDs
+                        })->pluck('society_member_id')->toArray();
+
+                        if (!in_array($value, $validMemberIds)) {
+                            $fail('Invalid society member ID.');
+                        }
+                    },
+                ];
+            }
+        }
 
         $validator = Validator::make($request->all(), $rules);
 

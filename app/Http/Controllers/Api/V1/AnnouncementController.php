@@ -57,8 +57,6 @@ class AnnouncementController extends BaseController
             $action ="Updated";
         }
 
-        
-
         $announcement->announcement_title = $request->title;
         $announcement->announcement_description = $request->description;
         $announcement->save();
@@ -74,10 +72,13 @@ class AnnouncementController extends BaseController
                 $doc_file->file_url = $fileUrl;
                 $doc_file->uploaded_at = now();
                 $doc_file->save();
-            } 
+            }
         }
 
-        return $this->sendResponseSuccess("Announcement ".$action." Successfully");
+        $data = array();
+        $temp['announcement_id'] = $announcement->announcement_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "Announcement ".$action." Successfully");
     }
 
     public function announcement_list(Request $request)
@@ -89,7 +90,7 @@ class AnnouncementController extends BaseController
         $search_text = $request->input('search_text');
 
         // Query announcements with related announcement files
-        $announcements = Announcement::with('announcement_file')
+        $announcements = Announcement::with('announcement_file','user')
             ->where('society_id', $society_id)
             ->where('estatus', 1);
 
@@ -106,8 +107,11 @@ class AnnouncementController extends BaseController
         $announcement_arr = array();
         foreach ($announcements as $announcement) {
             $temp['announcement_id'] = $announcement['announcement_id'];
-            $temp['announcement_title'] = $announcement->announcement_title;
-            $temp['announcement_description'] = $announcement->announcement_description;
+            $temp['title'] = $announcement->announcement_title;
+            $temp['description'] = $announcement->announcement_description;
+            $temp['full_name'] = $announcement->user->full_name;
+            $temp['block_flat_no'] = "";
+            $temp['profile_pic'] = $announcement->user->profile_pic_url;
             $temp['featured_image'] = isset($announcement->announcement_file)?url($announcement->announcement_file->file_url):"";
             $temp['date'] = $announcement->created_at->format('d-m-Y H:i:s');
             array_push($announcement_arr, $temp);
@@ -121,7 +125,7 @@ class AnnouncementController extends BaseController
     public function delete_announcement(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'announcement_id' => 'required|exists:announcement',
+            'announcement_id' => 'required|exists:announcement,announcement_id,deleted_at,NULL',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -139,19 +143,22 @@ class AnnouncementController extends BaseController
     public function get_announcement(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'announcement_id' => 'required|exists:announcement',
+            'announcement_id' => 'required|exists:announcement,announcement_id,deleted_at,NULL',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $announcement = Announcement::with('announcement_file')->where('estatus',1)->where('announcement_id',$request->announcement_id)->first();
+        $announcement = Announcement::with('announcement_file','user')->where('estatus',1)->where('announcement_id',$request->announcement_id)->first();
         if (!$announcement){
             return $this->sendError(404,"You can not get this announcement", "Invalid folder", []);
         }
         $data = array();
         $temp['announcement_id'] = $announcement['announcement_id'];
-        $temp['announcement_title'] = $announcement->announcement_title;
-        $temp['announcement_description'] = $announcement->announcement_description;
+        $temp['title'] = $announcement->announcement_title;
+        $temp['description'] = $announcement->announcement_description;
+        $temp['full_name'] = $announcement->user->full_name;
+        $temp['block_flat_no'] = "";
+        $temp['profile_pic'] = $announcement->user->profile_pic_url;
         $temp['featured_image'] = isset($announcement->announcement_file)?url($announcement->announcement_file->file_url):"";
         $temp['date'] = $announcement->created_at->format('d-m-Y H:i:s');
         array_push($data, $temp);

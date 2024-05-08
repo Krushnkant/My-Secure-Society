@@ -52,6 +52,7 @@ class BusinessProfileController extends BaseController
     {
         // Validation rules
         $rules = [
+            'profile_id' => 'required',
             'business_name' => 'required|string|max:100',
             'mobile_no' => 'required|string|max:10',
             'website_url' => 'required|url|max:255',
@@ -66,18 +67,24 @@ class BusinessProfileController extends BaseController
             'pdf_file' => 'file|mimes:pdf|max:10000', // Assuming pdf_file is a PDF file with max size of 10MB
         ];
 
+        if ($request->has('profile_id') && $request->input('profile_id') != 0) {
+            $rules['profile_id'] .= '|exists:business_profile,business_profile_id,deleted_at,NULL';
+        }
+
         // Validate the request data
         $validator = Validator::make($request->all(), $rules);
 
         // If validation fails, return error response
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        // Handle saving the business profile data
-        // Assuming the BusinessProfile model has the necessary fields
-
-        $businessProfile = new BusinessProfile();
+        $businessProfile = BusinessProfile::find($request->contact_id);
+        $action = "updated";
+        if (!$businessProfile) {
+            $businessProfile = new BusinessProfile();
+            $action = "saved";
+        }
         $businessProfile->business_name = $request->business_name;
         $businessProfile->mobile_no = $request->mobile_no;
         $businessProfile->website_url = $request->website_url;
@@ -91,30 +98,139 @@ class BusinessProfileController extends BaseController
         $businessProfile->city_id = $request->city_id;
         $businessProfile->state_id = $request->state_id;
         $businessProfile->country_id = $request->country_id;
-
-        // Save business icon
-        $businessIcon = $request->file('business_icon');
-        $businessIconPath = $businessIcon->store('business_icons', 'public');
-        $businessProfile->business_icon = $businessIconPath;
-
-        // Save additional image files
-        if ($request->hasFile('image_files')) {
-            foreach ($request->file('image_files') as $imageFile) {
-                $imageFilePath = $imageFile->store('business_images', 'public');
-                // Save image file path to database or perform other actions as needed
-            }
-        }
-
-        // Save PDF file if provided
-        if ($request->hasFile('pdf_file')) {
-            $pdfFilePath = $request->file('pdf_file')->store('business_pdfs', 'public');
-            // Save PDF file path to database or perform other actions as needed
-        }
-
-        // Save the business profile
         $businessProfile->save();
 
+        $data = array();
+        $temp['profile_id'] = $businessProfile->business_profile_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, 'Business Profile '.$action.' successfully');
+    }
+
+    public function list(Request $request)
+    {
+        // Validate the request parameters
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer',
+            'list_type' => 'required|in:1,2',
+            'category_id' => 'required|integer',
+        ]);
+
+        // If validation fails, return error response
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Retrieve business profiles based on parameters
+        $query = BusinessProfile::query()->where('category_id', $request->category_id);
+
+        if ($request->list_type == 1) {
+            // Own Business Profile List
+            $query->where('user_id', $request->user_id);
+        }
+
+        $profiles = $query->get();
+
+        // Format the response data
+        $data = [];
+        foreach ($profiles as $profile) {
+            $data[] = [
+                'profile_id' => $profile->id,
+                'business_name' => $profile->business_name,
+                'business_icon' => $profile->business_icon,
+                'mobile_no' => $profile->mobile_no,
+                'website_url' => $profile->website_url,
+                'business_description' => $profile->business_description,
+                'street_address1' => $profile->street_address1,
+                'street_address2' => $profile->street_address2,
+                'landmark' => $profile->landmark,
+                'pin_code' => $profile->pin_code,
+                'latitude' => $profile->latitude,
+                'longitude' => $profile->longitude,
+                'city' => $profile->city,
+                'state' => $profile->state,
+                'country' => $profile->country,
+                'user_id' => $profile->user_id,
+                'user_fullname' => $profile->user_fullname,
+                'user_profile_pic' => $profile->user_profile_pic,
+                'user_block_flat_no' => $profile->user_block_flat_no,
+            ];
+        }
+
+        // Return the response
+        return response()->json(['business_profile_list' => $data]);
+    }
+
+    public function get(Request $request)
+    {
+        // Validate the request parameters
+        $validator = Validator::make($request->all(), [
+            'profile_id' => 'required|integer',
+        ]);
+
+        // If validation fails, return error response
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Retrieve the specified business profile
+        $profile = BusinessProfile::find($request->profile_id);
+
+        // If profile not found, return error response
+        if (!$profile) {
+            return response()->json(['error' => 'Business profile not found'], 404);
+        }
+
+        // Format the response data
+        $data = [
+            'profile_id' => $profile->id,
+                'business_name' => $profile->business_name,
+                'business_icon' => $profile->business_icon,
+                'mobile_no' => $profile->mobile_no,
+                'website_url' => $profile->website_url,
+                'business_description' => $profile->business_description,
+                'street_address1' => $profile->street_address1,
+                'street_address2' => $profile->street_address2,
+                'landmark' => $profile->landmark,
+                'pin_code' => $profile->pin_code,
+                'latitude' => $profile->latitude,
+                'longitude' => $profile->longitude,
+                'city' => $profile->city,
+                'state' => $profile->state,
+                'country' => $profile->country,
+                'user_id' => $profile->user_id,
+                'user_fullname' => $profile->user_fullname,
+                'user_profile_pic' => $profile->user_profile_pic,
+                'user_block_flat_no' => $profile->user_block_flat_no,
+        ];
+
+        // Return the response
+        return response()->json($data);
+    }
+
+    public function delete(Request $request)
+    {
+        // Validate the request parameters
+        $validator = Validator::make($request->all(), [
+            'profile_id' => 'required|integer',
+        ]);
+
+        // If validation fails, return error response
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Find the profile to delete
+        $profile = BusinessProfile::find($request->profile_id);
+
+        // If profile not found, return error response
+        if (!$profile) {
+            return response()->json(['error' => 'Business profile not found'], 404);
+        }
+
+        // Delete the profile
+        $profile->delete();
+
         // Return success response
-        return response()->json(['message' => 'Business Profile saved successfully'], 200);
+        return response()->json(['message' => 'Business profile deleted successfully']);
     }
 }

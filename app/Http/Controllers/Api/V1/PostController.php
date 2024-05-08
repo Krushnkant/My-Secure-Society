@@ -38,7 +38,8 @@ class PostController extends BaseController
             'bg_color' => 'nullable|max:20',
             'event_time' => 'sometimes|required_if:post_type,3|date',
             'event_venue' => 'required_if:post_type,3',
-            'poll_options' => 'required_if:post_type,2'
+            'poll_options' => 'required_if:post_type,2',
+            'media_files.*' => 'nullable|file|mimetypes:image/jpeg,image/png,video/mp4,video/quicktime|max:20480',
         ];
 
         if ($request->parent_post_id != 0) {
@@ -57,6 +58,10 @@ class PostController extends BaseController
 
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
+
+        if (empty($request->file('media_files')) && empty($request->bg_color)) {
+            return $this->sendError(422, 'Background color is required when media files are empty.', "Validation Error", []);
         }
 
         if ($request->post_id == 0) {
@@ -78,10 +83,14 @@ class PostController extends BaseController
         $post->parent_post_id = $request->parent_post_id;
         $post->post_type = $request->post_type;
         $post->post_description = $request->post_description;
-        $post->bg_color = $request->bg_color;
-        $post->event_time = $request->event_time;
-        $post->event_venue = $request->event_venue;
-        $post->event_time = $request->event_time;
+        if ($request->post_type != 4) {
+            $post->bg_color = $request->bg_color;
+        }
+
+        if ($request->post_type == 3) {
+            $post->event_time = $request->event_time;
+            $post->event_venue = $request->event_venue;
+        }
         $post->save();
 
         if ($post) {
@@ -93,14 +102,22 @@ class PostController extends BaseController
                     $this->storeFileEntry($post->society_daily_post_id, $fileType, $fileUrl);
                 }
             }
-            if ($request->has('poll_options') && is_array($request->poll_options) && count($request->poll_options) > 0) {
-                foreach ($request->poll_options as $optionText) {
-                    if ($optionText != "") {
-                        $this->storePollOption($post->society_daily_post_id, $optionText);
+            if ($request->post_type == 2) {
+                if ($request->has('poll_options') && is_array($request->poll_options) && count($request->poll_options) > 0) {
+                    foreach ($request->poll_options as $optionText) {
+                        if ($optionText != "") {
+                            $this->storePollOption($post->society_daily_post_id, $optionText);
+                        }
                     }
                 }
             }
         }
+
+
+        $data = array();
+        $temp['post_id'] = $post->society_daily_post_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "Post " . $action . " Successfully");
 
         return $this->sendResponseSuccess("Post " . $action . " Successfully");
     }
@@ -142,12 +159,12 @@ class PostController extends BaseController
             ->where('society_id', $society_id)
             ->where('estatus', 1);
 
-        if ($post_type !== null) {
+        if ($post_type !== null && $post_type != 0) {
             $postsQuery->where('post_type', $post_type);
         }
 
         // Filter by user ID if provided
-        if ($user_id !== null) {
+        if ($user_id !== null && $post_type != 0) {
             $postsQuery->where('created_by', $user_id);
         }
 
@@ -215,10 +232,13 @@ class PostController extends BaseController
 
     public function get_daily_post(Request $request)
     {
-
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
 
         $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL',
+            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL,society_id,'.$society_id,
         ]);
 
         if ($validator->fails()) {
