@@ -510,10 +510,10 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id, 
                                 "eAuthority" => 51, // Society Department
                                 "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
+                                "can_add" => 1, 
+                                "can_edit" => 1, 
+                                "can_delete" => 1, 
+                                "can_print" => 1, 
                                 "updated_at" => now(), 
                                 "updated_by" => 1
                             ),
@@ -521,10 +521,10 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id, 
                                 "eAuthority" => 52, // Category for Society
                                 "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
+                                "can_add" => 1, 
+                                "can_edit" => 1, 
+                                "can_delete" => 1, 
+                                "can_print" => 1,  
                                 "updated_at" => now(), 
                                 "updated_by" => 1
                             ),
@@ -532,10 +532,10 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id, 
                                 "eAuthority" => 53, // Society Member Designation
                                 "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
+                                "can_add" => 1, 
+                                "can_edit" => 1, 
+                                "can_delete" => 1, 
+                                "can_print" => 1,  
                                 
                                 "updated_at" => now(), 
                                 "updated_by" => 1
@@ -545,9 +545,9 @@ class SocietyController extends Controller
                                 "eAuthority" => 54, // Society Member Designation Authority
                                 "can_view" => 1, 
                                 "can_add" => 0, 
-                                "can_edit" => 2, 
+                                "can_edit" => 1, 
                                 "can_delete" => 0, 
-                                "can_print" => 2, 
+                                "can_print" => 1, 
                                 
                                 "updated_at" => now(), 
                                 "updated_by" => 1
@@ -556,10 +556,10 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id, 
                                 "eAuthority" => 55, // Society Member List
                                 "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
+                                "can_add" => 1, 
+                                "can_edit" => 1, 
+                                "can_delete" => 1, 
+                                "can_print" => 1,  
                                 
                                 "updated_at" => now(), 
                                 "updated_by" => 1
@@ -569,9 +569,9 @@ class SocietyController extends Controller
                                 "eAuthority" => 56, // Society Member Request
                                 "can_view" => 1, 
                                 "can_add" => 0, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
+                                "can_edit" => 1, 
+                                "can_delete" => 1, 
+                                "can_print" => 1,  
                                 
                                 "updated_at" => now(), 
                                 "updated_by" => 1
@@ -580,10 +580,10 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id, 
                                 "eAuthority" => 57, // Announcement
                                 "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
+                                "can_add" => 1, 
+                                "can_edit" => 1, 
+                                "can_delete" => 1, 
+                                "can_print" => 1,  
                                 
                                 "updated_at" => now(), 
                                 "updated_by" => 1
@@ -592,10 +592,10 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id, 
                                 "eAuthority" => 58, // Amenity
                                 "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
+                                "can_add" => 1, 
+                                "can_edit" => 1, 
+                                "can_delete" => 1, 
+                                "can_print" => 1,
                                 
                                 "updated_at" => now(), 
                                 "updated_by" => 1

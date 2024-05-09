@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\PostBanner;
+use App\Models\SocietyMember;
 use App\Models\PostBannerConfig;
 use Illuminate\Http\Request;
 use JWTAuth;
@@ -62,23 +63,23 @@ class BannerController extends BaseController
         if($request->banner_for == 1){
             $rules['business_profile_id'] .= '|exists:business_profile,business_profile_id,deleted_at,NULL';
         }
-        if($request->banner_for == 2){
-            if ($request->banner_for == 2) {
-                $rules['society_member_id'] = [
-                    'required',
-                    function ($attribute, $value, $fail) use ($request,$society_member_id) {
-                        $validMemberIds = SocietyMember::where(function ($query) use ($request) {
-                            $query->where('society_member_id', $society_member_id) // User's own ID
-                                  ->orWhere('parent_society_member_id', $society_member_id); // User's family member IDs
-                        })->pluck('society_member_id')->toArray();
+    
+        if ($request->banner_for == 2) {
+            $rules['society_member_id'] = [
+                'required',
+                function ($attribute, $value, $fail) use ($request,$society_member_id) {
+                    $validMemberIds = SocietyMember::where(function ($query) use ($request,$society_member_id) {
+                        $query->where('society_member_id', $society_member_id) // User's own ID
+                                ->orWhere('parent_society_member_id', $society_member_id); // User's family member IDs
+                    })->pluck('society_member_id')->toArray();
 
-                        if (!in_array($value, $validMemberIds)) {
-                            $fail('Invalid society member ID.');
-                        }
-                    },
-                ];
-            }
+                    if (!in_array($value, $validMemberIds)) {
+                        $fail('Invalid society member ID.');
+                    }
+                },
+            ];
         }
+        
 
         $validator = Validator::make($request->all(), $rules);
 

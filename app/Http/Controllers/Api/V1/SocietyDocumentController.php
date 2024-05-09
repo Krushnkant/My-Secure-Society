@@ -218,7 +218,13 @@ class SocietyDocumentController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $userdocument = SocietyDocument::where('society_document_id',$request->document_id)->where('created_by', $user_id)
+        $userdocument = SocietyDocument::where('society_document_id',$request->document_id)
+        // ->where(function ($query) use ($user_id, $block_flat_id) {
+        //     $query->where('created_by', $user_id)
+        //         ->orWhereHas('sharedocumentflat', function ($query) use ($block_flat_id) {
+        //             $query->where('block_flat_id', $block_flat_id);
+        //         });
+        // })
         ->where(function ($query) use ($user_id, $block_flat_id) {
             $query->where('created_by', $user_id)
                 ->orWhereHas('sharedocumentflat', function ($query) use ($block_flat_id) {
