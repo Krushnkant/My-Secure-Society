@@ -37,4 +37,9 @@ class DailyPost extends Model
         return $this->hasMany('App\Models\DailyPostLike', 'society_daily_post_id');
     }
 
+    public function daily_post_files()
+    {
+        return $this->hasMany('App\Models\DailyPostFile', 'society_daily_post_id');
+    }
+
 }

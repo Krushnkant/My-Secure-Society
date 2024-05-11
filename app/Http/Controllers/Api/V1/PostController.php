@@ -42,6 +42,11 @@ class PostController extends BaseController
             'media_files.*' => 'nullable|file|mimetypes:image/jpeg,image/png,video/mp4,video/quicktime|max:20480',
         ];
 
+        $messages = [
+            'event_venue.required_if' => 'The event venue field is required.',
+            'poll_options.required_if' => 'The poll options field is required.'
+        ];
+
         if ($request->parent_post_id != 0) {
             $rules['parent_post_id'] .= '|exists:society_daily_post,society_daily_post_id,deleted_at,NULL';
         }
@@ -54,7 +59,7 @@ class PostController extends BaseController
             $rules['poll_options'] .= '|array';
         }
 
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
@@ -155,7 +160,7 @@ class PostController extends BaseController
         $user_id = $request->input('user_id');
         $post_id = $request->input('post_id');
 
-        $postsQuery = DailyPost::with('user', 'poll_options')
+        $postsQuery = DailyPost::with('user.societymembers', 'poll_options','daily_post_files')
             ->where('society_id', $society_id)
             ->where('estatus', 1);
 
@@ -164,7 +169,7 @@ class PostController extends BaseController
         }
 
         // Filter by user ID if provided
-        if ($user_id !== null && $post_type != 0) {
+        if ($user_id !== null && $user_id != 0) {
             $postsQuery->where('created_by', $user_id);
         }
 
@@ -180,6 +185,17 @@ class PostController extends BaseController
 
         $post_arr = [];
         foreach ($posts as $post) {
+            $block_flat_no = "";
+            if(isset($post->user->societymembers)){
+                foreach($post->user->societymembers as $societymember){
+                    $flat_info = getSocietyBlockAndFlatInfo($societymember['block_flat_id']);
+                    if($block_flat_no == ""){
+                        $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
+                    }else{
+                        $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
+                    }   
+                }
+            };
             $option_arr = [];
             foreach ($post->poll_options as $option) {
                 $option_temp['option_id'] = $option->daily_post_pole_option_id;
@@ -188,10 +204,19 @@ class PostController extends BaseController
                 array_push($option_arr, $option_temp);
             }
 
+            $media_files = [];
+            foreach ($post->daily_post_files as $post_file) {
+                $file_temp['daily_post_file_id'] = $post_file->daily_post_file_id;
+                $file_temp['file_type'] = $post_file->file_type;
+                $file_temp['file_url'] = url($post_file->file_url);
+                array_push($media_files, $file_temp);
+            }
+
             $temp['post_id'] = $post->society_daily_post_id;
             $temp['post_type'] = $post->post_type;
             $temp['post_description'] = $post->post_description;
             $temp['bg_color'] = $post->bg_color;
+            $temp['media_files'] = $media_files;
             $temp['total_like'] = $post->total_like;
             $temp['total_comment'] = $post->total_comment;
             $temp['total_shared'] = $post->total_shared;
@@ -199,7 +224,7 @@ class PostController extends BaseController
             $temp['is_like'] = $post->isLike();
             $temp['user_id'] = $post->created_by;
             $temp['full_name'] = $post->user->full_name;
-            $temp['block_flat_no'] = "";
+            $temp['block_flat_no'] = $block_flat_no;
             $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
             $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
             $temp['poll_options'] = $option_arr;
@@ -212,20 +237,33 @@ class PostController extends BaseController
         return $this->sendResponseWithData($data, "All Post Successfully.");
     }
 
-    public function delete_daily_post(Request $request)
+    public function change_status_daily_post(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
         $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL',
+            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL,society_id,'.$society_id,
+            'status' => 'required|in:1,3,5',
         ]);
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
+        if($request->status == 3 )
+
         $post = DailyPost::find($request->post_id);
+        if($request->status == 3 && $post->created_by != auth()->id()){
+            return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+        }
         if ($post) {
-            $post->estatus = 3;
+            $post->estatus = $request->status;
             $post->save();
-            $post->delete();
+            if($request->status == 3){
+                $post->delete();
+            }
         }
         return $this->sendResponseSuccess("post deleted Successfully.");
     }
@@ -245,24 +283,45 @@ class PostController extends BaseController
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-        $post = DailyPost::with('user', 'poll_options')->where('estatus', 1)->where('society_daily_post_id', $request->post_id)->first();
-
+        $post = DailyPost::with('user', 'poll_options','daily_post_files')->where('estatus', 1)->where('society_daily_post_id', $request->post_id)->first();
         if (!$post) {
             return $this->sendError(404, "You can not get this post", "Invalid Post", []);
         }
 
-        $option_arr = [];
+        $block_flat_no = "";
+        if(isset($post->user->societymembers)){
+            foreach($post->user->societymembers as $societymember){
+                $flat_info = getSocietyBlockAndFlatInfo($societymember['block_flat_id']);
+                if($block_flat_no == ""){
+                    $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
+                }else{
+                    $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
+                }   
+            }
+        };
 
+        $option_arr = [];
+          
         foreach ($post->poll_options as $option) {
             $option_temp['option_id'] = $option->daily_post_pole_option_id;
             $option_temp['option_text'] = $option->option_text;
             $option_temp['is_voted'] = $option->isVoted();
             array_push($option_arr, $option_temp);
         }
+
+        $media_files = [];
+        foreach ($post->daily_post_files as $post_file) {
+            $file_temp['daily_post_file_id'] = $post_file->daily_post_file_id;
+            $file_temp['file_type'] = $post_file->file_type;
+            $file_temp['file_url'] = url($post_file->file_url);
+            array_push($media_files, $file_temp);
+        }
+
         $temp['post_id'] = $post->society_daily_post_id;
         $temp['post_type'] = $post->post_type;
         $temp['post_description'] = $post->post_description;
         $temp['bg_color'] = $post->bg_color;
+        $temp['media_files'] = $media_files;
         $temp['total_like'] = $post->total_like;
         $temp['total_comment'] = $post->total_comment;
         $temp['total_shared'] = $post->total_shared;
@@ -270,7 +329,7 @@ class PostController extends BaseController
         $temp['is_like'] = $post->isLike();
         $temp['user_id'] = $post->created_by;
         $temp['full_name'] = $post->user->full_name;
-        $temp['block_flat_no'] = "";
+        $temp['block_flat_no'] = $block_flat_no;
         $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
         $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
         $temp['poll_options'] = $option_arr;
@@ -280,10 +339,14 @@ class PostController extends BaseController
 
     public function update_like(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
         // Validate the request parameters
         $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL', // Assuming your daily posts table is named daily_posts
-            'is_like' => 'required',
+            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL,society_id,'.$society_id,
+            'is_like' => 'required|in:1,2',
         ]);
 
         // If validation fails, return error response
