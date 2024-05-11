@@ -121,6 +121,7 @@ class SocietyDocumentController extends BaseController
         $rules = [
             'document_type' => 'required',
             'folder_id' => 'required',
+            'is_shared_list' => 'required|boolean',
         ];
 
         if($request->folder_id > 0){
@@ -136,21 +137,22 @@ class SocietyDocumentController extends BaseController
         }
 
         $query = SocietyDocument::where('estatus', 1)
-        ->where('society_id', $society_id)
-        ->where('document_folder_id', $request->folder_id)
-        ->where(function ($query) use ($user_id, $block_flat_id) {
-            $query->where('created_by', $user_id)
-                ->orWhereHas('sharedocumentflat', function ($query) use ($block_flat_id) {
+        ->where('society_id', $society_id);
+
+        if($request->is_shared_list){
+               $query->where('sharedocumentflat', function ($query) use ($block_flat_id) {
                     $query->where('block_flat_id', $block_flat_id);
                 });
-        })
-        ->with('sharedocumentflat', 'document_file')
-        ->orderBy('created_at', 'DESC');
+        }else{
+            $query->where('created_by', $user_id);
+            $query->where('document_folder_id', $request->folder_id);
+            if ($request->document_type > 0) {
+                $query->where('document_type', $request->document_type);
+            }
 
-        // Apply documentType filter if provided
-        if ($request->document_type > 0) {
-            $query->where('document_type', $request->document_type);
         }
+        $query->with('sharedocumentflat', 'document_file');
+
 
         $query->orderBy('created_at', 'DESC');
         $perPage = 10;
@@ -219,12 +221,6 @@ class SocietyDocumentController extends BaseController
         }
 
         $userdocument = SocietyDocument::where('society_document_id',$request->document_id)
-        // ->where(function ($query) use ($user_id, $block_flat_id) {
-        //     $query->where('created_by', $user_id)
-        //         ->orWhereHas('sharedocumentflat', function ($query) use ($block_flat_id) {
-        //             $query->where('block_flat_id', $block_flat_id);
-        //         });
-        // })
         ->where(function ($query) use ($user_id, $block_flat_id) {
             $query->where('created_by', $user_id)
                 ->orWhereHas('sharedocumentflat', function ($query) use ($block_flat_id) {

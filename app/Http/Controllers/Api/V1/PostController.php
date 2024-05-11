@@ -193,7 +193,7 @@ class PostController extends BaseController
                         $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
                     }else{
                         $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                    }   
+                    }
                 }
             };
             $option_arr = [];
@@ -296,12 +296,12 @@ class PostController extends BaseController
                     $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
                 }else{
                     $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                }   
+                }
             }
         };
 
         $option_arr = [];
-          
+
         foreach ($post->poll_options as $option) {
             $option_temp['option_id'] = $option->daily_post_pole_option_id;
             $option_temp['option_text'] = $option->option_text;
@@ -354,30 +354,25 @@ class PostController extends BaseController
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-        // Check if a like entry exists for the post by the current user
+        $is_like  = $request->is_like;
+
         $existingLike = DailyPostLike::where('society_daily_post_id', $request->post_id)
             ->where('user_id', auth()->id())
             ->first();
 
-        // If is_like is false and an entry exists, delete the like entry
-        if (!$request->is_like && $existingLike) {
+        if (($is_like == 2) && $existingLike) {
             $existingLike->delete();
+            DailyPost::where('society_daily_post_id', $request->post_id)->decrement('total_like');
         }
 
-        // If is_like is true and no entry exists, create a new like entry
-        if ($request->is_like && !$existingLike) {
+        if (($is_like == 1) && !$existingLike) {
             DailyPostLike::create([
                 'society_daily_post_id' => $request->post_id,
                 'user_id' => auth()->id(),
             ]);
-        }
-
-        // Update like count in the daily_post table if necessary
-        if ($request->is_like) {
             DailyPost::where('society_daily_post_id', $request->post_id)->increment('total_like');
         }
 
-        // Send notification on like (you can implement this part based on your notification system)
         return $this->sendResponseSuccess("Like updated successfully.");
     }
 }
