@@ -100,6 +100,13 @@ class BusinessProfileController extends BaseController
         $businessProfile->country_id = $request->country_id;
         $businessProfile->save();
 
+        // if($businessProfile){
+        //   $BusinessPrifileCategory = New BusinessPrifileCategory();
+        //   $BusinessPrifileCategory->business_profile_id = $businessProfile->business_profile_id;
+        //   $BusinessPrifileCategory->business_profile_id = $request->business_profile_id;
+        //   $BusinessPrifileCategory->save();
+        // }
+
         $data = array();
         $temp['profile_id'] = $businessProfile->business_profile_id;
         array_push($data, $temp);
@@ -108,12 +115,18 @@ class BusinessProfileController extends BaseController
 
     public function list(Request $request)
     {
-        // Validate the request parameters
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required|integer',
+
+        $rules = [
+            'user_id' => 'required|integer|exists:user,user_id,deleted_at,NULL',
             'list_type' => 'required|in:1,2',
             'category_id' => 'required|integer',
-        ]);
+        ];
+
+        if ($request->has('category_id') && $request->input('category_id') != 0) {
+            $rules['category_id'] .= '|exists:business_category,business_category_id,deleted_at,NULL';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         // If validation fails, return error response
         if ($validator->fails()) {
@@ -121,7 +134,10 @@ class BusinessProfileController extends BaseController
         }
 
         // Retrieve business profiles based on parameters
-        $query = BusinessProfile::query()->where('category_id', $request->category_id);
+        $query = BusinessProfile::query();
+        if ($request->has('category_id') && $request->input('category_id') != 0) {
+            $query->where('category_id', $request->category_id);
+        }
 
         if ($request->list_type == 1) {
             // Own Business Profile List
@@ -164,7 +180,7 @@ class BusinessProfileController extends BaseController
     {
         // Validate the request parameters
         $validator = Validator::make($request->all(), [
-            'profile_id' => 'required|integer',
+            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL',
         ]);
 
         // If validation fails, return error response
@@ -203,34 +219,28 @@ class BusinessProfileController extends BaseController
                 'user_block_flat_no' => $profile->user_block_flat_no,
         ];
 
-        // Return the response
-        return response()->json($data);
+        return $this->sendResponseWithData($data, "All Profile Retrieved Successfully.");
     }
 
     public function delete(Request $request)
     {
         // Validate the request parameters
         $validator = Validator::make($request->all(), [
-            'profile_id' => 'required|integer',
+            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL',
         ]);
 
         // If validation fails, return error response
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
         // Find the profile to delete
         $profile = BusinessProfile::find($request->profile_id);
-
-        // If profile not found, return error response
-        if (!$profile) {
-            return response()->json(['error' => 'Business profile not found'], 404);
-        }
-
-        // Delete the profile
+        $profile->estatus = 3;
+        $profile->save();
         $profile->delete();
 
         // Return success response
-        return response()->json(['message' => 'Business profile deleted successfully']);
+        return $this->sendResponseSuccess("Business profile deleted successfully.");
     }
 }

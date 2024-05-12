@@ -36,9 +36,9 @@ class BloodDonateController extends BaseController
             'hospital_address' => 'required|string|max:255',
             'landmark' => 'required|string|max:50',
             'pin_code' => 'required|string',
-            'city_id' => 'required|integer',
-            'state_id' => 'required|integer',
-            'country_id' => 'required|integer',
+            'city_id' => 'required|integer|exists:city_id',
+            'state_id' => 'required|integer|exists:state_id',
+            'country_id' => 'required|integer|exists:country',
         ];
 
         if ($request->input('request_id') != 0) {
@@ -113,7 +113,7 @@ class BloodDonateController extends BaseController
 
         $blood_arr = array();
         foreach ($bloods as $blood) {
-            $temp['request_id'] = $blood->request_id;
+            $temp['request_id'] = $blood->blood_donate_request_id;
             $temp['request_by_user_id'] = $blood->request_by_user_id;
             $temp['request_by_user_fullname'] = $blood->request_by_user_fullname;
             $temp['request_by_user_profile_pic'] = $blood->request_by_user_profile_pic;
@@ -141,5 +141,71 @@ class BloodDonateController extends BaseController
         $data['request_list'] = $blood_arr;
         $data['total_records'] = $documents->toArray()['total'];
         return $this->sendResponseWithData($data, "All Request Retrieved Successfully.");
+    }
+
+
+
+    public function get_request(Request $request)
+    {
+        $user_id =  Auth::user()->user_id;
+        $validator = Validator::make($request->all(), [
+            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+        $blood = BloodDonate::where('estatus',1)->where('blood_donate_request_id',$request->request_id)->first();
+        if (!$blood){
+            return $this->sendError(404,"You can not view this folder", "Invalid folder", []);
+        }
+        $data = array();
+        $temp['request_id'] = $blood->blood_donate_request_id;
+        $temp['request_by_user_id'] = $blood->request_by_user_id;
+        $temp['request_by_user_fullname'] = $blood->request_by_user_fullname;
+        $temp['request_by_user_profile_pic'] = $blood->request_by_user_profile_pic;
+        $temp['request_by_user_block_flat_no'] = $blood->request_by_user_block_flat_no;
+        $temp['blood_group'] = $blood->blood_group;
+        $temp['patient_name'] = $blood->patient_name;
+        $temp['relation_with_patient'] = $blood->relation_with_patient;
+        $temp['required_blood_bottle_qty'] = $blood->required_blood_bottle_qty;
+        $temp['expected_time'] = $blood->expected_time;
+        $temp['hospital_name'] = $blood->hospital_name;
+        $temp['hospital_address'] = $blood->hospital_address;
+        $temp['landmark'] = $blood->landmark;
+        $temp['pin_code'] = $blood->pin_code;
+        $temp['city'] = $blood->city;
+        $temp['state'] = $blood->state;
+        $temp['country'] = $blood->country;
+        $temp['request_status'] = $blood->request_status;
+        $temp['total_reply'] = $blood->total_reply;
+        $temp['confirmed_blood_bottle_qty'] = $blood->confirmed_blood_bottle_qty;
+        $temp['request_date'] = $blood->request_date;
+        $temp['requested_time_str'] = $blood->requested_time_str;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "All Request Retrieved Successfully.");
+    }
+
+    public function change_status(Request $request)
+    {
+        $rules = [
+            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL',
+            'request_status' => 'required|in:2,3',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
+
+        $blood = BloodDonate::find($request->request_id);
+        if ($blood) {
+            $blood->estatus = $request->request_status;
+            $blood->save();
+            if($request->status == 3){
+                $blood->delete();
+            }
+        }
+        return $this->sendResponseSuccess("request updated Successfully.");
     }
 }
