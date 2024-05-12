@@ -34,7 +34,6 @@ class EmergencyAlertController extends BaseController
             'alert_message' => 'required|string|max:255',
         ];
 
-
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -58,13 +57,12 @@ class EmergencyAlertController extends BaseController
 
     public function emergency_alert_list(Request $request)
     {
-
         $contacts = EmergencyAlert::with('society_member.user')->paginate(10);
         $contact_arr = array();
         foreach ($contacts as $contact) {
             $flat_info = getSocietyBlockAndFlatInfo($contact->society_member['block_flat_id']);
             $temp['alert_id'] = $contact->emergency_alert_id;
-            $temp['reason_type'] = $contact->alert_reason_type;
+            $temp['reason_type'] = getReasonTypeName($contact->alert_reason_type);
             $temp['alert_message'] = $contact->alert_message;
             $temp['full_name'] = $contact->society_member->user->full_name;
             $temp['block_flat_no'] =  $flat_info['block_name'] .'-'. $flat_info['flat_no'];

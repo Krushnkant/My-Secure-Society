@@ -3,6 +3,7 @@
 use App\Models\CompanyDesignationAuthority;
 use App\Models\Flat;
 use App\Models\ResidentDesignationAuthority;
+use App\Models\ResidentDesignation;
 use App\Models\Society;
 use App\Models\SocietyMember;
 use Illuminate\Http\Request;
@@ -326,3 +327,37 @@ function calculateDueDate() {
     //return date('Y-m-d', strtotime('+30 days'));
     return date('Y-m-d');
 }
+
+function getResidentDesignation($designation_id)
+{
+    $residentDesignation = ResidentDesignation::where('resident_designation_id',$designation_id)->where('estatus',1)->first();
+    return $residentDesignation ? $residentDesignation->designation_name : null;
+}
+
+
+function getReasonTypeName($reasonType)
+{
+    switch ($reasonType) {
+        case 1:
+            return 'Fire';
+        case 2:
+            return 'Stuck in Lift';
+        case 3:
+            return 'Animal Threat';
+        default:
+            return 'Other';
+    }
+}
+
+// use Illuminate\Contracts\Database\Eloquent\Builder;
+// return $query->orderBy('id', 'DESC')->paginate(10)->withQueryString()->through(function ($item) {
+//     $item->id = $item->id;
+//     $item->cancel_reason = $item->cancel_reason;
+//     $item->cancel_comment = $item->cancel_comment;
+//     $item->status = $item->status;
+//     $item->created_at = $item->created_at;
+//     $item->order_code = $item->order->order_code;
+//     return $item;
+// });
+
+

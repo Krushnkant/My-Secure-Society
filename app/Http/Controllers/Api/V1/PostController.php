@@ -11,6 +11,8 @@ use App\Models\DailyPost;
 use App\Models\DailyPostFile;
 use App\Models\DailyPostLike;
 use App\Models\DailyPostPoleOption;
+use App\Models\ResidentDesignation;
+use App\Models\PostReportOption;
 
 class PostController extends BaseController
 {
@@ -136,8 +138,6 @@ class PostController extends BaseController
         $pollOption->save();
     }
 
-
-
     // Method to store file entry in the database
     public function storeFileEntry($postId, $fileType, $fileUrl)
     {
@@ -155,6 +155,27 @@ class PostController extends BaseController
         if ($society_id == "") {
             return $this->sendError(400, 'Society Not Found.', "Not Found", []);
         }
+        $designation_id = $this->payload['designation_id'];
+
+        $rules = [
+            'user_id' => 'required',
+            'post_id' => 'required',
+            'post_type' => 'required|in:0,1,2,3,4',
+        ];
+
+        if ($request->post_id != 0) {
+            $rules['post_id'] .= '|exists:society_daily_post,society_daily_post_id,deleted_at,NULL';
+        }
+
+        if ($request->user_id != 0) {
+            $rules['user_id'] .= '|exists:user,user_id,deleted_at,NULL';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
 
         $post_type = $request->input('post_type');
         $user_id = $request->input('user_id');
@@ -168,17 +189,16 @@ class PostController extends BaseController
             $postsQuery->where('post_type', $post_type);
         }
 
-        // Filter by user ID if provided
         if ($user_id !== null && $user_id != 0) {
             $postsQuery->where('created_by', $user_id);
         }
+        if(getReasonTypeName($designation_id) == "Society Member"){
+            $postsQuery->where('estatus',"!=",5);
+        }
+          
 
-        // Filter by post ID if provided and non-zero
         if ($post_id !== null && $post_id != 0) {
-            $post = $postsQuery->find($post_id);
-            if (!$post) {
-                return $this->sendError(400, 'Post Not Found.', "Not Found", []);
-            }
+            $postsQuery->where('parent_post_id',$post_id);
         }
 
         $posts = $postsQuery->orderBy('created_at', 'DESC')->paginate(10);
@@ -237,37 +257,6 @@ class PostController extends BaseController
         return $this->sendResponseWithData($data, "All Post Successfully.");
     }
 
-    public function change_status_daily_post(Request $request)
-    {
-        $society_id = $this->payload['society_id'];
-        if ($society_id == "") {
-            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL,society_id,'.$society_id,
-            'status' => 'required|in:1,3,5',
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
-        }
-
-        if($request->status == 3 )
-
-        $post = DailyPost::find($request->post_id);
-        if($request->status == 3 && $post->created_by != auth()->id()){
-            return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
-        }
-        if ($post) {
-            $post->estatus = $request->status;
-            $post->save();
-            if($request->status == 3){
-                $post->delete();
-            }
-        }
-        return $this->sendResponseSuccess("post deleted Successfully.");
-    }
-
     public function get_daily_post(Request $request)
     {
         $society_id = $this->payload['society_id'];
@@ -300,6 +289,7 @@ class PostController extends BaseController
             }
         };
 
+        $data = [];
         $option_arr = [];
 
         foreach ($post->poll_options as $option) {
@@ -316,7 +306,7 @@ class PostController extends BaseController
             $file_temp['file_url'] = url($post_file->file_url);
             array_push($media_files, $file_temp);
         }
-
+        
         $temp['post_id'] = $post->society_daily_post_id;
         $temp['post_type'] = $post->post_type;
         $temp['post_description'] = $post->post_description;
@@ -335,6 +325,59 @@ class PostController extends BaseController
         $temp['poll_options'] = $option_arr;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Get Post Details Successfully.");
+    }
+
+    public function change_status_daily_post(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
+        $designation_id = $this->payload['designation_id'];
+        if($designation_id == ""){
+            return $this->sendError(400,'designation Not Found.', "Not Found", []);
+        }
+
+        $rules = [
+            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL,society_id,'.$society_id,
+            'status' => 'required|in:1,3,5',
+        ];
+      
+        if ($request->status == 5) {
+            $rules['report_id'] = 'required|exists:daily_post_report_option,daily_post_report_option_id';
+        }
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
+
+        $post = DailyPost::find($request->post_id);
+        $resident_designation = ResidentDesignation::find($designation_id);
+        if($resident_designation->designation_name != "Society Admin"){
+            if($request->status == 3 && $post->estatus == 5  &&  $post->created_by == auth()->id()){
+                return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+            }
+      
+            if($resident_designation->designation_name == "Society Member"){
+                if($request->status == 3 &&  $post->created_by != auth()->id()){
+                    return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+                }
+            }
+        }
+      
+        if ($post) {
+            $post->estatus = $request->status;
+            if($request->status == 5){
+                $post->daily_post_report_option_id = $request->report_id;
+            }
+            $post->save();
+            if($request->status == 3){
+                $post->delete();
+            }
+        }
+        return $this->sendResponseSuccess("post status updated Successfully.");
     }
 
     public function update_like(Request $request)
@@ -374,5 +417,18 @@ class PostController extends BaseController
         }
 
         return $this->sendResponseSuccess("Like updated successfully.");
+    }
+
+    public function report_reason_list()
+    {
+        $options = PostReportOption::where('estatus', 1)->get();
+        $option_arr = [];
+        foreach ($options as $option) {
+            $temp['report_option_id'] = $option->daily_post_report_option_id;
+            $temp['report_option_text'] = $option->report_option_text;
+            array_push($option_arr, $temp);
+        }
+        $data['option_list'] = $option_arr;
+        return $this->sendResponseWithData($data, "All Report Options Successfully.");
     }
 }

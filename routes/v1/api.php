@@ -83,6 +83,7 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('daily_post/change_status',[PostController::class,'change_status_daily_post']);
     Route::post('daily_post/get',[PostController::class,'get_daily_post']);
     Route::post('daily_post/update_like',[PostController::class,'update_like']);
+    Route::get('daily_post/report_reason/list',[PostController::class,'report_reason_list']);
 
     Route::post('amenity/save',[AmenityController::class,'save_amenity']);
     Route::post('amenity/list',[AmenityController::class,'amenity_list']);

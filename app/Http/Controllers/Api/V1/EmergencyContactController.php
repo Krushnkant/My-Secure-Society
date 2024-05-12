@@ -32,7 +32,7 @@ class EmergencyContactController extends BaseController
             'contact_id' => 'required',
             'contact_type' => 'required|in:2,3',
             'name' => 'required|string|max:100',
-            'mobile_no' => 'required|string|max:13',
+            'mobile_no' => 'required|numeric|digits:10',
         ];
 
         if ($request->input('contact_id') != 0) {
@@ -113,6 +113,7 @@ class EmergencyContactController extends BaseController
 
     public function delete_emergency_contact(Request $request)
     {
+        $designation_id = $this->payload['designation_id'];
         $user_id = Auth::id();
         $validator = Validator::make($request->all(), [
             'contact_id' => 'required|exists:emergency_contact,emergency_contact_id,deleted_at,NULL',
@@ -122,6 +123,10 @@ class EmergencyContactController extends BaseController
         }
 
         $contact = EmergencyContact::find($request->contact_id);
+        $designation = getResidentDesignation($designation_id);
+        if($designation == "Society Member" &&  $contact->created_by != auth()->id()){
+            return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+        }
         if ($contact) {
             $contact->estatus = 3;
             $contact->save();
