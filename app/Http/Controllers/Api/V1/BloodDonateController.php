@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BloodDonate;
-use JWTAuth;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
 
 class BloodDonateController extends BaseController
 {
@@ -36,8 +38,8 @@ class BloodDonateController extends BaseController
             'hospital_address' => 'required|string|max:255',
             'landmark' => 'required|string|max:50',
             'pin_code' => 'required|string',
-            'city_id' => 'required|integer|exists:city_id',
-            'state_id' => 'required|integer|exists:state_id',
+            'city_id' => 'required|integer|exists:city',
+            'state_id' => 'required|integer|exists:state',
             'country_id' => 'required|integer|exists:country',
         ];
 
@@ -89,7 +91,7 @@ class BloodDonateController extends BaseController
     }
 
 
-    public function blood_donate_request_list(Request $request)
+    public function request_blood_donate_list(Request $request)
     {
         $society_id = $this->payload['society_id'];
         if($society_id == ""){
@@ -102,7 +104,7 @@ class BloodDonateController extends BaseController
         if (empty($block_flat_id)) {
             return $this->sendError(400, 'Block Flat ID not provided.', "Not Found", []);
         }
-        $query = BloodDonate::where('society_id', $society_id);
+        $query = BloodDonate::with('user_id')->where('society_id', $society_id);
 
         if (isset($request->blood_group) && $request->blood_group != "") {
             $query->where('blood_group', $request->blood_group);
@@ -114,14 +116,14 @@ class BloodDonateController extends BaseController
         $blood_arr = array();
         foreach ($bloods as $blood) {
             $temp['request_id'] = $blood->blood_donate_request_id;
-            $temp['request_by_user_id'] = $blood->request_by_user_id;
-            $temp['request_by_user_fullname'] = $blood->request_by_user_fullname;
-            $temp['request_by_user_profile_pic'] = $blood->request_by_user_profile_pic;
-            $temp['request_by_user_block_flat_no'] = $blood->request_by_user_block_flat_no;
+            $temp['request_by_user_id'] = isset($blood->user)?$blood->user->user_id:"";
+            $temp['request_by_user_fullname'] = isset($blood->user)?$blood->user->full_name:"";
+            $temp['request_by_user_profile_pic'] = isset($blood->user) && $blood->profile_pic_url != ""?url($blood->user->profile_pic_url):"";
+            $temp['request_by_user_block_flat_no'] = "";
             $temp['blood_group'] = $blood->blood_group;
             $temp['patient_name'] = $blood->patient_name;
             $temp['relation_with_patient'] = $blood->relation_with_patient;
-            $temp['required_blood_bottle_qty'] = $blood->required_blood_bottle_qty;
+            $temp['required_blood_bottle_qty'] = $blood->blood_bottle_qty;
             $temp['expected_time'] = $blood->expected_time;
             $temp['hospital_name'] = $blood->hospital_name;
             $temp['hospital_address'] = $blood->hospital_address;
@@ -139,13 +141,13 @@ class BloodDonateController extends BaseController
         }
 
         $data['request_list'] = $blood_arr;
-        $data['total_records'] = $documents->toArray()['total'];
+        $data['total_records'] = $bloods->toArray()['total'];
         return $this->sendResponseWithData($data, "All Request Retrieved Successfully.");
     }
 
 
 
-    public function get_request(Request $request)
+    public function get_request_blood_donate(Request $request)
     {
         $user_id =  Auth::user()->user_id;
         $validator = Validator::make($request->all(), [
@@ -154,28 +156,28 @@ class BloodDonateController extends BaseController
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $blood = BloodDonate::where('estatus',1)->where('blood_donate_request_id',$request->request_id)->first();
+        $blood = BloodDonate::where('blood_donate_request_id',$request->request_id)->first();
         if (!$blood){
             return $this->sendError(404,"You can not view this folder", "Invalid folder", []);
         }
         $data = array();
         $temp['request_id'] = $blood->blood_donate_request_id;
-        $temp['request_by_user_id'] = $blood->request_by_user_id;
-        $temp['request_by_user_fullname'] = $blood->request_by_user_fullname;
-        $temp['request_by_user_profile_pic'] = $blood->request_by_user_profile_pic;
-        $temp['request_by_user_block_flat_no'] = $blood->request_by_user_block_flat_no;
+        $temp['request_by_user_id'] = isset($blood->user)?$blood->user->user_id:"";
+        $temp['request_by_user_fullname'] = isset($blood->user)?$blood->user->full_name:"";
+        $temp['request_by_user_profile_pic'] = isset($blood->user) && $blood->profile_pic_url != ""?url($blood->user->profile_pic_url):"";
+        $temp['request_by_user_block_flat_no'] = "";
         $temp['blood_group'] = $blood->blood_group;
         $temp['patient_name'] = $blood->patient_name;
         $temp['relation_with_patient'] = $blood->relation_with_patient;
-        $temp['required_blood_bottle_qty'] = $blood->required_blood_bottle_qty;
+        $temp['required_blood_bottle_qty'] = $blood->blood_bottle_qty;
         $temp['expected_time'] = $blood->expected_time;
         $temp['hospital_name'] = $blood->hospital_name;
         $temp['hospital_address'] = $blood->hospital_address;
         $temp['landmark'] = $blood->landmark;
         $temp['pin_code'] = $blood->pin_code;
-        $temp['city'] = $blood->city;
-        $temp['state'] = $blood->state;
-        $temp['country'] = $blood->country;
+        $temp['city'] = $blood->city_id;
+        $temp['state'] = $blood->state_id;
+        $temp['country'] = $blood->country_id;
         $temp['request_status'] = $blood->request_status;
         $temp['total_reply'] = $blood->total_reply;
         $temp['confirmed_blood_bottle_qty'] = $blood->confirmed_blood_bottle_qty;
@@ -185,7 +187,7 @@ class BloodDonateController extends BaseController
         return $this->sendResponseWithData($data, "All Request Retrieved Successfully.");
     }
 
-    public function change_status(Request $request)
+    public function change_status_request_blood_donate(Request $request)
     {
         $rules = [
             'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL',
@@ -200,9 +202,9 @@ class BloodDonateController extends BaseController
 
         $blood = BloodDonate::find($request->request_id);
         if ($blood) {
-            $blood->estatus = $request->request_status;
+            $blood->request_status = $request->request_status;
             $blood->save();
-            if($request->status == 3){
+            if($request->request_status == 3){
                 $blood->delete();
             }
         }

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BusinessPrifileCategory extends Model
+class BusinessProfileCategory extends Model
 {
     use HasFactory,SoftDeletes;
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\AmenityController;
 use App\Http\Controllers\Api\V1\EmergencyContactController;
 use App\Http\Controllers\Api\V1\EmergencyAlertController;
 use App\Http\Controllers\Api\V1\BusinessProfileController;
+use App\Http\Controllers\Api\V1\BloodDonateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,10 +105,15 @@ Route::group(['middleware' => 'jwt'], function(){
 
     Route::post('business_category/get',[BusinessProfileController::class,'get_business_category']);
 
-    Route::post('business_profile/save',[BusinessProfileController::class,'save_business_profilet']);
+    Route::post('business_profile/save',[BusinessProfileController::class,'save_business_profile']);
     Route::post('business_profile/list',[BusinessProfileController::class,'business_profile_list']);
-    Route::post('business_profile/get',[BusinessProfileController::class,'get_emergency_contact']);
+    Route::post('business_profile/get',[BusinessProfileController::class,'get_business_profile']);
     Route::post('business_profile/delete',[BusinessProfileController::class,'delete_business_profile']);
+
+    Route::post('blood_donate/request',[BloodDonateController::class,'request_blood_donate']);
+    Route::post('blood_donate/request/list',[BloodDonateController::class,'request_blood_donate_list']);
+    Route::post('blood_donate/request/get',[BloodDonateController::class,'get_request_blood_donate']);
+    Route::post('blood_donate/request/change_status',[BloodDonateController::class,'change_status_request_blood_donate']);
 
 });
 
