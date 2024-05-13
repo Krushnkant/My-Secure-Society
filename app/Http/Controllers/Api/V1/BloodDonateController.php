@@ -8,6 +8,7 @@ use App\Models\BloodDonate;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class BloodDonateController extends BaseController
 {
@@ -104,7 +105,7 @@ class BloodDonateController extends BaseController
         if (empty($block_flat_id)) {
             return $this->sendError(400, 'Block Flat ID not provided.', "Not Found", []);
         }
-        $query = BloodDonate::with('user_id')->where('society_id', $society_id);
+        $query = BloodDonate::with('user')->where('society_id', $society_id);
 
         if (isset($request->blood_group) && $request->blood_group != "") {
             $query->where('blood_group', $request->blood_group);
@@ -135,8 +136,8 @@ class BloodDonateController extends BaseController
             $temp['request_status'] = $blood->request_status;
             $temp['total_reply'] = $blood->total_reply;
             $temp['confirmed_blood_bottle_qty'] = $blood->confirmed_blood_bottle_qty;
-            $temp['request_date'] = $blood->request_date;
-            $temp['requested_time_str'] = $blood->requested_time_str;
+            $temp['request_date'] =  Carbon::parse($blood->created_at)->format('d-m-Y H:i:s');
+            $temp['requested_time_str'] = Carbon::parse($blood->created_at)->diffForHumans();
             array_push($blood_arr, $temp);
         }
 
@@ -156,7 +157,7 @@ class BloodDonateController extends BaseController
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $blood = BloodDonate::where('blood_donate_request_id',$request->request_id)->first();
+        $blood = BloodDonate::with('user')->where('blood_donate_request_id',$request->request_id)->first();
         if (!$blood){
             return $this->sendError(404,"You can not view this folder", "Invalid folder", []);
         }
@@ -175,14 +176,14 @@ class BloodDonateController extends BaseController
         $temp['hospital_address'] = $blood->hospital_address;
         $temp['landmark'] = $blood->landmark;
         $temp['pin_code'] = $blood->pin_code;
-        $temp['city'] = $blood->city_id;
-        $temp['state'] = $blood->state_id;
-        $temp['country'] = $blood->country_id;
-        $temp['request_status'] = $blood->request_status;
-        $temp['total_reply'] = $blood->total_reply;
-        $temp['confirmed_blood_bottle_qty'] = $blood->confirmed_blood_bottle_qty;
-        $temp['request_date'] = $blood->request_date;
-        $temp['requested_time_str'] = $blood->requested_time_str;
+        $temp['city_id'] = $blood->city_id;
+        $temp['state_id'] = $blood->state_id;
+        $temp['country_id'] = $blood->country_id;
+        // $temp['request_status'] = $blood->request_status;
+        // $temp['total_reply'] = $blood->total_reply;
+        // $temp['confirmed_blood_bottle_qty'] = $blood->confirmed_blood_bottle_qty;
+        // $temp['request_date'] = $blood->request_date;
+        // $temp['requested_time_str'] = $blood->requested_time_str;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "All Request Retrieved Successfully.");
     }
@@ -209,5 +210,98 @@ class BloodDonateController extends BaseController
             }
         }
         return $this->sendResponseSuccess("request updated Successfully.");
+    }
+
+    public function reply_request_blood_donate(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+
+        $rules = [
+            'reply_id' => 'required',
+            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL',
+            'required_blood_bottle_qty' => 'required|integer|min:1',
+            'reply_message' => 'required|string|max:255',
+        ];
+
+        if ($request->input('reply_id') != 0) {
+            $rules['reply_id'] .= '|exists:blood_donate_request_response,blood_donate_request_response_id,deleted_at,NULL';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        if($request->reply_id == 0){
+            $blood = New BloodDonateRequestResponse();
+            $blood->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $blood->created_by = Auth::user()->user_id;
+            $blood->updated_by = Auth::user()->user_id;
+            $action = "Added";
+        }else{
+            $blood = BloodDonateRequestResponse::find($request->reply_id);
+            if (!$blood)
+            {
+                return $this->sendError(404,'request id Not Exist.', "Not Found Error", []);
+            }
+            $blood->updated_by = Auth::user()->user_id;
+            $action = "Updated";
+        }
+        $blood->blood_donate_request_id = $request_id;
+        $blood->blood_bottle_qty = $request->required_blood_bottle_qty;
+        $blood->message = $request->reply_message;
+        $blood->save();
+
+        $data = array();
+        $temp['reply_id'] = $blood->blood_donate_request_response_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, "Reply ". $action ." Successfully");
+    }
+
+
+    public function reply_request_blood_donate_list(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+        $user_id = Auth::id();
+
+        $rules = [
+            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $query = BloodDonateRequestResponse::with('user','request')->where('request_id', $request->request_id);
+        $query->orderBy('created_at', 'DESC');
+        $perPage = 10;
+        $bloods = $query->paginate($perPage);
+
+        $blood_arr = array();
+        foreach ($bloods as $blood) {
+            $temp['reply_id'] = $blood->blood_donate_request_response_id;
+            $temp['request_id'] = $blood->blood_donate_request_id;
+            $temp['required_blood_bottle_qty'] = $blood->blood_bottle_qty;
+            $temp['reply_message'] = $blood->message;
+            $temp['reply_by_user_id'] = isset($blood->user)?$blood->user->user_id:"";
+            $temp['reply_by_user_full_name'] = isset($blood->user)?$blood->user->full_name:"";
+            $temp['reply_by_user_profile_pic'] = isset($blood->user) && $blood->profile_pic_url != ""?url($blood->user->profile_pic_url):"";
+            $temp['reply_by_user_full_name'] = isset($blood->user)?$blood->user->mobile_no:"";
+            $temp['request_by_user_block_flat_no'] = "";
+            $temp['reply_time'] =  Carbon::parse($blood->created_at)->format('d-m-Y H:i:s');
+            $temp['requested_time_str'] = Carbon::parse($blood->request->created_at)->diffForHumans();
+            array_push($blood_arr, $temp);
+        }
+
+        $data['request_list'] = $blood_arr;
+        $data['total_records'] = $bloods->toArray()['total'];
+        return $this->sendResponseWithData($data, "All Request Retrieved Successfully.");
     }
 }

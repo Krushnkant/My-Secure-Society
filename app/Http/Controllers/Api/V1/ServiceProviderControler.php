@@ -4,53 +4,29 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\BusinessCategory;
-use App\Models\BusinessProfile;
-use App\Models\BusinessProfileFile;
+use App\Models\DailyHelpService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class BusinessProfileController extends BaseController
+class ServiceProviderControler extends BaseController
 {
-    public function get_business_category(Request $request)
+    public function daily_help_service_list()
     {
-        $rules = [
-            'parent_category_id' => 'required',
-        ];
-
-        if ($request->has('parent_category_id') && $request->input('parent_category_id') != 0) {
-            $rules['parent_category_id'] .= '|exists:business_category,business_category_id,deleted_at,NULL';
+        $services = DailyHelpService::where('estatus', 1)->orderBy('service_name', 'asc')->get();
+        $service_arr = array();
+        foreach ($services as $service) {
+            $temp['daily_help_service_id'] = $service->daily_help_service_id;
+            $temp['service_name'] = $service->service_name;
+            $temp['service_icon'] = $service->service_icon;
+            array_push($service_arr, $temp);
         }
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
-        }
-
-        $query = BusinessCategory::where('estatus', 1);
-        if ($request->has('parent_category_id') && $request->parent_category_id != 0) {
-            $query->where('parent_business_category_id', $request->parent_category_id);
-        } else {
-            $query->whereNull('parent_business_category_id');
-        }
-
-        $business_categories = $query->orderBy('business_category_name', 'asc')->get();
-        $category_arr = array();
-        foreach ($business_categories as $category) {
-            $temp['category_id'] = $category->business_category_id;
-            $temp['parent_category_id'] = $category->parent_business_category_id;
-            $temp['category_name'] = $category->business_category_name;
-            array_push($category_arr, $temp);
-        }
-        $data['business_category_list'] = $category_arr;
-        return $this->sendResponseWithData($data, "All Business Category Retrieved Successfully.");
+        $data['service_list'] = $service_arr;
+        return $this->sendResponseWithData($data, "All Service Retrieved Successfully.");
     }
 
-
-    public function save_business_profile(Request $request)
+    public function save_service_provider(Request $request)
     {
         // Validation rules
         $rules = [

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\EmergencyContactController;
 use App\Http\Controllers\Api\V1\EmergencyAlertController;
 use App\Http\Controllers\Api\V1\BusinessProfileController;
 use App\Http\Controllers\Api\V1\BloodDonateController;
+use App\Http\Controllers\Api\V1\ServiceProviderControler;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,6 +115,14 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('blood_donate/request/list',[BloodDonateController::class,'request_blood_donate_list']);
     Route::post('blood_donate/request/get',[BloodDonateController::class,'get_request_blood_donate']);
     Route::post('blood_donate/request/change_status',[BloodDonateController::class,'change_status_request_blood_donate']);
+    Route::post('blood_donate/request/reply',[BloodDonateController::class,'reply_request_blood_donate']);
+    Route::post('blood_donate/request/reply/list',[BloodDonateController::class,'reply_request_blood_donate_list']);
+
+    Route::get('daily_help/service/list',[ServiceProviderControler::class,'daily_help_service_list']);
+    Route::post('daily_help/service_provider/save',[ServiceProviderControler::class,'save_service_provider']);
+    Route::post('daily_help/service_provider/list',[ServiceProviderControler::class,'service_provider_list']);
+    Route::post('daily_help/service_provider/get',[ServiceProviderControler::class,'get_service_provider']);
+    Route::post('daily_help/service_provider/delete',[ServiceProviderControler::class,'delete_service_provider']);
 
 });
 
