@@ -128,7 +128,7 @@ class JwtMiddleware extends BaseMiddleware
             }if($request->route()->uri()==$v1.'daily_post/delete' && is_delete_resident(10) == 0){
                 return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
-            
+
             if($request->route()->uri()== $v1.'amenity/list' && is_view_resident(11) == 0){
                 return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }if($request->route()->uri()== $v1.'amenity/get' && is_view_resident(11) == 0){
@@ -148,6 +148,9 @@ class JwtMiddleware extends BaseMiddleware
                 return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
             if($request->route()->uri()==$v1.'amenity/booking/create' && is_view_resident(12) == 0){
+                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if($request->route()->uri()== $v1.'amenity/booking/list' && is_view_resident(59) == 0){
                 return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 

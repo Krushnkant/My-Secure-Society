@@ -30,35 +30,19 @@ class ServiceProviderControler extends BaseController
     {
         // Validation rules
         $rules = [
-            'profile_id' => 'required',
-            'business_name' => 'required|string|max:100',
-            'mobile_no' => 'required|string|max:10',
-            'website_url' => 'required|url|max:255',
-            'business_description' => 'required|string|max:500',
-            'street_address1' => 'required|string|max:255',
-            'pin_code' => 'required|string',
-            'city_id' => 'required|integer',
-            'state_id' => 'required|integer',
-            'country_id' => 'required|integer',
-            'business_icon' => 'required|image', // Assuming business_icon is an image file
-            'image_files' => 'required|array|min:1|max:5',
-            'image_files.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'pdf_file' => 'nullable|file|mimes:pdf|max:2048',
+            'daily_help_provider_id' => 'required',
+            'full_name' => 'required|string|max:100',
+            'mobile_no' => 'required|digits:10',
+            'gender' => ['required', Rule::in([1, 2])],
         ];
 
-        if ($request->has('profile_id') && $request->input('profile_id') != 0) {
-            $rules['profile_id'] .= '|exists:business_profile,business_profile_id,deleted_at,NULL';
-        }
-
-        // Validate the request data
         $validator = Validator::make($request->all(), $rules);
 
-        // If validation fails, return error response
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $businessProfile = BusinessProfile::find($request->contact_id);
+        $user = User::find($request->daily_help_provider_id);
         $action = "updated";
         if (!$businessProfile) {
             $businessProfile = new BusinessProfile();
@@ -90,7 +74,7 @@ class ServiceProviderControler extends BaseController
             $image_full_path = UploadImage($image,'images/business_icon');
             $businessProfile->business_icon =  $image_full_path;
         }
-        
+
         $businessProfile->save();
 
         if($businessProfile){
@@ -110,7 +94,7 @@ class ServiceProviderControler extends BaseController
                 $fileUrl = UploadImage($file,'images/business');
                 $this->storeFileEntry($businessProfile->business_profile_id, $fileType, $fileUrl);
             }
-            
+
         //   $BusinessPrifileCategory = New BusinessProfileCategory();
         //   $BusinessPrifileCategory->business_profile_id = $businessProfile->business_profile_id;
         //   $BusinessPrifileCategory->business_profile_id = $request->business_profile_id;
@@ -262,7 +246,7 @@ class ServiceProviderControler extends BaseController
 
     public function delete_business_profile(Request $request)
     {
-        
+
         $validator = Validator::make($request->all(), [
             'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL',
         ]);

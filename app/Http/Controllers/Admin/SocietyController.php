@@ -105,9 +105,9 @@ class SocietyController extends Controller
         $society->save();
 
         if($action == "add"){
-             $designation_array = ['Society Admin','Committee Member','Society Member']; 
+             $designation_array = ['Society Admin','Committee Member','Society Member'];
              foreach($designation_array as $designation){
-               
+
                 $resident_designation = new ResidentDesignation();
                 $resident_designation->society_id = $society->society_id;
                 $resident_designation->designation_name = $designation;
@@ -117,1082 +117,1773 @@ class SocietyController extends Controller
                 $resident_designation->save();
 
                 if($resident_designation){
-                    if($designation == 'Society Admin' || $designation == 'Committee Member'){
+                    if($designation == 'Society Admin'){
                         $DesignationAuthority = array(
                             // Resident's Authority
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 1, // Own Flat
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 2, // Own Family Member
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1,  
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 3, // Own Festival Banner 
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 4, // Own Festival Banner Configuration
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 1, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 5, // Own Folder
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 6, // Own Documents
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 7, // Society Member List
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 8, // Announcement
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 9, // Resident's Daily Post
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 10, // Own Daily Post
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 11, // Amenity
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 12, // Amenity Booking
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 13, // Emergency Alert
-                                "can_view" => 0, 
-                                "can_add" => 1, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 0, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 14, // My Emergency No
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 15, // Soc Emergency No
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 16, // Government Emergency No
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 17, // Resident's Business Profile
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 18, // Own Business Profile
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 19, // Resident's Society Payment
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 20, // Invoice
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 21, // Own Loan Request
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 22, // Own Complaint 
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 0, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 23, // Staff Member
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 24, // Staff Member Duty Area
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 25, // Staff Member Attendance
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 26, // Maintanance Terms
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 27, // Loan Terms
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 28, // Pre Approved List
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 29, // Own Visitor List
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 30, // Delivered At Gate
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 31, // Daily Help Member
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 32, // Daily Help Member for My Flat
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            // Committee Member Authority
-                            
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
-                                "eAuthority" => 51, // Society Department
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
-                                "eAuthority" => 52, // Category for Society
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1,  
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
-                                "eAuthority" => 53, // Society Member Designation
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1,  
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
-                                "eAuthority" => 54, // Society Member Designation Authority
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 1, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
-                                "eAuthority" => 55, // Society Member List
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1,  
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
-                                "eAuthority" => 56, // Society Member Request
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1,  
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
-                                "eAuthority" => 57, // Announcement
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1,  
-                                
-                                "updated_at" => now(), 
-                                "updated_by" => 1
-                            ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
-                                "eAuthority" => 58, // Amenity
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
                                 "can_print" => 1,
-                                
-                                "updated_at" => now(), 
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 2, // Own Family Member
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 3, // Own Festival Banner
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 4, // Own Festival Banner Configuration
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 5, // Own Folder
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 6, // Own Documents
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 7, // Society Member List
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 8, // Announcement
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 9, // Resident's Daily Post
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 10, // Own Daily Post
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 11, // Amenity
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 12, // Amenity Booking
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 13, // Emergency Alert
+                                "can_view" => 0,
+                                "can_add" => 1,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 0,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 14, // My Emergency No
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 15, // Soc Emergency No
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 16, // Government Emergency No
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 17, // Resident's Business Profile
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 18, // Own Business Profile
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 19, // Resident's Society Payment
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 20, // Invoice
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 21, // Own Loan Request
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 22, // Own Complaint
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 0,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 23, // Staff Member
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 24, // Staff Member Duty Area
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 25, // Staff Member Attendance
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 26, // Maintanance Terms
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 27, // Loan Terms
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 28, // Pre Approved List
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 29, // Own Visitor List
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 30, // Delivered At Gate
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 31, // Daily Help Member
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 32, // Daily Help Member for My Flat
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 1,
+                                "eAuthority" => 51, // Society Department
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 1,
+                                "eAuthority" => 52, // Category for Society
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 1,
+                                "eAuthority" => 53, // Society Member Designation
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 1,
+                                "eAuthority" => 54, // Society Member Designation Authority
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 1,
+                                "eAuthority" => 55, // Society Member List
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 1,
+                                "eAuthority" => 56, // Society Member Request
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 1,
+                                "eAuthority" => 57, // Announcement
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 1,
+                                "eAuthority" => 58, // Amenity
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 59, // Amenity Booking
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 2, 
-                                "can_delete" => 0, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 60, // Emergency Alert History
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 61, // Society Emergency No
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 62, // Resident's Society Payment
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 63, // Invoice
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 64, // Resident's Loan Request
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 65, // Resident's Complaint
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 66, // Duty Area
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 67, // Staff Member
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 68, // Staff Member Duty Area
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 69, // Staff Member Attendance
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 70, // Maintanance Terms
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 71, // Loan Terms
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 72, // Pre Approved List
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 73, // Visitor List
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 74, // Delivered At Gate
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id, 
+                            array(
+                                'resident_designation_id' => 1,
                                 "eAuthority" => 75, // Daily Help Member
-                                "can_view" => 1, 
-                                "can_add" => 2, 
-                                "can_edit" => 2, 
-                                "can_delete" => 2, 
-                                "can_print" => 2, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
-                            )
+                            ),
+
                         );
-                    }else{
+                    }else if($designation == 'Committee Member'){
                         $DesignationAuthority = array(
                             // Resident's Authority
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 1, // Own Flat
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 2, // Own Family Member
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1,  
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 3, // Own Festival Banner 
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 3, // Own Festival Banner
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 4, // Own Festival Banner Configuration
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 1, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 5, // Own Folder
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 6, // Own Documents
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 7, // Society Member List
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 8, // Announcement
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 9, // Resident's Daily Post
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 10, // Own Daily Post
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 11, // Amenity
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 12, // Amenity Booking
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 13, // Emergency Alert
-                                "can_view" => 0, 
-                                "can_add" => 1, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 0, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 0,
+                                "can_add" => 1,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 0,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 14, // My Emergency No
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 15, // Soc Emergency No
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 16, // Government Emergency No
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 17, // Resident's Business Profile
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 18, // Own Business Profile
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 19, // Resident's Society Payment
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 20, // Invoice
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 21, // Own Loan Request
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
-                                "eAuthority" => 22, // Own Complaint 
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 0, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 22, // Own Complaint
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 0,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 23, // Staff Member
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 24, // Staff Member Duty Area
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 25, // Staff Member Attendance
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 26, // Maintanance Terms
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 27, // Loan Terms
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 28, // Pre Approved List
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 29, // Own Visitor List
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 0, 
-                                "can_delete" => 0, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 30, // Delivered At Gate
-                                "can_view" => 1, 
-                                "can_add" => 0, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 31, // Daily Help Member
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            array( 
-                                'resident_designation_id' => $resident_designation->resident_designation_id,  
+                            array(
+                                'resident_designation_id' => 3,
                                 "eAuthority" => 32, // Daily Help Member for My Flat
-                                "can_view" => 1, 
-                                "can_add" => 1, 
-                                "can_edit" => 1, 
-                                "can_delete" => 1, 
-                                "can_print" => 1, 
-                                
-                                "updated_at" => now(), 
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
                                 "updated_by" => 1
                             ),
-                            
+
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 51, // Society Department
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 52, // Category for Society
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 53, // Society Member Designation
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 54, // Society Member Designation Authority
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 2,
+                                "can_delete" => 0,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 55, // Society Member List
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 56, // Society Member Request
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 57, // Announcement
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 58, // Amenity
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 59, // Amenity Booking
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 2,
+                                "can_delete" => 0,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 60, // Emergency Alert History
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 61, // Society Emergency No
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 62, // Resident's Society Payment
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 63, // Invoice
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 64, // Resident's Loan Request
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 65, // Resident's Complaint
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 66, // Duty Area
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 67, // Staff Member
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 68, // Staff Member Duty Area
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 69, // Staff Member Attendance
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 70, // Maintanance Terms
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 71, // Loan Terms
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 72, // Pre Approved List
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 73, // Visitor List
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 74, // Delivered At Gate
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 2,
+                                "eAuthority" => 75, // Daily Help Member
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 2,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+
+                        );
+                    }else {
+                        $DesignationAuthority = array(
+                            // Resident's Authority
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 1, // Own Flat
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 2, // Own Family Member
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 3, // Own Festival Banner
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 4, // Own Festival Banner Configuration
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 5, // Own Folder
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 6, // Own Documents
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 7, // Society Member List
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 8, // Announcement
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 9, // Resident's Daily Post
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 10, // Own Daily Post
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 11, // Amenity
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 12, // Amenity Booking
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 13, // Emergency Alert
+                                "can_view" => 0,
+                                "can_add" => 1,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 0,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 14, // My Emergency No
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 15, // Soc Emergency No
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 16, // Government Emergency No
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 17, // Resident's Business Profile
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 18, // Own Business Profile
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 19, // Resident's Society Payment
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 20, // Invoice
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 21, // Own Loan Request
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 22, // Own Complaint
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 0,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 23, // Staff Member
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 24, // Staff Member Duty Area
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 25, // Staff Member Attendance
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 26, // Maintanance Terms
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 27, // Loan Terms
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 28, // Pre Approved List
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 29, // Own Visitor List
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 0,
+                                "can_delete" => 0,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 30, // Delivered At Gate
+                                "can_view" => 1,
+                                "can_add" => 0,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 31, // Daily Help Member
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => 3,
+                                "eAuthority" => 32, // Daily Help Member for My Flat
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+
                         );
                     }
                     DB::table('resident_designate_auth')->insert($DesignationAuthority);
@@ -1251,7 +1942,7 @@ class SocietyController extends Controller
                 $societie->save();
                 $societie->delete();
             }
-        
+
         return response()->json(['status' => '200']);
     }
 }
