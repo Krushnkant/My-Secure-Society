@@ -13,4 +13,24 @@ class ServiceProvider extends Model
     protected $primaryKey = 'daily_help_provider_id';
 
     protected $dates = ['deleted_at'];
+
+    public function user()
+    {
+        return $this->hasOne(User::class,'user_id', 'user_id');
+    }
+
+    public function daily_help_service()
+    {
+        return $this->hasOne(User::class,'daily_help_service_id', 'daily_help_service_id');
+    }
+
+    public function front_img()
+    {
+        return $this->hasOne(ServiceProviderFile::class,'daily_help_provider_id', 'daily_help_provider_id')->where('file_view',1);
+    }
+
+    public function back_img()
+    {
+        return $this->hasOne(ServiceProviderFile::class,'daily_help_provider_id', 'daily_help_provider_id')->where('file_view',2);
+    }
 }

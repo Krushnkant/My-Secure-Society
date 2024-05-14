@@ -55,6 +55,10 @@ class ServiceProviderControler extends BaseController
             'indentity_proof_back_img' => 'image|mimes:jpeg,png,jpg',
         ];
 
+        if ($request->has('daily_help_provider_id') && $request->input('daily_help_provider_id') != 0) {
+            $rules['daily_help_provider_id'] .= '|exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL';
+        }
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -69,7 +73,7 @@ class ServiceProviderControler extends BaseController
             $user->mobile_no = $request->mobile_no;
             $user->gender = $request->gender;
             $image_full_path = "";
-            if ($request->hasFile('profile_pic')) { 
+            if ($request->hasFile('profile_pic')) {
                 $image = $request->file('profile_pic');
                 $image_full_path = UploadImage($image,'images/profile_pic');
             }
@@ -99,7 +103,7 @@ class ServiceProviderControler extends BaseController
                     }
                 }
                 $image_full_path = "";
-                if ($request->hasFile('profile_pic')) { 
+                if ($request->hasFile('profile_pic')) {
                     $image = $request->file('profile_pic');
                     $image_full_path = UploadImage($image,'images/profile_pic');
                 }
@@ -146,20 +150,13 @@ class ServiceProviderControler extends BaseController
         $fileEntry->save();
     }
 
-    public function business_profile_list(Request $request)
+    public function service_provider_list(Request $request)
     {
-
         $rules = [
-            'user_id' => 'required|integer',
-            'list_type' => 'required|in:1,2',
-            'category_id' => 'required|integer',
+            'daily_help_service_id' => 'required|integer|exists:daily_help_service,daily_help_service_id,deleted_at,NULL',
+            'rating' => 'required|in:1,2,3,4,5,6',
         ];
-        if ($request->has('category_id') && $request->input('category_id') != 0) {
-            $rules['category_id'] .= '|exists:business_category,business_category_id,deleted_at,NULL';
-        }
-        if ($request->has('user_id') && $request->input('user_id') != 0) {
-            $rules['user_id'] .= '|exists:user,user_id,deleted_at,NULL';
-        }
+
         $validator = Validator::make($request->all(), $rules);
 
         // If validation fails, return error response
@@ -168,53 +165,48 @@ class ServiceProviderControler extends BaseController
         }
 
         // Retrieve business profiles based on parameters
-        $query = BusinessProfile::with('user')->where('estatus',1);
+        $query = ServiceProvider::with('user','daily_help_service')->where('estatus',1)->where('daily_help_service_id',$request->daily_help_service_id);
         if ($request->has('category_id') && $request->input('category_id') != 0) {
             $query->where('category_id', $request->category_id);
         }
 
-        if ($request->list_type == 1) {
-            // Own Business Profile List
-            $query->where('created_by', $request->user_id);
+        if ($request->has('search_text')) {
+            $searchText = $request->input('search_text');
+
+            $query->whereHas('user', function ($userQuery) use ($searchText) {
+                $userQuery->where('mobile_no', 'LIKE', "%$searchText%")
+                          ->orWhere('user_code', 'LIKE', "%$searchText%")
+                          ->orWhere('full_name', 'LIKE', "%$searchText%");
+            });
         }
+
         $perPage = 10;
-        $profiles = $query->paginate($perPage);
+        $providers = $query->paginate($perPage);
 
         // Format the response data
-        $profile_arr = [];
-        foreach ($profiles as $profile) {
-            $temp['profile_id'] = $profile->business_profile_id;
-            $temp['business_name'] = $profile->business_name;
-            $temp['business_icon'] = $profile->business_icon != ""?url($profile->business_icon):"";
-            $temp['mobile_no'] = $profile->phone_number;
-            $temp['website_url'] = $profile->website_url;
-            $temp['business_description'] = $profile->description;
-            $temp['street_address1'] = $profile->street_address1;
-            $temp['street_address2'] = $profile->street_address2;
-            $temp['landmark'] = $profile->landmark;
-            $temp['pin_code'] = $profile->pin_code;
-            $temp['latitude'] = $profile->latitude;
-            $temp['longitude'] = $profile->longitude;
-            $temp['city'] = $profile->city_id;
-            $temp['state'] = $profile->state_id;
-            $temp['country'] = $profile->country_id;
-            $temp['user_id'] = isset($profile->user)?$profile->user->user_id:"";
-            $temp['user_fullname'] = isset($profile->user)?$profile->user->full_name:"";
-            $temp['user_profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
-            $temp['user_block_flat_no'] = "";
-            array_push($profile_arr, $temp);
+        $provider_arr = [];
+        foreach ($providers as $provider) {
+            $temp['daily_help_provider_id'] = $provider->daily_help_provider_id;
+            $temp['daily_help_user_id'] = $provider->user_id;
+            $temp['full_name'] = isset($profile->user)?$profile->user->full_name:"";
+            $temp['mobile_no'] = isset($profile->user)?$profile->user->mobile_no:"";
+            $temp['profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
+            $temp['service_name'] = isset($profile->daily_help_service)?$profile->daily_help_service->service_name:"";
+            $temp['service_icon'] = isset($profile->user)?$profile->user->service_icon:"";
+            $temp['rating'] = "";
+            array_push($provider_arr, $temp);
         }
 
-        $data['business_profile_list'] = $profile_arr;
-        $data['total_records'] = $profiles->toArray()['total'];
-        return $this->sendResponseWithData($data, "All business profile Successfully.");
+        $data['provider_list'] = $provider_arr;
+        $data['total_records'] = $providers->toArray()['total'];
+        return $this->sendResponseWithData($data, "All Provider Successfully.");
     }
 
-    public function get_business_profile(Request $request)
+    public function get_service_provider(Request $request)
     {
         // Validate the request parameters
         $validator = Validator::make($request->all(), [
-            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL',
+            'daily_help_provider_id' => 'required||exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL',
         ]);
 
         // If validation fails, return error response
@@ -223,61 +215,43 @@ class ServiceProviderControler extends BaseController
         }
 
         // Retrieve the specified business profile
-        $profile = BusinessProfile::with('image_files','pdf_file','user')->find($request->profile_id);
+        $provider = ServiceProvider::with('user','daily_help_service','front_img','back_img')->find($request->daily_help_provider_id);
 
         // If profile not found, return error response
-        if (!$profile) {
-            return response()->json(['error' => 'Business profile not found'], 404);
+        if (!$provider) {
+            return response()->json(['error' => 'provider not found'], 404);
         }
 
-        $image_files = [];
-        foreach ($profile->image_files as $image_file) {
-            $file_temp['business_profile_id'] = $image_file->business_profile_id;
-            $file_temp['file_type'] = $image_file->file_type;
-            $file_temp['file_url'] = url($image_file->file_url);
-            array_push($image_files, $file_temp);
-        }
 
-        $pdf_file = [];
-        if(isset($profile->pdf_file) && $profile->pdf_file != null){
-            $pdf_temp['business_profile_id'] = $profile->pdf_file->business_profile_id;
-            $pdf_temp['file_type'] = $profile->pdf_file->file_type;
-            $pdf_temp['file_url'] = url($profile->pdf_file->file_url);
-            array_push($pdf_file, $pdf_temp);
-        }
         $data = array();
-        $temp['profile_id'] = $profile->business_profile_id;
-        $temp['business_name'] = $profile->business_name;
-        $temp['business_icon'] = $profile->business_icon != ""?url($profile->business_icon):"";
-        $temp['mobile_no'] = $profile->phone_number;
-        $temp['website_url'] = $profile->website_url;
-        $temp['business_description'] = $profile->description;
-        $temp['street_address1'] = $profile->street_address1;
-        $temp['street_address2'] = $profile->street_address2;
-        $temp['landmark'] = $profile->landmark;
-        $temp['pin_code'] = $profile->pin_code;
-        $temp['latitude'] = $profile->latitude;
-        $temp['longitude'] = $profile->longitude;
-        $temp['city'] = $profile->city_id;
-        $temp['state'] = $profile->state_id;
-        $temp['country'] = $profile->country_id;
-        $temp['user_id'] = isset($profile->user)?$profile->user->user_id:"";
-        $temp['user_fullname'] = isset($profile->user)?$profile->user->full_name:"";
-        $temp['user_profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
-        $temp['user_block_flat_no'] = "";
-        $temp['image_files'] = $image_files;
-        $temp['pdf_file'] = $profile->pdf_file;
+        $temp['daily_help_provider_id'] = $provider->daily_help_provider_id;
+        $temp['daily_help_user_id'] = $provider->user_id;
+        $temp['daily_help_user_passcode'] = isset($profile->user)?$profile->user->user_code:"";
+        $temp['full_name'] = isset($profile->user)?$profile->user->full_name:"";
+        $temp['mobile_no'] = isset($profile->user)?$profile->user->mobile_no:"";
+        $temp['profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
+        $temp['gender'] = isset($profile->user)?$profile->user->gender:"";
+        $temp['service_name'] = isset($profile->daily_help_service)?$profile->daily_help_service->service_name:"";
+        $temp['service_icon'] = isset($profile->user)?$profile->user->service_icon:"";
+        $temp['rating'] = "";
+        $temp['indentity_proof_front_img'] = isset($profile->front_img) ? url($profile->front_img->file_url):"";
+        $temp['indentity_proof_back_img'] = isset($profile->back_img) ?url($profile->back_img->file_url):"";
+        $temp['can_add_review'] = "";
+        $temp['work_in_flats'] = "";
+        $temp['block_flat_no'] = "";
+        $temp['work_time'] = "";
+
 
         array_push($data, $temp);
 
-        return $this->sendResponseWithData($data, "All Profile Retrieved Successfully.");
+        return $this->sendResponseWithData($data, "All provider Retrieved Successfully.");
     }
 
-    public function delete_business_profile(Request $request)
+    public function delete_service_provider(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
-            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL',
+            'daily_help_provider_id' => 'required||exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL',
         ]);
 
         // If validation fails, return error response
@@ -286,12 +260,12 @@ class ServiceProviderControler extends BaseController
         }
 
         // Find the profile to delete
-        $profile = BusinessProfile::find($request->profile_id);
-        $profile->estatus = 3;
-        $profile->save();
-        $profile->delete();
+        $provider = ServiceProvider::find($request->daily_help_provider_id);
+        $provider->estatus = 3;
+        $provider->save();
+        $provider->delete();
 
         // Return success response
-        return $this->sendResponseSuccess("Business profile deleted successfully.");
+        return $this->sendResponseSuccess("Business provider deleted successfully.");
     }
 }
