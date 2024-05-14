@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DailyHelpService;
+use App\Models\ServiceProviderFile;
+use App\Models\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -12,6 +14,15 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ServiceProviderControler extends BaseController
 {
+    public $payload;
+
+    public function __construct()
+    {
+        $token = JWTAuth::parseToken()->getToken();
+        $this->payload = JWTAuth::decode($token);
+    }
+
+
     public function daily_help_service_list()
     {
         $services = DailyHelpService::where('estatus', 1)->orderBy('service_name', 'asc')->get();
@@ -28,12 +39,20 @@ class ServiceProviderControler extends BaseController
 
     public function save_service_provider(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
         // Validation rules
         $rules = [
             'daily_help_provider_id' => 'required',
+            'daily_help_service_id' => 'required|exists:daily_help_service,daily_help_service_id,deleted_at,NULL',
             'full_name' => 'required|string|max:100',
             'mobile_no' => 'required|digits:10',
             'gender' => ['required', Rule::in([1, 2])],
+            'profile_pic' => 'image|mimes:jpeg,png,jpg',
+            'indentity_proof_front_img' => 'image|mimes:jpeg,png,jpg',
+            'indentity_proof_back_img' => 'image|mimes:jpeg,png,jpg',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -42,76 +61,86 @@ class ServiceProviderControler extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $user = User::find($request->daily_help_provider_id);
-        $action = "updated";
-        if (!$businessProfile) {
-            $businessProfile = new BusinessProfile();
-            $action = "saved";
-            $businessProfile->created_by = Auth::user()->user_id;
-        }
-        $businessProfile->updated_by = Auth::user()->user_id;
-        $businessProfile->business_name = $request->business_name;
-        $businessProfile->phone_number = $request->mobile_no;
-        $businessProfile->website_url = $request->website_url;
-        $businessProfile->description = $request->business_description;
-        $businessProfile->street_address1 = $request->street_address1;
-        $businessProfile->street_address2 = $request->street_address2;
-        $businessProfile->landmark = $request->landmark;
-        $businessProfile->pin_code = $request->pin_code;
-        $businessProfile->latitude = $request->latitude;
-        $businessProfile->longitude = $request->longitude;
-        $businessProfile->city_id = $request->city_id;
-        $businessProfile->state_id = $request->state_id;
-        $businessProfile->country_id = $request->country_id;
-        if ($request->hasFile('business_icon')) {
-            if(isset($businessProfile->business_icon)) {
-                $old_image = public_path('images/business_icon/' . $user->business_icon);
-                if (file_exists($old_image)) {
-                    unlink($old_image);
+        if($request->daily_help_provider_id == 0){
+            $user = new User();
+            $user->created_by = Auth::user()->user_id;
+            $user->user_code = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
+            $user->full_name = $request->full_name;
+            $user->mobile_no = $request->mobile_no;
+            $user->gender = $request->gender;
+            $image_full_path = "";
+            if ($request->hasFile('profile_pic')) { 
+                $image = $request->file('profile_pic');
+                $image_full_path = UploadImage($image,'images/profile_pic');
+            }
+            $user->profile_pic_url =  $image_full_path;
+            $user->save();
+
+            if($user){
+                $serviceProvider = new ServiceProvider();
+                $serviceProvider->created_by = Auth::user()->user_id;
+                $serviceProvider->society_id = $society_id;
+                $serviceProvider->user_id = $user->user_id;
+                $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
+                $serviceProvider->save();
+            }
+        }else{
+            $serviceProvider = ServiceProvider::find($request->post_id);
+            if($serviceProvider){
+                $user = User::find($serviceProvider->user_id);
+                $user->updated_by = Auth::user()->user_id;
+                $user->full_name = $request->full_name;
+                $user->mobile_no = $request->mobile_no;
+                $user->gender = $request->gender;
+                if(isset($user->profile_pic)) {
+                    $old_image = public_path('images/profile_pic/' . $user->profile_pic);
+                    if (file_exists($old_image)) {
+                        unlink($old_image);
+                    }
                 }
+                $image_full_path = "";
+                if ($request->hasFile('profile_pic')) { 
+                    $image = $request->file('profile_pic');
+                    $image_full_path = UploadImage($image,'images/profile_pic');
+                }
+                $user->profile_pic_url =  $image_full_path;
+                $user->save();
             }
-            $image = $request->file('business_icon');
-            $image_full_path = UploadImage($image,'images/business_icon');
-            $businessProfile->business_icon =  $image_full_path;
+            $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
+            $serviceProvider->save();
         }
 
-        $businessProfile->save();
+        if ($request->hasFile('indentity_proof_front_img')) {
+            // if(isset($businessProfile->business_icon)) {
+            //     $old_image = public_path('images/profile_pic/' . $user->business_icon);
+            //     if (file_exists($old_image)) {
+            //         unlink($old_image);
+            //     }
+            // }
+            $image = $request->file('indentity_proof_front_img');
+            $fileUrl = UploadImage($image,'images/provider_indentity_proof');
+            $this->storeFileEntry($serviceProvider->daily_help_provider_id, $fileType, $fileUrl,1);
+        }
 
-        if($businessProfile){
-            if ($request->hasFile('image_files')) {
-                $files = $request->file('image_files');
-                foreach ($files as $file) {
-                    $fileType = getFileType($file);
-                    $fileUrl = UploadImage($file, 'images/business');
-                    $this->storeFileEntry($businessProfile->business_profile_id, $fileType, $fileUrl);
-                }
-            }
-
-             // Handle file upload for PDF
-            if ($request->hasFile('pdf_file')) {
-                $file = $request->file('pdf_file');
-                $fileType = getFileType($file);
-                $fileUrl = UploadImage($file,'images/business');
-                $this->storeFileEntry($businessProfile->business_profile_id, $fileType, $fileUrl);
-            }
-
-        //   $BusinessPrifileCategory = New BusinessProfileCategory();
-        //   $BusinessPrifileCategory->business_profile_id = $businessProfile->business_profile_id;
-        //   $BusinessPrifileCategory->business_profile_id = $request->business_profile_id;
-        //   $BusinessPrifileCategory->save();
+        if ($request->hasFile('indentity_proof_back_img')) {
+            $image = $request->file('indentity_proof_back_img');
+            $fileUrl = UploadImage($image,'images/provider_indentity_proof');
+            $this->storeFileEntry($serviceProvider->daily_help_provider_id, $fileType, $fileUrl,2);
         }
 
         $data = array();
-        $temp['profile_id'] = $businessProfile->business_profile_id;
+        $temp['daily_help_provider_id'] = $businessProfile->daily_help_provider_id;
+        $temp['passcode'] = $user->user_code;
         array_push($data, $temp);
-        return $this->sendResponseWithData($data, 'Business Profile '.$action.' successfully');
+        return $this->sendResponseWithData($data, 'Service Provider successfully');
     }
 
-    public function storeFileEntry($Id, $fileType, $fileUrl)
+    public function storeFileEntry($Id, $fileType, $fileUrl,$fileView)
     {
-        $fileEntry = new BusinessProfileFile();
-        $fileEntry->business_profile_id = $Id;
+        $fileEntry = new ServiceProviderFile();
+        $fileEntry->daily_help_provider_id = $Id;
         $fileEntry->file_type = $fileType;
+        $fileEntry->file_view = $fileView;
         $fileEntry->file_url = $fileUrl;
         $fileEntry->uploaded_at = now();
         $fileEntry->save();
