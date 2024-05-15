@@ -301,7 +301,7 @@ class ServiceProviderControler extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        
+
         $work = New ServiceProviderWorkFlat();
         $work->daily_help_provider_id = $request->daily_help_provider_id;
         $work->block_flat_id = $block_flat_id;
@@ -311,7 +311,7 @@ class ServiceProviderControler extends BaseController
         $work->created_by = Auth::user()->user_id;
         $work->updated_by = Auth::user()->user_id;
         $work->save();
-        
+
         if($work){
             $visitor = New SocietyVisitor();
             $visitor->daily_help_provider_id = $request->daily_help_provider_id;
@@ -329,4 +329,100 @@ class ServiceProviderControler extends BaseController
         array_push($data, $temp);
         return $this->sendResponseWithData($data, 'Service Provider Work Flat added successfully');
     }
+
+    public function service_provider_delete_flat(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'work_flat_id' => 'required||exists:daily_help_provider_work_flat,work_flat_id,deleted_at,NULL',
+        ]);
+
+        // If validation fails, return error response
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $work = ServiceProviderWorkFlat::find($request->work_flat_id);
+        $work->estatus = 3;
+        $work->save();
+        $work->delete();
+
+        // Return success response
+        return $this->sendResponseSuccess("Flat deleted successfully.");
+    }
+
+    public function service_provider_add_review(Request $request)
+    {
+        $block_flat_id = $this->payload['block_flat_id'];
+        if($block_flat_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+        // Validation rules
+        $rules = [
+            'daily_help_user_id' => 'required',
+            'rating' => ['required', Rule::in([1, 2,3,4,5])],
+            'review_text' => 'required|string|max:200',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $review = New ServiceProviderReview();
+        $review->given_by_bloack_flat_id = $block_flat_id;
+        $review->review_to_user_id = $request->daily_help_user_id;
+        $review->number_of_star = $request->rating;
+        $review->review_text = $request->review_text;
+        $review->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+        $review->created_by = Auth::user()->user_id;
+        $review->updated_by = Auth::user()->user_id;
+        $review->save();
+
+        $data = array();
+        $temp['review_id'] = $review->daily_help_provider_review_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, 'Add Review successfully');
+    }
+
+    public function service_provider_review_list(Request $request)
+    {
+
+        $query = ServiceProviderReview::with('user','daily_help_service')->where('estatus',1)->where('daily_help_service_id',$request->daily_help_service_id);
+        if ($request->has('category_id') && $request->input('category_id') != 0) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->has('search_text')) {
+            $searchText = $request->input('search_text');
+
+            $query->whereHas('user', function ($userQuery) use ($searchText) {
+                $userQuery->where('mobile_no', 'LIKE', "%$searchText%")
+                          ->orWhere('user_code', 'LIKE', "%$searchText%")
+                          ->orWhere('full_name', 'LIKE', "%$searchText%");
+            });
+        }
+
+        $perPage = 10;
+        $providers = $query->paginate($perPage);
+
+        // Format the response data
+        $provider_arr = [];
+        foreach ($providers as $provider) {
+            $temp['daily_help_provider_id'] = $provider->daily_help_provider_id;
+            $temp['daily_help_user_id'] = $provider->user_id;
+            $temp['full_name'] = isset($profile->user)?$profile->user->full_name:"";
+            $temp['mobile_no'] = isset($profile->user)?$profile->user->mobile_no:"";
+            $temp['profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
+            $temp['service_name'] = isset($profile->daily_help_service)?$profile->daily_help_service->service_name:"";
+            $temp['service_icon'] = isset($profile->user)?$profile->user->service_icon:"";
+            $temp['rating'] = "";
+            array_push($provider_arr, $temp);
+        }
+
+        $data['provider_list'] = $provider_arr;
+        $data['total_records'] = $providers->toArray()['total'];
+        return $this->sendResponseWithData($data, "All Provider Successfully.");
+    }
+
 }

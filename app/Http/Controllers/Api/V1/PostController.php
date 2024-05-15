@@ -13,7 +13,6 @@ use App\Models\DailyPostLike;
 use App\Models\DailyPostPoleOption;
 use App\Models\ResidentDesignation;
 use App\Models\PostReportOption;
-use Illuminate\Support\Facades\Validator;
 
 class PostController extends BaseController
 {
@@ -74,7 +73,7 @@ class PostController extends BaseController
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
-        
+
         if ($request->post_type != 4) {
             if (empty($request->file('media_files')) && empty($request->bg_color)) {
                 return $this->sendError(422, 'Background color is required when media files are empty.', "Validation Error", []);
@@ -207,7 +206,7 @@ class PostController extends BaseController
         if(getReasonTypeName($designation_id) == "Society Member"){
             $postsQuery->where('estatus',"!=",5);
         }
-          
+
 
         if ($post_id !== null && $post_id != 0) {
             $postsQuery->where('parent_post_id',$post_id);
@@ -318,7 +317,7 @@ class PostController extends BaseController
             $file_temp['file_url'] = url($post_file->file_url);
             array_push($media_files, $file_temp);
         }
-        
+
         $temp['post_id'] = $post->society_daily_post_id;
         $temp['post_type'] = $post->post_type;
         $temp['post_description'] = $post->post_description;
@@ -355,7 +354,7 @@ class PostController extends BaseController
             'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL,society_id,'.$society_id,
             'status' => 'required|in:1,3,5',
         ];
-      
+
         if ($request->status == 5) {
             $rules['report_id'] = 'required|exists:daily_post_report_option,daily_post_report_option_id';
         }
@@ -371,14 +370,14 @@ class PostController extends BaseController
             if($request->status == 3 && $post->estatus == 5  &&  $post->created_by == auth()->id()){
                 return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
             }
-      
+
             if($resident_designation->designation_name == "Society Member"){
                 if($request->status == 3 &&  $post->created_by != auth()->id()){
                     return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
                 }
             }
         }
-      
+
         if ($post) {
             $post->estatus = $request->status;
             if($request->status == 5){
