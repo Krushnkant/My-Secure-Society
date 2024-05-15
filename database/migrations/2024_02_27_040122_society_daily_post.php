@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigIncrements('society_daily_post_id')->index();
             $table->unsignedBigInteger('society_id')->index();
             $table->unsignedBigInteger('parent_post_id')->index()->comment('0 for Main Post');
-            $table->enum('post_type', [1, 2, 3])->default(1)->comment('1 - Discussion Question, 2 - Poll, 3 - Event, 4 - Replay')->index();
+            $table->enum('post_type', [1, 2, 3, 4])->default(1)->comment('1 - Discussion Question, 2 - Poll, 3 - Event, 4 - Replay')->index();
             $table->string('post_description', 500);
             $table->string('bg_color', 20)->nullable();
             $table->integer('total_like')->index();

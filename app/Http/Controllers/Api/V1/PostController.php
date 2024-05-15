@@ -13,6 +13,7 @@ use App\Models\DailyPostLike;
 use App\Models\DailyPostPoleOption;
 use App\Models\ResidentDesignation;
 use App\Models\PostReportOption;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends BaseController
 {
@@ -31,9 +32,16 @@ class PostController extends BaseController
             return $this->sendError(400, 'Society Not Found.', "Not Found", []);
         }
         $request->merge(['society_id' => $society_id]);
+
+        Validator::extend('min_options_for_poll', function ($attribute, $value, $parameters, $validator) {
+            $minOptions = $parameters[0] ?? 2; // Default minimum options required for a poll
+            return count($value) >= $minOptions;
+        });
+
         $rules = [
             'society_id' => 'required|exists:society',
             'post_id' => 'required|integer',
+            'parent_post_id' => 'required_if:post_type,1,2,3|integer|in:0',
             'parent_post_id' => 'required|integer',
             'post_type' => 'required|in:1,2,3,4',
             'post_description' => 'required|max:500',
@@ -58,7 +66,7 @@ class PostController extends BaseController
         }
 
         if ($request->has('poll_options') && $request->post_type == 2) {
-            $rules['poll_options'] .= '|array';
+            $rules['poll_options'] .= '|array|min_options_for_poll:2';
         }
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -66,9 +74,11 @@ class PostController extends BaseController
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
-
-        if (empty($request->file('media_files')) && empty($request->bg_color)) {
-            return $this->sendError(422, 'Background color is required when media files are empty.', "Validation Error", []);
+        
+        if ($request->post_type != 4) {
+            if (empty($request->file('media_files')) && empty($request->bg_color)) {
+                return $this->sendError(422, 'Background color is required when media files are empty.', "Validation Error", []);
+            }
         }
 
         if ($request->post_id == 0) {
@@ -187,6 +197,8 @@ class PostController extends BaseController
 
         if ($post_type !== null && $post_type != 0) {
             $postsQuery->where('post_type', $post_type);
+        }else{
+            $postsQuery->whereIn('post_type', [1,2,3]);
         }
 
         if ($user_id !== null && $user_id != 0) {

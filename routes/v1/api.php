@@ -124,6 +124,9 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('daily_help/service_provider/get',[ServiceProviderControler::class,'get_service_provider']);
     Route::post('daily_help/service_provider/delete',[ServiceProviderControler::class,'delete_service_provider']);
 
+    Route::post('daily_help/service_provider/add_to_flat',[ServiceProviderControler::class,'service_provider_add_flat']);
+    Route::post('daily_help/service_provider/delete_flat',[ServiceProviderControler::class,'service_provider_delete_flat']);
+
 });
 
 Route::post('country/list', [UserController::class, 'get_country']);

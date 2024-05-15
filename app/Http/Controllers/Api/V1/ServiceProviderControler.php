@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\DailyHelpService;
 use App\Models\ServiceProviderFile;
 use App\Models\ServiceProvider;
+use App\Models\SocietyVisitor;
+use App\Models\ServiceProviderWorkFla;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -267,5 +269,64 @@ class ServiceProviderControler extends BaseController
 
         // Return success response
         return $this->sendResponseSuccess("Business provider deleted successfully.");
+    }
+
+
+    public function service_provider_add_flat(Request $request)
+    {
+        $block_flat_id = $this->payload['block_flat_id'];
+        if($block_flat_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+        // Validation rules
+        $rules = [
+            'daily_help_provider_id' => [
+                'required',
+                'exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL'
+            ],
+            'from_time' => [
+                'required',
+                'date_format:H:i:s'
+            ],
+            'to_time' => [
+                'required',
+                'date_format:H:i:s',
+                'after:from_time'
+            ],
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        
+        $work = New ServiceProviderWorkFlat();
+        $work->daily_help_provider_id = $request->daily_help_provider_id;
+        $work->block_flat_id = $block_flat_id;
+        $work->work_start_time = $request->from_time;
+        $work->work_end_time = $request->to_time;
+        $work->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+        $work->created_by = Auth::user()->user_id;
+        $work->updated_by = Auth::user()->user_id;
+        $work->save();
+        
+        if($work){
+            $visitor = New SocietyVisitor();
+            $visitor->daily_help_provider_id = $request->daily_help_provider_id;
+            $visitor->block_flat_id = $block_flat_id;
+            $visitor->work_start_time = $request->from_time;
+            $visitor->work_end_time = $request->to_time;
+            $visitor->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $visitor->created_by = Auth::user()->user_id;
+            $visitor->updated_by = Auth::user()->user_id;
+            $visitor->save();
+        }
+
+        $data = array();
+        $temp['work_flat_id'] = $work->work_flat_id;
+        array_push($data, $temp);
+        return $this->sendResponseWithData($data, 'Service Provider Work Flat added successfully');
     }
 }

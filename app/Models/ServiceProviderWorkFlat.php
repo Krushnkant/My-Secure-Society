@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class SocietyVisitor extends Model
+class ServiceProviderWorkFlat extends Model
 {
-    use HasFactory,SoftDeletes;
-    protected $table = 'society_visitor';
-    protected $primaryKey = 'society_visitor_id';
+    use HasFactory, SoftDeletes;
+    protected $table = 'daily_help_provider_work_flat';
+    protected $primaryKey = 'work_flat_id';
+
     protected $dates = ['deleted_at'];
 }
