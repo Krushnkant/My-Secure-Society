@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('society_id');
             $table->string('patient_name', 70);
             $table->integer('relation_with_patient')->enum([1, 2, 3, 4])->comment('1 - Own, 2 - Family, 3 - Relative, 4 - Other');
-            $table->string('blood_group')->enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])->nullable()->index();
+            $table->string('blood_group')->enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])->index();
             $table->integer('blood_bottle_qty')->default(1);
             $table->string('message')->nullable();
             $table->dateTime('expected_time');
