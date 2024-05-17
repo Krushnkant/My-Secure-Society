@@ -121,7 +121,7 @@ class SocietyController extends Controller
                         $DesignationAuthority = array(
                             // Resident's Authority
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 1, // Own Flat
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -133,7 +133,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 2, // Own Family Member
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -145,7 +145,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 3, // Own Festival Banner
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -157,7 +157,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 4, // Own Festival Banner Configuration
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -169,7 +169,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 5, // Own Folder
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -181,7 +181,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 6, // Own Documents
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -193,7 +193,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 7, // Society Member List
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -205,7 +205,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 8, // Announcement
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -217,7 +217,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 9, // Resident's Daily Post
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -229,7 +229,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 10, // Own Daily Post
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -241,7 +241,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 11, // Amenity
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -253,7 +253,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 12, // Amenity Booking
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -265,7 +265,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 13, // Emergency Alert
                                 "can_view" => 0,
                                 "can_add" => 1,
@@ -277,7 +277,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 14, // My Emergency No
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -289,7 +289,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 15, // Soc Emergency No
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -301,7 +301,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 16, // Government Emergency No
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -313,7 +313,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 17, // Resident's Business Profile
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -325,7 +325,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 18, // Own Business Profile
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -337,7 +337,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 19, // Resident's Society Payment
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -349,7 +349,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 20, // Invoice
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -361,7 +361,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 21, // Own Loan Request
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -373,7 +373,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 22, // Own Complaint
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -385,7 +385,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 23, // Staff Member
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -397,7 +397,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 24, // Staff Member Duty Area
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -409,7 +409,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 25, // Staff Member Attendance
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -421,7 +421,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 26, // Maintanance Terms
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -433,7 +433,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 27, // Loan Terms
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -445,7 +445,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 28, // Pre Approved List
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -457,7 +457,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 29, // Own Visitor List
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -469,7 +469,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 30, // Delivered At Gate
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -481,7 +481,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 31, // Daily Help Member
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -493,7 +493,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 32, // Daily Help Member for My Flat
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -505,7 +505,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 51, // Society Department
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -517,7 +517,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 52, // Category for Society
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -529,7 +529,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 53, // Society Member Designation
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -541,7 +541,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 54, // Society Member Designation Authority
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -553,7 +553,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 55, // Society Member List
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -565,7 +565,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 56, // Society Member Request
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -577,7 +577,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 57, // Announcement
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -589,7 +589,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 58, // Amenity
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -601,7 +601,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 59, // Amenity Booking
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -613,7 +613,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 60, // Emergency Alert History
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -625,7 +625,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 61, // Society Emergency No
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -637,7 +637,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 62, // Resident's Society Payment
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -649,7 +649,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 63, // Invoice
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -661,7 +661,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 64, // Resident's Loan Request
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -673,7 +673,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 65, // Resident's Complaint
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -685,7 +685,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 66, // Duty Area
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -697,7 +697,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 67, // Staff Member
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -709,7 +709,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 68, // Staff Member Duty Area
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -721,7 +721,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 69, // Staff Member Attendance
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -733,7 +733,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 70, // Maintanance Terms
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -745,7 +745,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 71, // Loan Terms
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -757,7 +757,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 72, // Pre Approved List
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -769,7 +769,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 73, // Visitor List
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -781,7 +781,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 74, // Delivered At Gate
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -793,7 +793,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 1,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 75, // Daily Help Member
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -810,7 +810,7 @@ class SocietyController extends Controller
                         $DesignationAuthority = array(
                             // Resident's Authority
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 1, // Own Flat
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -822,7 +822,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 2, // Own Family Member
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -834,7 +834,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 3, // Own Festival Banner
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -846,7 +846,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 4, // Own Festival Banner Configuration
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -858,7 +858,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 5, // Own Folder
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -870,7 +870,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 6, // Own Documents
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -882,7 +882,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 7, // Society Member List
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -894,7 +894,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 8, // Announcement
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -906,7 +906,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 9, // Resident's Daily Post
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -918,7 +918,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 10, // Own Daily Post
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -930,7 +930,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 11, // Amenity
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -942,7 +942,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 12, // Amenity Booking
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -954,7 +954,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 13, // Emergency Alert
                                 "can_view" => 0,
                                 "can_add" => 1,
@@ -966,7 +966,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 14, // My Emergency No
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -978,7 +978,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 15, // Soc Emergency No
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -990,7 +990,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 16, // Government Emergency No
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1002,7 +1002,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 17, // Resident's Business Profile
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1014,7 +1014,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 18, // Own Business Profile
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1026,7 +1026,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 19, // Resident's Society Payment
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1038,7 +1038,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 20, // Invoice
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1050,7 +1050,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 21, // Own Loan Request
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1062,7 +1062,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 22, // Own Complaint
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1074,7 +1074,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 23, // Staff Member
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1086,7 +1086,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 24, // Staff Member Duty Area
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1098,7 +1098,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 25, // Staff Member Attendance
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1110,7 +1110,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 26, // Maintanance Terms
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1122,7 +1122,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 27, // Loan Terms
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1134,7 +1134,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 28, // Pre Approved List
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1146,7 +1146,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 29, // Own Visitor List
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1158,7 +1158,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 30, // Delivered At Gate
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1170,7 +1170,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 31, // Daily Help Member
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1182,7 +1182,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 32, // Daily Help Member for My Flat
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1195,7 +1195,7 @@ class SocietyController extends Controller
                             ),
 
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 51, // Society Department
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1207,7 +1207,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 52, // Category for Society
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1219,7 +1219,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 53, // Society Member Designation
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1231,7 +1231,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 54, // Society Member Designation Authority
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1243,7 +1243,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 55, // Society Member List
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1255,7 +1255,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 56, // Society Member Request
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1267,7 +1267,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 57, // Announcement
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1279,7 +1279,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 58, // Amenity
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1291,7 +1291,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 59, // Amenity Booking
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1303,7 +1303,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 60, // Emergency Alert History
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1315,7 +1315,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 61, // Society Emergency No
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1327,7 +1327,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 62, // Resident's Society Payment
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1339,7 +1339,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 63, // Invoice
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1351,7 +1351,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 64, // Resident's Loan Request
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1363,7 +1363,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 65, // Resident's Complaint
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1375,7 +1375,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 66, // Duty Area
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1387,7 +1387,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 67, // Staff Member
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1399,7 +1399,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 68, // Staff Member Duty Area
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1411,7 +1411,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 69, // Staff Member Attendance
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1423,7 +1423,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 70, // Maintanance Terms
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1435,7 +1435,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 71, // Loan Terms
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1447,7 +1447,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 72, // Pre Approved List
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1459,7 +1459,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 73, // Visitor List
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1471,7 +1471,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 74, // Delivered At Gate
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1483,7 +1483,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 2,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 75, // Daily Help Member
                                 "can_view" => 1,
                                 "can_add" => 2,
@@ -1500,7 +1500,7 @@ class SocietyController extends Controller
                         $DesignationAuthority = array(
                             // Resident's Authority
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 1, // Own Flat
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1512,7 +1512,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 2, // Own Family Member
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1524,7 +1524,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 3, // Own Festival Banner
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1536,7 +1536,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 4, // Own Festival Banner Configuration
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1548,7 +1548,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 5, // Own Folder
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1560,7 +1560,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 6, // Own Documents
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1572,7 +1572,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 7, // Society Member List
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1584,7 +1584,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 8, // Announcement
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1596,7 +1596,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 9, // Resident's Daily Post
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1608,7 +1608,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 10, // Own Daily Post
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1620,7 +1620,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 11, // Amenity
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1632,7 +1632,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 12, // Amenity Booking
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1644,7 +1644,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 13, // Emergency Alert
                                 "can_view" => 0,
                                 "can_add" => 1,
@@ -1656,7 +1656,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 14, // My Emergency No
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1668,7 +1668,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 15, // Soc Emergency No
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1680,7 +1680,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 16, // Government Emergency No
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1692,7 +1692,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 17, // Resident's Business Profile
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1704,7 +1704,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 18, // Own Business Profile
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1716,7 +1716,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 19, // Resident's Society Payment
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1728,7 +1728,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 20, // Invoice
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1740,7 +1740,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 21, // Own Loan Request
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1752,7 +1752,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 22, // Own Complaint
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1764,7 +1764,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 23, // Staff Member
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1776,7 +1776,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 24, // Staff Member Duty Area
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1788,7 +1788,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 25, // Staff Member Attendance
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1800,7 +1800,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 26, // Maintanance Terms
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1812,7 +1812,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 27, // Loan Terms
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1824,7 +1824,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 28, // Pre Approved List
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1836,7 +1836,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 29, // Own Visitor List
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1848,7 +1848,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 30, // Delivered At Gate
                                 "can_view" => 1,
                                 "can_add" => 0,
@@ -1860,7 +1860,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 31, // Daily Help Member
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -1872,7 +1872,7 @@ class SocietyController extends Controller
                                 "updated_by" => 1
                             ),
                             array(
-                                'resident_designation_id' => 3,
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 32, // Daily Help Member for My Flat
                                 "can_view" => 1,
                                 "can_add" => 1,
