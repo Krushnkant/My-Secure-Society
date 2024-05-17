@@ -90,7 +90,7 @@ class AnnouncementController extends BaseController
         $search_text = $request->input('search_text');
 
         // Query announcements with related announcement files
-        $announcements = Announcement::with('announcement_file','user.societymembers')
+        $announcements = Announcement::with('announcement_file','user')
             ->where('society_id', $society_id)
             ->where('estatus', 1);
 
@@ -106,22 +106,22 @@ class AnnouncementController extends BaseController
 
         $announcement_arr = array();
         foreach ($announcements as $announcement) {
-             $block_flat_no = "";
-             if(isset($announcement->user->societymembers)){
-                   foreach($announcement->user->societymembers as $societymember){
-                        $flat_info = getSocietyBlockAndFlatInfo($societymember['block_flat_id']);
-                        if($block_flat_no == ""){
-                            $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                        }else{
-                            $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                        }   
-                   }
-             };
+            //  $block_flat_no = "";
+            //  if(isset($announcement->user->societymembers)){
+            //        foreach($announcement->user->societymembers as $societymember){
+            //             $flat_info = getSocietyBlockAndFlatInfo($societymember['block_flat_id']);
+            //             if($block_flat_no == ""){
+            //                 $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
+            //             }else{
+            //                 $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
+            //             }
+            //        }
+            //  };
             $temp['announcement_id'] = $announcement['announcement_id'];
             $temp['title'] = $announcement->announcement_title;
             $temp['description'] = $announcement->announcement_description;
             $temp['full_name'] = $announcement->user->full_name;
-            $temp['block_flat_no'] = $block_flat_no;
+            // $temp['block_flat_no'] = $block_flat_no;
             $temp['profile_pic'] = $announcement->user->profile_pic_url;
             $temp['featured_image'] = isset($announcement->announcement_file)?url($announcement->announcement_file->file_url):"";
             $temp['date'] = $announcement->created_at->format('d-m-Y H:i:s');
@@ -159,27 +159,27 @@ class AnnouncementController extends BaseController
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-        $announcement = Announcement::with('announcement_file','user.societymembers')->where('estatus',1)->where('announcement_id',$request->announcement_id)->first();
+        $announcement = Announcement::with('announcement_file','user')->where('estatus',1)->where('announcement_id',$request->announcement_id)->first();
         if (!$announcement){
             return $this->sendError(404,"You can not get this announcement", "Invalid folder", []);
         }
-        $block_flat_no = "";
-        if(isset($announcement->user->societymembers)){
-            foreach($announcement->user->societymembers as $societymember){
-                $flat_info = getSocietyBlockAndFlatInfo($societymember['block_flat_id']);
-                if($block_flat_no == ""){
-                    $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                }else{
-                    $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                }   
-            }
-        };
+        // $block_flat_no = "";
+        // if(isset($announcement->user->societymembers)){
+        //     foreach($announcement->user->societymembers as $societymember){
+        //         $flat_info = getSocietyBlockAndFlatInfo($societymember['block_flat_id']);
+        //         if($block_flat_no == ""){
+        //             $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
+        //         }else{
+        //             $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
+        //         }
+        //     }
+        // };
         $data = array();
         $temp['announcement_id'] = $announcement['announcement_id'];
         $temp['title'] = $announcement->announcement_title;
         $temp['description'] = $announcement->announcement_description;
         $temp['full_name'] = $announcement->user->full_name;
-        $temp['block_flat_no'] = $block_flat_no;
+        // $temp['block_flat_no'] = $block_flat_no;
         $temp['profile_pic'] = $announcement->user->profile_pic_url;
         $temp['featured_image'] = isset($announcement->announcement_file)?url($announcement->announcement_file->file_url):"";
         $temp['date'] = $announcement->created_at->format('d-m-Y H:i:s');

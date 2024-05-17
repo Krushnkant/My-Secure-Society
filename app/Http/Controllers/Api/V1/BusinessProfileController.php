@@ -34,7 +34,7 @@ class BusinessProfileController extends BaseController
         if ($request->has('parent_category_id') && $request->parent_category_id != 0) {
             $query->where('parent_business_category_id', $request->parent_category_id);
         } else {
-            $query->whereNull('parent_business_category_id');
+            $query->where('parent_business_category_id',0);
         }
 
         $business_categories = $query->orderBy('business_category_name', 'asc')->get();
@@ -60,7 +60,7 @@ class BusinessProfileController extends BaseController
             'website_url' => 'required|url|max:255',
             'business_description' => 'required|string|max:500',
             'street_address1' => 'required|string|max:255',
-            'pin_code' => 'required|string',
+            'pin_code' => 'required|integer',
             'city_id' => 'required|integer',
             'state_id' => 'required|integer',
             'country_id' => 'required|integer',
@@ -114,7 +114,7 @@ class BusinessProfileController extends BaseController
             $image_full_path = UploadImage($image,'images/business_icon');
             $businessProfile->business_icon =  $image_full_path;
         }
-        
+
         $businessProfile->save();
 
         if($businessProfile){
@@ -134,7 +134,7 @@ class BusinessProfileController extends BaseController
                 $fileUrl = UploadImage($file,'images/business');
                 $this->storeFileEntry($businessProfile->business_profile_id, $fileType, $fileUrl);
             }
-            
+
         //   $BusinessPrifileCategory = New BusinessProfileCategory();
         //   $BusinessPrifileCategory->business_profile_id = $businessProfile->business_profile_id;
         //   $BusinessPrifileCategory->business_profile_id = $request->business_profile_id;
@@ -159,7 +159,6 @@ class BusinessProfileController extends BaseController
 
     public function business_profile_list(Request $request)
     {
-
         $rules = [
             'user_id' => 'required|integer',
             'list_type' => 'required|in:1,2',
@@ -286,7 +285,7 @@ class BusinessProfileController extends BaseController
 
     public function delete_business_profile(Request $request)
     {
-        
+
         $validator = Validator::make($request->all(), [
             'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL',
         ]);

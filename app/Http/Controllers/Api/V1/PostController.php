@@ -432,7 +432,7 @@ class PostController extends BaseController
 
     public function report_reason_list()
     {
-        $options = PostReportOption::where('estatus', 1)->get();
+        $options = PostReportOption::where('estatus', 1)->orderBy('title', 'asc')->get();
         $option_arr = [];
         foreach ($options as $option) {
             $temp['report_option_id'] = $option->daily_post_report_option_id;

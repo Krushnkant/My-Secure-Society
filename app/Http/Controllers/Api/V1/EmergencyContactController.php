@@ -113,6 +113,10 @@ class EmergencyContactController extends BaseController
 
     public function delete_emergency_contact(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if (empty($society_id)) {
+            return $this->sendError(400, 'Society ID not provided.', "Not Found", []);
+        }
         $designation_id = $this->payload['designation_id'];
         $user_id = Auth::id();
         $validator = Validator::make($request->all(), [
