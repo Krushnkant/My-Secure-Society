@@ -95,7 +95,6 @@ class AmenityController extends BaseController
             $slot->rent_amount = $slotData['booking_fee'];
             $slot->created_by = Auth::user()->user_id;
             $slot->updated_by = Auth::user()->user_id;
-            //$slot->is_deleted = $slotData['is_deleted'];
             $slot->save();
         }
         if($amenity){
@@ -162,8 +161,13 @@ class AmenityController extends BaseController
 
     public function delete_amenity(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
         $validator = Validator::make($request->all(), [
-            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL',
+            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id,'.$society_id,
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
