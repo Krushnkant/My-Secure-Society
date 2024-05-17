@@ -216,17 +216,7 @@ class PostController extends BaseController
 
         $post_arr = [];
         foreach ($posts as $post) {
-            $block_flat_no = "";
-            if(isset($post->user->societymembers)){
-                foreach($post->user->societymembers as $societymember){
-                    $flat_info = getSocietyBlockAndFlatInfo($societymember['block_flat_id']);
-                    if($block_flat_no == ""){
-                        $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                    }else{
-                        $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                    }
-                }
-            };
+
             $option_arr = [];
             foreach ($post->poll_options as $option) {
                 $option_temp['option_id'] = $option->daily_post_pole_option_id;
@@ -255,7 +245,7 @@ class PostController extends BaseController
             $temp['is_like'] = $post->isLike();
             $temp['user_id'] = $post->created_by;
             $temp['full_name'] = $post->user->full_name;
-            $temp['block_flat_no'] = $block_flat_no;
+            $temp['block_flat_no'] = getUserBlockAndFlat($post->created_by);
             $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
             $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
             $temp['poll_options'] = $option_arr;
@@ -288,18 +278,6 @@ class PostController extends BaseController
             return $this->sendError(404, "You can not get this post", "Invalid Post", []);
         }
 
-        $block_flat_no = "";
-        if(isset($post->user->societymembers)){
-            foreach($post->user->societymembers as $societymember){
-                $flat_info = getSocietyBlockAndFlatInfo($societymember['block_flat_id']);
-                if($block_flat_no == ""){
-                    $block_flat_no = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                }else{
-                    $block_flat_no .= ",".$flat_info['block_name'] .'-'. $flat_info['flat_no'];
-                }
-            }
-        };
-
         $data = [];
         $option_arr = [];
 
@@ -330,7 +308,7 @@ class PostController extends BaseController
         $temp['is_like'] = $post->isLike();
         $temp['user_id'] = $post->created_by;
         $temp['full_name'] = $post->user->full_name;
-        $temp['block_flat_no'] = $block_flat_no;
+        $temp['block_flat_no'] = getUserBlockAndFlat($post->created_by);
         $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
         $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
         $temp['poll_options'] = $option_arr;
