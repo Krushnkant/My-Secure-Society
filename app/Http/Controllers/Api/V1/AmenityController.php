@@ -98,7 +98,11 @@ class AmenityController extends BaseController
             //$slot->is_deleted = $slotData['is_deleted'];
             $slot->save();
         }
-
+        if($amenity){
+            $notification_array['title'] = $amenity->title;
+            $notification_array['message'] = $amenity->description;
+            sendPushNotification($amenity->creategd_by,$notification_array,'amenity');
+        }
         $data = array();
         $temp['amenity_id'] = $amenity->amenity_id;
         array_push($data, $temp);

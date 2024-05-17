@@ -105,7 +105,7 @@ class BusinessProfileController extends BaseController
         $businessProfile->country_id = $request->country_id;
         if ($request->hasFile('business_icon')) {
             if(isset($businessProfile->business_icon)) {
-                $old_image = public_path('images/business_icon/' . $user->business_icon);
+                $old_image = public_path('images/business_icon/' . $businessProfile->business_icon);
                 if (file_exists($old_image)) {
                     unlink($old_image);
                 }

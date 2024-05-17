@@ -367,7 +367,7 @@ class PostController extends BaseController
         $post = DailyPost::find($request->post_id);
         $resident_designation = ResidentDesignation::find($designation_id);
         if($resident_designation->designation_name != "Society Admin"){
-            if($request->status == 3 && $post->estatus == 5  &&  $post->created_by == auth()->id()){
+            if(($request->status == 3 || $request->status == 1) && $post->estatus == 5  &&  $post->created_by == auth()->id()){
                 return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
             }
 
@@ -407,24 +407,26 @@ class PostController extends BaseController
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
+        $post = DailyPost::where('society_daily_post_id', $request->post_id)->where('estatus','<>', 5)->first();
+        if($post){
+            $is_like  = $request->is_like;
 
-        $is_like  = $request->is_like;
+            $existingLike = DailyPostLike::where('society_daily_post_id', $request->post_id)
+                ->where('user_id', auth()->id())
+                ->first();
 
-        $existingLike = DailyPostLike::where('society_daily_post_id', $request->post_id)
-            ->where('user_id', auth()->id())
-            ->first();
+            if (($is_like == 2) && $existingLike) {
+                $existingLike->delete();
+                DailyPost::where('society_daily_post_id', $request->post_id)->decrement('total_like');
+            }
 
-        if (($is_like == 2) && $existingLike) {
-            $existingLike->delete();
-            DailyPost::where('society_daily_post_id', $request->post_id)->decrement('total_like');
-        }
-
-        if (($is_like == 1) && !$existingLike) {
-            DailyPostLike::create([
-                'society_daily_post_id' => $request->post_id,
-                'user_id' => auth()->id(),
-            ]);
-            DailyPost::where('society_daily_post_id', $request->post_id)->increment('total_like');
+            if (($is_like == 1) && !$existingLike) {
+                DailyPostLike::create([
+                    'society_daily_post_id' => $request->post_id,
+                    'user_id' => auth()->id(),
+                ]);
+                DailyPost::where('society_daily_post_id', $request->post_id)->increment('total_like');
+            }
         }
 
         return $this->sendResponseSuccess("Like updated successfully.");

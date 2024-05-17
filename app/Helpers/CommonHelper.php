@@ -195,24 +195,6 @@ function getUserType($user_type_id)
     return  $user_type;
 }
 
-function send_sms($mobile_no, $otp)
-{
-    $url = 'https://www.smsgatewayhub.com/api/mt/SendSMS?APIKey=H26o0GZiiEaUyyy0kvOV5g&senderid=MADMRT&channel=2&DCS=0&flashsms=0&number=91' . $mobile_no . '&text=Welcome%20to%20Madness%20Mart,%20Your%20One%20time%20verification%20code%20is%20' . $otp . '.%20Regards%20-%20MADNESS%20MART&route=31&EntityId=1301164983812180724&dlttemplateid=1307165088121527950';
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'GET',
-    ));
-    $response = curl_exec($curl);
-    curl_close($curl);
-    //    echo $response;
-}
 
 function getSocietyBlockAndFlatInfo($flatId)
 {
@@ -224,6 +206,12 @@ function getSocietyBlockAndFlatInfo($flatId)
     $flat_no = isset($flatInfo)?$flatInfo->flat_no:"";
 
     return compact('society_name', 'block_name', 'flat_no','street_address','block_id');
+}
+
+function getUserBlockAndFlat($userId)
+{
+    $flatInfo = SocietyMember::with('flat.society_block.society')->where('user_id',$userId)->first();
+    return $flatInfo->flat->society_block->block_name .'-'.$flatInfo->flat->flat_no;
 }
 
 
@@ -347,6 +335,105 @@ function getReasonTypeName($reasonType)
         default:
             return 'Other';
     }
+}
+
+function send_sms($mobile_no, $otp)
+{
+    $url = 'https://www.smsgatewayhub.com/api/mt/SendSMS?APIKey=H26o0GZiiEaUyyy0kvOV5g&senderid=MADMRT&channel=2&DCS=0&flashsms=0&number=91' . $mobile_no . '&text=Welcome%20to%20Madness%20Mart,%20Your%20One%20time%20verification%20code%20is%20' . $otp . '.%20Regards%20-%20MADNESS%20MART&route=31&EntityId=1301164983812180724&dlttemplateid=1307165088121527950';
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    //    echo $response;
+}
+
+function sendPushNotification($user_id, $data,$type = null){
+    // Do not send push notification from localhost
+    if (env('APP_ENV') == 'local') {
+        \Illuminate\Support\Facades\Log::info($data);
+        \Illuminate\Support\Facades\Log::info("local environment");
+        return true;
+    }
+    else{
+        if($type == "amenity"){
+            $tokens_android = \App\Models\User::where('user_id',"!=",$user_id)->where('user_type',4)->pluck('token')->all();
+            $tokens_ios = \App\Models\User::where('user_id',"!=",$user_id)->where('user_type',4)->pluck('token')->all();
+        }else{
+            $tokens_android = \App\Models\User::where('user_id',"!=",$user_id)->where('user_type',4)->pluck('token')->all();
+            $tokens_ios = \App\Models\User::where('user_id',"!=",$user_id)->where('user_type',4)->pluck('token')->all();
+        }
+
+
+        if (count($tokens_android) == 0 && count($tokens_ios) == 0) {
+                //Log::info('no token found');
+            return false;
+        }
+
+        if (isset($tokens_ios) && !empty($tokens_ios)){
+            $ios_fields = array(
+                'registration_ids' => $tokens_ios,
+                'data' => $data,
+                'notification' => array(
+                    "title" => $data['title'],
+                    "body" => $data['message'],
+                   // "image" => $data['image'],
+                    "priority" => "high",
+                    "sound" => "default",
+                )
+            );
+            sendNotification($ios_fields,"ios");
+        }
+        elseif (isset($tokens_android) && !empty($tokens_android)){
+            $android_fields = array(
+                'registration_ids' => $tokens_android,
+                'data' => $data,
+                'notification' => array(
+                    "title" => $data['title'],
+                    "body" => $data['message'],
+                   // "image" => $data['image'],
+                    "priority" => "high",
+                    "sound" => "default",
+                )
+            );
+            sendNotification($android_fields,"android");
+        }
+
+        return true;
+    }
+}
+
+function sendNotification($data,$type){
+    $api_key = env('ANDROID_NOTIFICATION_KEY');
+    if($type == "ios"){
+        $api_key = env('IOS_NOTIFICATION_KEY');
+    }
+    $headers = array('Authorization: key=' . $api_key, 'Content-Type: application/json');
+    $url = 'https://fcm.googleapis.com/fcm/send';
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    $result = curl_exec($ch);
+    curl_close($ch);
+
+    $data = explode(':', $result);
+    $sucess = explode(",", $data[2]);
+
+    return true;
 }
 
 // use Illuminate\Contracts\Database\Eloquent\Builder;

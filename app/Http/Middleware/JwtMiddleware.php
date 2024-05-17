@@ -16,20 +16,21 @@ class JwtMiddleware extends BaseMiddleware
             $user = JWTAuth::parseToken()->authenticate();
         } catch (\Exception $e) {
             if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized', 'message' => 'Token expired'), 401);
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized', 'message' => 'Token expired'), 401);
             } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized', 'message' => 'Token invalid'), 401);
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized', 'message' => 'Token invalid'), 401);
             } else {
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized', 'message' => 'Token absent'), 401);
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized', 'message' => 'Token absent'), 401);
             }
         }
 
 
-            $designation_id =  getResidentDesignationId();
+        $designation_id =  getResidentDesignationId();
+        $designation = getResidentDesignation($designation_id);
+        $v1 = 'api/v1/';
+        $message = 'You are not authorized';
 
-            $v1 = 'api/v1/';
-            $message = 'You are not authorized';
-
+        if ($designation == "Society Member") {
             // if($request->route()->uri()== $v1.'users/flat/list' && is_view_resident(1) == 0){
             //     return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message1' => $message), 401);
             // }
@@ -39,124 +40,174 @@ class JwtMiddleware extends BaseMiddleware
             //     return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message3' => $message), 401);
             // }
 
-            if($request->route()->uri()== $v1.'family_member/list' && is_view_resident(2) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()==$v1.'family_member/save'){
-                if($request->user_id == 0 && is_add_resident(2) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'family_member/list' && is_view_resident(2) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'family_member/save') {
+                if ($request->user_id == 0 && is_add_resident(2) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-                if($request->user_id > 0 && is_edit_resident(2) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                if ($request->user_id > 0 && is_edit_resident(2) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-            }if($request->route()->uri()==$v1.'family_member/delete' && is_delete_resident(2) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'family_member/delete' && is_delete_resident(2) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if($request->route()->uri()== $v1.'banner/list' && is_view_resident(3) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'banner/list' && is_view_resident(3) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if($request->route()->uri()== $v1.'banner/config/get' && is_view_resident(4) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()==$v1.'banner/config/set' && is_EDIT_resident(4) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'banner/config/get' && is_view_resident(4) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'banner/config/set' && is_EDIT_resident(4) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if($request->route()->uri()== $v1.'folder/list' && is_view_resident(5) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()== $v1.'folder/get' && is_view_resident(5) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()==$v1.'folder/save'){
-                if($request->folder_id == 0 && is_add_resident(5) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'folder/list' && is_view_resident(5) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'folder/get' && is_view_resident(5) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'folder/save') {
+                if ($request->folder_id == 0 && is_add_resident(5) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-                if($request->folder_id > 0 && is_edit_resident(5) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                if ($request->folder_id > 0 && is_edit_resident(5) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-            }if($request->route()->uri()==$v1.'folder/delete' && is_delete_resident(5) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'folder/delete' && is_delete_resident(5) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if($request->route()->uri()== $v1.'document/list' && is_view_resident(6) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()== $v1.'document/get' && is_view_resident(6) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()==$v1.'document/save'){
-                if($request->folder_id == 0 && is_add_resident(6) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'document/list' && is_view_resident(6) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'document/get' && is_view_resident(6) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'document/save') {
+                if ($request->folder_id == 0 && is_add_resident(6) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-                if($request->folder_id > 0 && is_edit_resident(6) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                if ($request->folder_id > 0 && is_edit_resident(6) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-            }if($request->route()->uri()==$v1.'document/delete' && is_delete_resident(6) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'document/delete' && is_delete_resident(6) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if($request->route()->uri()== $v1.'resident/list' && is_view_resident(7) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()== $v1.'resident/get' && is_view_resident(7) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'resident/list' && is_view_resident(7) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'resident/get' && is_view_resident(7) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if($request->route()->uri()== $v1.'announcement/list' && is_view_resident(8) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()== $v1.'announcement/get' && is_view_resident(8) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'announcement/list' && is_view_resident(8) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
-            if($request->route()->uri()==$v1.'announcement/save'){
-                if($request->folder_id == 0 && is_add_resident(8) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'announcement/get' && is_view_resident(8) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'announcement/save') {
+                if ($request->folder_id == 0 && is_add_resident(8) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-                if($request->folder_id > 0 && is_edit_resident(8) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                if ($request->folder_id > 0 && is_edit_resident(8) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-            }if($request->route()->uri()==$v1.'announcement/delete' && is_delete_resident(8) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'announcement/delete' && is_delete_resident(8) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if($request->route()->uri()== $v1.'daily_post/list' && is_view_resident(10) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()== $v1.'daily_post/get' && is_view_resident(10) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()==$v1.'daily_post/save'){
-                if($request->post_id == 0 && is_add_resident(10) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'daily_post/list' && is_view_resident(10) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'daily_post/get' && is_view_resident(10) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'daily_post/save') {
+                if ($request->post_id == 0 && is_add_resident(10) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-                if($request->post_id > 0 && is_edit_resident(10) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                if ($request->post_id > 0 && is_edit_resident(10) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-            }if($request->route()->uri()==$v1.'daily_post/delete' && is_delete_resident(10) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'daily_post/delete' && is_delete_resident(10) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if($request->route()->uri()== $v1.'amenity/list' && is_view_resident(11) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()== $v1.'amenity/get' && is_view_resident(11) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }if($request->route()->uri()==$v1.'amenity/save'){
-                if($request->amenity_id == 0 && is_add_resident(58) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'amenity/list' && is_view_resident(11) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'amenity/get' && is_view_resident(11) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'amenity/save') {
+                if ($request->amenity_id == 0 && is_add_resident(58) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-                if($request->amenity_id > 0 && is_edit_resident(58) == 0){
-                    return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                if ($request->amenity_id > 0 && is_edit_resident(58) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-            }if($request->route()->uri()==$v1.'amenity/delete' && is_delete_resident(58) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'amenity/delete' && is_delete_resident(58) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if($request->route()->uri()== $v1.'amenity/booking/list' && is_view_resident(12) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'amenity/booking/list' && is_view_resident(12) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
-            if($request->route()->uri()==$v1.'amenity/booking/create' && is_view_resident(12) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'amenity/booking/create' && is_add_resident(12) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
-            if($request->route()->uri()== $v1.'amenity/booking/list' && is_view_resident(59) == 0){
-                return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            if ($request->route()->uri() == $v1 . 'amenity/booking/list' && is_view_resident(59) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            else{
+            if ($request->route()->uri() == $v1 . 'emergency_alert/create' && is_add_resident(13) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'emergency_alert/list' && is_view_resident(60) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+
+            if ($request->route()->uri() == $v1 . 'emergency_contact/save') {
+                if ($request->contact_type != 3) {
+                    if ($request->contact_id == 0 && is_add_resident(14) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(14) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+
+                if ($request->contact_id == 0 && is_add_resident(61) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->contact_id > 0 && is_edit_resident(61) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }
+            if ($request->route()->uri() == $v1 . 'emergency_contact/list' && is_view_resident(14) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'emergency_contact/delete' && is_view_resident(14) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            } else {
                 return $next($request);
             }
+        }else{
+            
+        }
 
 
         return $next($request);
