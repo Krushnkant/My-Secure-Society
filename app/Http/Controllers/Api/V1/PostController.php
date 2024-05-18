@@ -204,7 +204,9 @@ class PostController extends BaseController
             $postsQuery->where('created_by', $user_id);
         }
         if(getReasonTypeName($designation_id) == "Society Member"){
-            $postsQuery->where('estatus',"!=",5);
+            if(auth()->id() != $user_id){
+                $postsQuery->where('estatus',"!=",5);
+            }
         }
 
 
