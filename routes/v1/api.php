@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\EmergencyAlertController;
 use App\Http\Controllers\Api\V1\BusinessProfileController;
 use App\Http\Controllers\Api\V1\BloodDonateController;
 use App\Http\Controllers\Api\V1\ServiceProviderControler;
+use App\Http\Controllers\Api\V1\VisitorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -123,12 +124,17 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('daily_help/service_provider/list',[ServiceProviderControler::class,'service_provider_list']);
     Route::post('daily_help/service_provider/get',[ServiceProviderControler::class,'get_service_provider']);
     Route::post('daily_help/service_provider/delete',[ServiceProviderControler::class,'delete_service_provider']);
-
     Route::post('daily_help/service_provider/add_to_flat',[ServiceProviderControler::class,'service_provider_add_flat']);
     Route::post('daily_help/service_provider/delete_flat',[ServiceProviderControler::class,'service_provider_delete_flat']);
-
     Route::post('daily_help/service_provider/add_review',[ServiceProviderControler::class,'service_provider_add_review']);
     Route::post('daily_help/service_provider/review/list',[ServiceProviderControler::class,'service_provider_review_list']);
+
+
+    Route::post('service_vendor/list',[VisitorController::class,'service_vendor_list']);
+    Route::post('gatepass/save',[VisitorController::class,'save_gatepass']);
+    Route::post('gatepass/list',[VisitorController::class,'gatepass_list']);
+    Route::post('gatepass/get',[VisitorController::class,'get_gatepass']);
+    Route::post('gatepass/delete',[VisitorController::class,'delete_gatepass']);
 
 });
 

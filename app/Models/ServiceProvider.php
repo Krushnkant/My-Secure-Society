@@ -21,7 +21,12 @@ class ServiceProvider extends Model
 
     public function daily_help_service()
     {
-        return $this->hasOne(User::class,'daily_help_service_id', 'daily_help_service_id');
+        return $this->hasOne(DailyHelpService::class,'daily_help_service_id', 'daily_help_service_id');
+    }
+
+    public function user_rating()
+    {
+        return $this->hasOne(UserRating::class,'user_id', 'user_id');
     }
 
     public function front_img()
@@ -32,5 +37,10 @@ class ServiceProvider extends Model
     public function back_img()
     {
         return $this->hasOne(ServiceProviderFile::class,'daily_help_provider_id', 'daily_help_provider_id')->where('file_view',2);
+    }
+
+    public function work_flat()
+    {
+        return $this->hasMany(ServiceProviderWorkFlat::class,'daily_help_provider_id', 'daily_help_provider_id');
     }
 }

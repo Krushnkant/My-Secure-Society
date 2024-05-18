@@ -7,12 +7,18 @@ use Illuminate\Http\Request;
 use App\Models\DailyHelpService;
 use App\Models\ServiceProviderFile;
 use App\Models\ServiceProvider;
-use App\Models\SocietyVisitor;
-use App\Models\ServiceProviderWorkFla;
+use App\Models\ServiceProviderReview;
+use App\Models\ServiceProviderWorkFlat;
+use App\Models\User;
+use App\Models\UserRating;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
+use DateTime;
+use Illuminate\Support\Carbon;
 
 class ServiceProviderControler extends BaseController
 {
@@ -49,12 +55,12 @@ class ServiceProviderControler extends BaseController
         $rules = [
             'daily_help_provider_id' => 'required',
             'daily_help_service_id' => 'required|exists:daily_help_service,daily_help_service_id,deleted_at,NULL',
-            'full_name' => 'required|string|max:100',
+            'full_name' => 'required|string|max:50',
             'mobile_no' => 'required|digits:10',
             'gender' => ['required', Rule::in([1, 2])],
-            'profile_pic' => 'image|mimes:jpeg,png,jpg',
-            'indentity_proof_front_img' => 'image|mimes:jpeg,png,jpg',
-            'indentity_proof_back_img' => 'image|mimes:jpeg,png,jpg',
+            'profile_pic' => 'required|image|mimes:jpeg,png,jpg',
+            'indentity_proof_front_img' => 'required|image|mimes:jpeg,png,jpg',
+            'indentity_proof_back_img' => 'required|image|mimes:jpeg,png,jpg',
         ];
 
         if ($request->has('daily_help_provider_id') && $request->input('daily_help_provider_id') != 0) {
@@ -67,9 +73,11 @@ class ServiceProviderControler extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
+        DB::beginTransaction();
+        try {
+
         if($request->daily_help_provider_id == 0){
             $user = new User();
-            $user->created_by = Auth::user()->user_id;
             $user->user_code = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
             $user->full_name = $request->full_name;
             $user->mobile_no = $request->mobile_no;
@@ -80,21 +88,24 @@ class ServiceProviderControler extends BaseController
                 $image_full_path = UploadImage($image,'images/profile_pic');
             }
             $user->profile_pic_url =  $image_full_path;
+            $user->created_by = Auth::user()->user_id;
+            $user->updated_by = Auth::user()->user_id;
             $user->save();
 
             if($user){
                 $serviceProvider = new ServiceProvider();
-                $serviceProvider->created_by = Auth::user()->user_id;
                 $serviceProvider->society_id = $society_id;
                 $serviceProvider->user_id = $user->user_id;
                 $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
+                $serviceProvider->created_by = Auth::user()->user_id;
+                $serviceProvider->updated_by = Auth::user()->user_id;
                 $serviceProvider->save();
             }
         }else{
             $serviceProvider = ServiceProvider::find($request->post_id);
             if($serviceProvider){
                 $user = User::find($serviceProvider->user_id);
-                $user->updated_by = Auth::user()->user_id;
+
                 $user->full_name = $request->full_name;
                 $user->mobile_no = $request->mobile_no;
                 $user->gender = $request->gender;
@@ -110,9 +121,11 @@ class ServiceProviderControler extends BaseController
                     $image_full_path = UploadImage($image,'images/profile_pic');
                 }
                 $user->profile_pic_url =  $image_full_path;
+                $user->updated_by = Auth::user()->user_id;
                 $user->save();
             }
             $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
+            $serviceProvider->updated_by = Auth::user()->user_id;
             $serviceProvider->save();
         }
 
@@ -124,21 +137,29 @@ class ServiceProviderControler extends BaseController
             //     }
             // }
             $image = $request->file('indentity_proof_front_img');
+            $fileType = getFileType($image);
             $fileUrl = UploadImage($image,'images/provider_indentity_proof');
             $this->storeFileEntry($serviceProvider->daily_help_provider_id, $fileType, $fileUrl,1);
         }
 
         if ($request->hasFile('indentity_proof_back_img')) {
             $image = $request->file('indentity_proof_back_img');
+            $fileType = getFileType($image);
             $fileUrl = UploadImage($image,'images/provider_indentity_proof');
             $this->storeFileEntry($serviceProvider->daily_help_provider_id, $fileType, $fileUrl,2);
         }
+        DB::commit();
 
         $data = array();
-        $temp['daily_help_provider_id'] = $businessProfile->daily_help_provider_id;
+        $temp['daily_help_provider_id'] = $serviceProvider->daily_help_provider_id;
         $temp['passcode'] = $user->user_code;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, 'Service Provider successfully');
+        } catch (\Exception $e) {
+            dd($e);
+            DB::rollBack();
+            return $this->sendError(500, 'An error occurred while saving the service provider.', "Internal Server Error", []);
+        }
     }
 
     public function storeFileEntry($Id, $fileType, $fileUrl,$fileView)
@@ -163,24 +184,52 @@ class ServiceProviderControler extends BaseController
 
         // If validation fails, return error response
         if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-        // Retrieve business profiles based on parameters
-        $query = ServiceProvider::with('user','daily_help_service')->where('estatus',1)->where('daily_help_service_id',$request->daily_help_service_id);
+        // Retrieve service providers based on parameters
+        $query = ServiceProvider::with(['user', 'daily_help_service','user_rating'])
+            ->where('estatus', 1)
+            ->where('daily_help_service_id', $request->daily_help_service_id);
+
         if ($request->has('category_id') && $request->input('category_id') != 0) {
             $query->where('category_id', $request->category_id);
         }
 
         if ($request->has('search_text')) {
             $searchText = $request->input('search_text');
-
-            $query->whereHas('user', function ($userQuery) use ($searchText) {
+            $query->whereHas('user', function (Builder $userQuery) use ($searchText) {
                 $userQuery->where('mobile_no', 'LIKE', "%$searchText%")
-                          ->orWhere('user_code', 'LIKE', "%$searchText%")
-                          ->orWhere('full_name', 'LIKE', "%$searchText%");
+                        ->orWhere('user_code', 'LIKE', "%$searchText%")
+                        ->orWhere('full_name', 'LIKE', "%$searchText%");
             });
         }
+
+         // Apply the rating filter
+    if ($request->has('rating')) {
+        $rating = $request->input('rating');
+        if($rating < 6){
+        $query->whereHas('user_rating', function (Builder $ratingQuery) use ($rating) {
+            switch ($rating) {
+                case 1:
+                    $ratingQuery->where('rating', '>=', 4);
+                    break;
+                case 2:
+                    $ratingQuery->where('rating', '>=', 3);
+                    break;
+                case 3:
+                    $ratingQuery->where('rating', '>=', 2);
+                    break;
+                case 4:
+                    $ratingQuery->where('rating', '>=', 1);
+                    break;
+                case 5:
+                    $ratingQuery->whereNull('rating');
+                    break;
+            }
+        });
+     }
+    }
 
         $perPage = 10;
         $providers = $query->paginate($perPage);
@@ -190,17 +239,19 @@ class ServiceProviderControler extends BaseController
         foreach ($providers as $provider) {
             $temp['daily_help_provider_id'] = $provider->daily_help_provider_id;
             $temp['daily_help_user_id'] = $provider->user_id;
-            $temp['full_name'] = isset($profile->user)?$profile->user->full_name:"";
-            $temp['mobile_no'] = isset($profile->user)?$profile->user->mobile_no:"";
-            $temp['profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
-            $temp['service_name'] = isset($profile->daily_help_service)?$profile->daily_help_service->service_name:"";
-            $temp['service_icon'] = isset($profile->user)?$profile->user->service_icon:"";
-            $temp['rating'] = "";
+            $temp['full_name'] = $provider->user->full_name ?? "";
+            $temp['mobile_no'] = $provider->user->mobile_no ?? "";
+            $temp['profile_pic'] = $provider->user->profile_pic_url ? url($provider->user->profile_pic_url) : "";
+            $temp['service_name'] = $provider->daily_help_service->service_name ?? "";
+            $temp['service_icon'] = $provider->daily_help_service->service_icon ?? "";
+            $temp['rating'] = isset($provider->user_rating)?$provider->user_rating->rating:0;
+
             array_push($provider_arr, $temp);
         }
 
         $data['provider_list'] = $provider_arr;
-        $data['total_records'] = $providers->toArray()['total'];
+        $data['total_records'] = $providers->total();
+
         return $this->sendResponseWithData($data, "All Provider Successfully.");
     }
 
@@ -208,7 +259,7 @@ class ServiceProviderControler extends BaseController
     {
         // Validate the request parameters
         $validator = Validator::make($request->all(), [
-            'daily_help_provider_id' => 'required||exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL',
+            'daily_help_provider_id' => 'required|exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL',
         ]);
 
         // If validation fails, return error response
@@ -217,31 +268,41 @@ class ServiceProviderControler extends BaseController
         }
 
         // Retrieve the specified business profile
-        $provider = ServiceProvider::with('user','daily_help_service','front_img','back_img')->find($request->daily_help_provider_id);
+        $provider = ServiceProvider::with('user','daily_help_service','front_img','back_img','user_rating','work_flat')->find($request->daily_help_provider_id);
 
         // If profile not found, return error response
         if (!$provider) {
             return response()->json(['error' => 'provider not found'], 404);
         }
+        $work_in_flats = [];
+        if(isset($provider->work_flat)){
 
+            foreach($provider->work_flat as $work_flat){
+                $work_start_time = new DateTime($work_flat->work_start_time);
+                $work_end_time = new DateTime($work_flat->work_end_time);
+                $flat_info = getSocietyBlockAndFlatInfo($work_flat->block_flat_id);
+                $work_temp['block_flat_no'] = $flat_info['block_name'] .'-'. $flat_info['flat_no'];
+                $work_temp['work_time'] = $work_start_time->format('g:i A') . " to " . $work_end_time->format('g:i A');
+                array_push($work_in_flats, $work_temp);
+            }
+        }
 
         $data = array();
         $temp['daily_help_provider_id'] = $provider->daily_help_provider_id;
         $temp['daily_help_user_id'] = $provider->user_id;
-        $temp['daily_help_user_passcode'] = isset($profile->user)?$profile->user->user_code:"";
-        $temp['full_name'] = isset($profile->user)?$profile->user->full_name:"";
-        $temp['mobile_no'] = isset($profile->user)?$profile->user->mobile_no:"";
-        $temp['profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
-        $temp['gender'] = isset($profile->user)?$profile->user->gender:"";
-        $temp['service_name'] = isset($profile->daily_help_service)?$profile->daily_help_service->service_name:"";
-        $temp['service_icon'] = isset($profile->user)?$profile->user->service_icon:"";
-        $temp['rating'] = "";
-        $temp['indentity_proof_front_img'] = isset($profile->front_img) ? url($profile->front_img->file_url):"";
-        $temp['indentity_proof_back_img'] = isset($profile->back_img) ?url($profile->back_img->file_url):"";
-        $temp['can_add_review'] = "";
-        $temp['work_in_flats'] = "";
-        $temp['block_flat_no'] = "";
-        $temp['work_time'] = "";
+        $temp['daily_help_user_passcode'] = isset($provider->user)?$provider->user->user_code:"";
+        $temp['full_name'] = isset($provider->user)?$provider->user->full_name:"";
+        $temp['mobile_no'] = isset($provider->user)?$provider->user->mobile_no:"";
+        $temp['profile_pic'] = isset($provider->user) && $provider->profile_pic_url != ""?url($provider->user->profile_pic_url):"";
+        $temp['gender'] = isset($provider->user)?$provider->user->gender:"";
+        $temp['service_name'] = isset($provider->daily_help_service)?$provider->daily_help_service->service_name:"";
+        $temp['service_icon'] = $provider->daily_help_service->service_icon ?? "";
+        $temp['rating'] = isset($provider->user_rating)?$provider->user_rating->rating:0;
+        $temp['indentity_proof_front_img'] = isset($provider->front_img) ? url($provider->front_img->file_url):"";
+        $temp['indentity_proof_back_img'] = isset($provider->back_img) ?url($provider->back_img->file_url):"";
+        $temp['can_add_review'] = true;
+        $temp['work_in_flats'] = $work_in_flats;
+
 
 
         array_push($data, $temp);
@@ -253,12 +314,16 @@ class ServiceProviderControler extends BaseController
     {
 
         $validator = Validator::make($request->all(), [
-            'daily_help_provider_id' => 'required||exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL',
+            'daily_help_provider_id' => 'required|exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL',
         ]);
 
         // If validation fails, return error response
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+        $isAssociatedWithFlat = ServiceProviderWorkFlat::where('daily_help_provider_id', $request->daily_help_provider_id)->exists();
+        if ($isAssociatedWithFlat) {
+            return $this->sendError(400, 'Provider is associated with a flat and cannot be deleted.', "Conflict", []);
         }
 
         // Find the profile to delete
@@ -276,6 +341,11 @@ class ServiceProviderControler extends BaseController
     {
         $block_flat_id = $this->payload['block_flat_id'];
         if($block_flat_id == ""){
+            return $this->sendError(400,'Flat Not Found.', "Not Found", []);
+        }
+
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
         // Validation rules
@@ -286,11 +356,11 @@ class ServiceProviderControler extends BaseController
             ],
             'from_time' => [
                 'required',
-                'date_format:H:i:s'
+                'date_format:H:i'
             ],
             'to_time' => [
                 'required',
-                'date_format:H:i:s',
+                'date_format:H:i',
                 'after:from_time'
             ],
         ];
@@ -300,7 +370,6 @@ class ServiceProviderControler extends BaseController
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
-
 
         $work = New ServiceProviderWorkFlat();
         $work->daily_help_provider_id = $request->daily_help_provider_id;
@@ -312,17 +381,22 @@ class ServiceProviderControler extends BaseController
         $work->updated_by = Auth::user()->user_id;
         $work->save();
 
-        if($work){
-            $visitor = New SocietyVisitor();
-            $visitor->daily_help_provider_id = $request->daily_help_provider_id;
-            $visitor->block_flat_id = $block_flat_id;
-            $visitor->work_start_time = $request->from_time;
-            $visitor->work_end_time = $request->to_time;
-            $visitor->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-            $visitor->created_by = Auth::user()->user_id;
-            $visitor->updated_by = Auth::user()->user_id;
-            $visitor->save();
-        }
+        // if($work){
+        //     $visitor = New SocietyVisitor();
+        //     $visitor->daily_help_provider_id = $request->daily_help_provider_id;
+        //     $visitor->society_id = $society_id;
+        //     $visitor->block_flat_id = $block_flat_id;
+        //     $visitor->visitor_type = 4;
+        //     $visitor->total_visitors = 1;
+        //     $visitor->service_vendor_id = 0;
+        //     $visitor->visitor_user_id = $provider->user_id;
+        //     $visitor->entry_time = $request->to_time;
+        //     $visitor->approved_by = 0;
+        //     $visitor->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+        //     $visitor->created_by = Auth::user()->user_id;
+        //     $visitor->updated_by = Auth::user()->user_id;
+        //     $visitor->save();
+        // }
 
         $data = array();
         $temp['work_flat_id'] = $work->work_flat_id;
@@ -342,8 +416,6 @@ class ServiceProviderControler extends BaseController
         }
 
         $work = ServiceProviderWorkFlat::find($request->work_flat_id);
-        $work->estatus = 3;
-        $work->save();
         $work->delete();
 
         // Return success response
@@ -358,71 +430,110 @@ class ServiceProviderControler extends BaseController
         }
         // Validation rules
         $rules = [
-            'daily_help_user_id' => 'required',
-            'rating' => ['required', Rule::in([1, 2,3,4,5])],
+            'daily_help_provider_id' => 'required|exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL',
+            'rating' => ['required', Rule::in([1, 2, 3, 4, 5])],
             'review_text' => 'required|string|max:200',
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-        $review = New ServiceProviderReview();
-        $review->given_by_bloack_flat_id = $block_flat_id;
-        $review->review_to_user_id = $request->daily_help_user_id;
-        $review->number_of_star = $request->rating;
-        $review->review_text = $request->review_text;
-        $review->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
-        $review->created_by = Auth::user()->user_id;
-        $review->updated_by = Auth::user()->user_id;
-        $review->save();
+        DB::beginTransaction();
 
-        $data = array();
-        $temp['review_id'] = $review->daily_help_provider_review_id;
-        array_push($data, $temp);
-        return $this->sendResponseWithData($data, 'Add Review successfully');
+        try {
+            // Insert review
+            $review = new ServiceProviderReview();
+            $review->given_by_bloack_flat_id = $block_flat_id;
+            $review->daily_help_provider_id = $request->daily_help_provider_id;
+            $review->number_of_star = $request->rating;
+            $review->review_text = $request->review_text;
+            $review->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $review->created_by = Auth::user()->user_id;
+            $review->updated_by = Auth::user()->user_id;
+            $review->save();
+
+            // Update user rating
+            $provider = ServiceProvider::find($request->daily_help_provider_id);
+            $existingRating = UserRating::where('user_id', $provider->user_id)->first();
+
+            if ($existingRating) {
+                $totalReviews = $existingRating->total_reviews + 1;
+                $newRating = (($existingRating->rating * $existingRating->total_reviews) + $request->rating) / $totalReviews;
+
+                $existingRating->rating = round($newRating, 2); // Round to 2 decimal places
+                $existingRating->total_reviews = $totalReviews;
+                $existingRating->updated_by = Auth::user()->user_id;
+                $existingRating->save();
+            } else {
+                $newRating = new UserRating();
+                $newRating->user_id = $provider->user_id;
+                $newRating->rating = $request->rating;
+                $newRating->total_reviews = 1;
+                $newRating->estatus = 1;
+                $newRating->updated_by = Auth::user()->user_id;
+                $newRating->save();
+            }
+
+            DB::commit();
+
+            $data = [];
+            $temp['review_id'] = $review->daily_help_provider_review_id;
+            array_push($data, $temp);
+            return $this->sendResponseWithData($data, 'Add Review successfully');
+
+        } catch (\Exception $e) {
+            dd($e);
+            DB::rollBack();
+            return $this->sendError(500, 'Failed to add review. Please try again.', "Server Error", []);
+        }
     }
 
     public function service_provider_review_list(Request $request)
     {
-
-        $query = ServiceProviderReview::with('user','daily_help_service')->where('estatus',1)->where('daily_help_service_id',$request->daily_help_service_id);
-        if ($request->has('category_id') && $request->input('category_id') != 0) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        if ($request->has('search_text')) {
-            $searchText = $request->input('search_text');
-
-            $query->whereHas('user', function ($userQuery) use ($searchText) {
-                $userQuery->where('mobile_no', 'LIKE', "%$searchText%")
-                          ->orWhere('user_code', 'LIKE', "%$searchText%")
-                          ->orWhere('full_name', 'LIKE', "%$searchText%");
-            });
-        }
-
+        $query = ServiceProviderReview::with('user')->where('review_status',1);
         $perPage = 10;
-        $providers = $query->paginate($perPage);
+        $reviews = $query->paginate($perPage);
+        $total_one_star_rating = $this->getStarRatingCount(1);
+        $total_two_star_rating = $this->getStarRatingCount(2);
+        $total_three_star_rating = $this->getStarRatingCount(3);
+        $total_four_star_rating = $this->getStarRatingCount(4);
+        $total_five_star_rating = $this->getStarRatingCount(5);
+        $total_reviews = $total_one_star_rating + $total_two_star_rating + $total_three_star_rating + $total_four_star_rating + $total_five_star_rating;
 
         // Format the response data
-        $provider_arr = [];
-        foreach ($providers as $provider) {
-            $temp['daily_help_provider_id'] = $provider->daily_help_provider_id;
-            $temp['daily_help_user_id'] = $provider->user_id;
-            $temp['full_name'] = isset($profile->user)?$profile->user->full_name:"";
-            $temp['mobile_no'] = isset($profile->user)?$profile->user->mobile_no:"";
-            $temp['profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
-            $temp['service_name'] = isset($profile->daily_help_service)?$profile->daily_help_service->service_name:"";
-            $temp['service_icon'] = isset($profile->user)?$profile->user->service_icon:"";
-            $temp['rating'] = "";
-            array_push($provider_arr, $temp);
+        $reviews_arr = [];
+        foreach ($reviews as $review) {
+            $temp['daily_help_provider_review_id'] = $review->daily_help_provider_review_id;
+            $temp['rating'] = $review->number_of_star;
+            $temp['review_text'] = $review->review_text;
+            $temp['review_by_user_id'] = isset($review->user)?$review->user->user_id:"";
+            $temp['review_by_user_fullname'] = isset($review->user)?$review->user->full_name:"";
+            $temp['review_by_user_block_flat_no'] = isset($review->user)?getUserBlockAndFlat($review->user->user_id):"";
+            $temp['review_by_user_profile_pic'] = isset($review->user) && $review->user->profile_pic_url != ""?url($review->user->profile_pic_url):"";
+            $temp['review_time'] =  Carbon::parse($review->created_at)->format('d-m-Y H:i:s');
+            $temp['review_time_str'] = Carbon::parse($review->created_at)->diffForHumans();
+            array_push($reviews_arr, $temp);
         }
 
-        $data['provider_list'] = $provider_arr;
-        $data['total_records'] = $providers->toArray()['total'];
+        $data['total_one_star_rating'] = $total_one_star_rating;
+        $data['total_two_star_rating'] = $total_two_star_rating;
+        $data['total_three_star_rating'] = $total_three_star_rating;
+        $data['total_four_star_rating'] = $total_four_star_rating;
+        $data['total_five_star_rating'] = $total_five_star_rating;
+        $data['total_reviews'] = $total_reviews;
+        $data['provider_list'] = $reviews_arr;
+        $data['total_records'] = $reviews->toArray()['total'];
         return $this->sendResponseWithData($data, "All Provider Successfully.");
+    }
+
+    public function getStarRatingCount(int $starRating): int
+    {
+        return ServiceProviderReview::where('review_status', 1)
+                   ->where('number_of_star', $starRating)
+                   ->count();
     }
 
 }

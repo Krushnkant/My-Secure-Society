@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('vehicle_number', 30)->nullable();
             $table->dateTime('entry_time');
             // $table->dateTime('exit_time');
-            $table->integer('visitor_status')->enum([1, 2, 3, 4, 5])->default(1)->comment('1 - Pre Approved, 2 - Approved 3 - Rejected, 4 - Pending, 5 - Cancelled')->index();
+            $table->integer('visitor_status')->enum([1, 2, 3, 4, 5])->default(4)->comment('1 - Pre Approved, 2 - Approved 3 - Rejected, 4 - Pending, 5 - Cancelled')->index();
             $table->integer('approved_by')->comment('0 till not Approved');
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();

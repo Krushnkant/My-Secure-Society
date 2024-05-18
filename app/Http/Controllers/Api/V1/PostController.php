@@ -134,8 +134,6 @@ class PostController extends BaseController
         $temp['post_id'] = $post->society_daily_post_id;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Post " . $action . " Successfully");
-
-        return $this->sendResponseSuccess("Post " . $action . " Successfully");
     }
 
     public function storePollOption($postId, $optionText)

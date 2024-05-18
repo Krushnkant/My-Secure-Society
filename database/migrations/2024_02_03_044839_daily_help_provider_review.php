@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('daily_help_provider_review', function (Blueprint $table) {
             $table->bigIncrements('daily_help_provider_review_id')->index();
             $table->integer('given_by_bloack_flat_id')->index();
-            $table->integer('review_to_user_id')->index();
+            $table->integer('daily_help_provider_id')->index();
             $table->float('number_of_star')->index();
             $table->string('review_text', 200);
             $table->integer('review_status')->enum([1, 2, 3, 4])->default(1)->comment('1 - Approved, 2 - Rejected, 3 - Delete, 4 - Pending')->index();

@@ -13,4 +13,9 @@ class ServiceProviderReview extends Model
     protected $primaryKey = 'daily_help_provider_review_id';
 
     protected $dates = ['deleted_at'];
+
+    public function user()
+    {
+        return $this->hasOne(User::class,'user_id', 'created_by');
+    }
 }
