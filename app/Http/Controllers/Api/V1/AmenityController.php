@@ -55,8 +55,18 @@ class AmenityController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        // Handle the request data and save the amenity details
-        $amenity = new Amenity();
+        if ($request->has('amenity_id') && $request->amenity_id != 0) {
+            $amenity = Amenity::find($request->amenity_id);
+            if (!$amenity) {
+                return $this->sendError(404, 'amenity not found.', "Not Found", []);
+            }
+            $amenity->updated_by = Auth::user()->user_id;
+        } else {
+            $amenity = new Amenity();
+            $amenity->created_by = Auth::user()->user_id;
+            $amenity->updated_by = Auth::user()->user_id;
+        }
+
         $amenity->society_id = $request->society_id;
         $amenity->amenity_name = $request->title;
         $amenity->amenity_description = $request->description;
@@ -64,8 +74,6 @@ class AmenityController extends BaseController
         $amenity->applicable_payment_type = $request->allowed_payment_type;
         $amenity->max_booking_per_slot = $request->max_booking_per_slot;
         $amenity->max_people_per_booking = $request->max_people_per_booking;
-        $amenity->created_by = Auth::user()->user_id;
-        $amenity->updated_by = Auth::user()->user_id;
         $amenity->save();
 
 
@@ -79,12 +87,12 @@ class AmenityController extends BaseController
         }
 
         // Handle file upload for PDF
-        if ($request->hasFile('pdf_file')) {
-            $file = $request->file('pdf_file');
-            $fileType = getFileType($file);
-            $fileUrl = UploadImage($file,'images/amenity');
-            $this->storeFileEntry($amenity->amenity_id, $fileType, $fileUrl);
-        }
+        // if ($request->hasFile('pdf_file')) {
+        //     $file = $request->file('pdf_file');
+        //     $fileType = getFileType($file);
+        //     $fileUrl = UploadImage($file,'images/amenity');
+        //     $this->storeFileEntry($amenity->amenity_id, $fileType, $fileUrl);
+        // }
 
         // Save slot data
         foreach ($request->slot_list as $slotData) {
@@ -105,7 +113,7 @@ class AmenityController extends BaseController
         $data = array();
         $temp['amenity_id'] = $amenity->amenity_id;
         array_push($data, $temp);
-        return $this->sendResponseWithData($data, "Amenity Added Successfully.");
+        return $this->sendResponseWithData($data, "Amenity saved successfully.");
     }
 
     public function storeFileEntry($Id, $fileType, $fileUrl)
@@ -221,7 +229,7 @@ class AmenityController extends BaseController
         $temp['max_booking_per_slot'] = $amenity->max_booking_per_slot;
         $temp['max_people_per_booking'] = $amenity->max_people_per_booking;
         $temp['image_urls'] = $amenity->amenity_images;
-        $temp['pdf_url'] = $amenity->amenity_pdf;
+        // $temp['pdf_url'] = $amenity->amenity_pdf;
         $temp['slot_list'] = $slot_arr;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Get Amenity Details Successfully.");
@@ -413,8 +421,5 @@ class AmenityController extends BaseController
             return $this->sendError(400,'Booking status cannot be changed from Pending.', "Invalid", []);
         }
     }
-
-
-
 
 }

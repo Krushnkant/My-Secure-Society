@@ -128,7 +128,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -140,7 +139,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -152,7 +150,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -164,7 +161,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -176,7 +172,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -188,7 +183,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -200,7 +194,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -212,7 +205,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -224,7 +216,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -236,7 +227,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -248,7 +238,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -260,7 +249,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -272,7 +260,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 0,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -284,7 +271,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -296,7 +282,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -308,7 +293,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -320,7 +304,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -332,7 +315,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -344,7 +326,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -356,7 +337,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -368,7 +348,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -380,7 +359,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -392,7 +370,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -404,7 +381,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -416,7 +392,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -428,7 +403,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -440,7 +414,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -452,7 +425,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -464,7 +436,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -476,7 +447,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -488,7 +458,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -500,7 +469,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -512,7 +480,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -524,7 +491,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -536,7 +502,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -548,7 +513,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -560,7 +524,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -572,7 +535,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -584,7 +546,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -596,7 +557,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -608,7 +568,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -620,7 +579,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -632,7 +590,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -644,7 +601,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -656,7 +612,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -668,7 +623,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -680,7 +634,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -692,7 +645,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -704,7 +656,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -716,7 +667,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -728,7 +678,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -740,7 +689,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -752,7 +700,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -764,7 +711,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -776,7 +722,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -788,7 +733,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -800,7 +744,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -817,7 +760,6 @@ class SocietyController extends Controller
                                 "can_edit" => 1,
                                 "can_delete" => 1,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -841,7 +783,6 @@ class SocietyController extends Controller
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
-
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),

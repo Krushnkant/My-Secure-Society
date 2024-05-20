@@ -54,7 +54,7 @@ class EmergencyContactController extends BaseController
         if($request->contact_type == 2){
             $emergencyContact->master_id = $society_id;
         }else{
-            $emergencyContact->master_id = $user_id = Auth::id();
+            $emergencyContact->master_id = Auth::id();
         }
         $emergencyContact->contact_type = $request->contact_type;
         $emergencyContact->name = $request->name;
@@ -118,7 +118,6 @@ class EmergencyContactController extends BaseController
             return $this->sendError(400, 'Society ID not provided.', "Not Found", []);
         }
         $designation_id = $this->payload['designation_id'];
-        $user_id = Auth::id();
         $validator = Validator::make($request->all(), [
             'contact_id' => 'required|exists:emergency_contact,emergency_contact_id,deleted_at,NULL',
         ]);
@@ -127,8 +126,11 @@ class EmergencyContactController extends BaseController
         }
 
         $contact = EmergencyContact::find($request->contact_id);
-        $designation = getResidentDesignation($designation_id);
-        if($designation == "Society Member" &&  $contact->created_by != auth()->id()){
+        if($contact->contact_type == 2 && $contact->master_id != $society_id){
+            return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+        }
+
+        if(getResidentDesignation($designation_id) != "Society Admin" &&  $contact->created_by != auth()->id()){
             return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
         }
         if ($contact) {

@@ -37,10 +37,13 @@ class PostController extends BaseController
             return count($value) >= $minOptions;
         });
 
+        Validator::extend('not_zero', function ($attribute, $value, $parameters, $validator) {
+            return $value != 0;
+        });
+
         $rules = [
             'society_id' => 'required|exists:society',
             'post_id' => 'required|integer',
-            'parent_post_id' => 'required_if:post_type,1,2,3|integer|in:0',
             'parent_post_id' => 'required|integer',
             'post_type' => 'required|in:1,2,3,4',
             'post_description' => 'required|max:500',
@@ -53,8 +56,17 @@ class PostController extends BaseController
 
         $messages = [
             'event_venue.required_if' => 'The event venue field is required.',
-            'poll_options.required_if' => 'The poll options field is required.'
+            'poll_options.required_if' => 'The poll options field is required.',
+            'poll_options.min_options_for_poll' => 'Minimum 2 options required in poll.',
+            'parent_post_id.not_zero' => 'The parent post ID must not be zero.',
+
         ];
+
+        if ($request->post_type == 4) {
+            $rules['parent_post_id'] .= '|not_zero';
+        }else{
+            $rules['parent_post_id'] .= '|in:0';
+        }
 
         if ($request->parent_post_id != 0) {
             $rules['parent_post_id'] .= '|exists:society_daily_post,society_daily_post_id,deleted_at,NULL';
@@ -127,6 +139,11 @@ class PostController extends BaseController
                     }
                 }
             }
+            if ($request->post_type == 4 && $request->post_id == 0) {
+                $postParent = DailyPost::find($request->parent_post_id);
+                $postParent->total_comment += 1;
+                $postParent->save();
+            }
         }
 
 
@@ -164,10 +181,18 @@ class PostController extends BaseController
         }
         $designation_id = $this->payload['designation_id'];
 
+        Validator::extend('not_zero', function ($attribute, $value, $parameters, $validator) {
+            return $value != 0;
+        });
+
         $rules = [
             'user_id' => 'required',
             'post_id' => 'required',
             'post_type' => 'required|in:0,1,2,3,4',
+        ];
+
+        $messages = [
+            'post_id.not_zero' => 'The post ID must not be zero.',
         ];
 
         if ($request->post_id != 0) {
@@ -178,7 +203,13 @@ class PostController extends BaseController
             $rules['user_id'] .= '|exists:user,user_id,deleted_at,NULL';
         }
 
-        $validator = Validator::make($request->all(), $rules);
+        if ($request->post_type == 4) {
+            $rules['post_id'] .= '|not_zero';
+        }else{
+            $rules['post_id'] .= '|in:0';
+        }
+
+        $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
@@ -189,8 +220,8 @@ class PostController extends BaseController
         $post_id = $request->input('post_id');
 
         $postsQuery = DailyPost::with('user.societymembers', 'poll_options','daily_post_files')
-            ->where('society_id', $society_id)
-            ->where('estatus', 1);
+            ->where('society_id', $society_id);
+            // ->where('estatus', 1);
 
         if ($post_type !== null && $post_type != 0) {
             $postsQuery->where('post_type', $post_type);
@@ -201,12 +232,12 @@ class PostController extends BaseController
         if ($user_id !== null && $user_id != 0) {
             $postsQuery->where('created_by', $user_id);
         }
-        if(getReasonTypeName($designation_id) == "Society Member"){
-            if(auth()->id() != $user_id){
-                $postsQuery->where('estatus',"!=",5);
-            }
+        if(getResidentDesignation($designation_id) == "Society Member"){
+            $postsQuery->where(function($query){
+                $query->where('estatus', '!=', 5)
+                    ->orWhere('created_by', auth()->id());
+            });
         }
-
 
         if ($post_id !== null && $post_id != 0) {
             $postsQuery->where('parent_post_id',$post_id);
@@ -343,13 +374,12 @@ class PostController extends BaseController
         }
 
         $post = DailyPost::find($request->post_id);
-        $resident_designation = ResidentDesignation::find($designation_id);
-        if($resident_designation->designation_name != "Society Admin"){
+        if(getResidentDesignation($designation_id) != "Society Admin"){
             if(($request->status == 3 || $request->status == 1) && $post->estatus == 5  &&  $post->created_by == auth()->id()){
                 return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
             }
 
-            if($resident_designation->designation_name == "Society Member"){
+            if(getResidentDesignation($designation_id) == "Society Member"){
                 if($request->status == 3 &&  $post->created_by != auth()->id()){
                     return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
                 }
@@ -363,6 +393,11 @@ class PostController extends BaseController
             }
             $post->save();
             if($request->status == 3){
+                $postParent = DailyPost::find($post->parent_post_id);
+                if($postParent->total_comment > 0){
+                    $postParent->total_comment -= 1;
+                    $postParent->save();
+                }
                 $post->delete();
             }
         }
@@ -377,7 +412,7 @@ class PostController extends BaseController
         }
         // Validate the request parameters
         $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL,society_id,'.$society_id,
+            'post_id' => 'required|exists:society_daily_post,society_daily_post_id,deleted_at,NULL,estatus,1,society_id,'.$society_id,
             'is_like' => 'required|in:1,2',
         ]);
 
@@ -412,7 +447,7 @@ class PostController extends BaseController
 
     public function report_reason_list()
     {
-        $options = PostReportOption::where('estatus', 1)->orderBy('title', 'asc')->get();
+        $options = PostReportOption::where('estatus', 1)->orderBy('report_option_text', 'asc')->get();
         $option_arr = [];
         foreach ($options as $option) {
             $temp['report_option_id'] = $option->daily_post_report_option_id;

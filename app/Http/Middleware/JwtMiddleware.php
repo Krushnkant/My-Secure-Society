@@ -202,11 +202,12 @@ class JwtMiddleware extends BaseMiddleware
             }
             if ($request->route()->uri() == $v1 . 'emergency_contact/delete' && is_view_resident(14) == 0) {
                 return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            } else {
-                return $next($request);
             }
+
+            return $next($request);
+
         }else{
-            
+
         }
 
 

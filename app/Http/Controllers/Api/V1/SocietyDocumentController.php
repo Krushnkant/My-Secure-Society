@@ -140,9 +140,9 @@ class SocietyDocumentController extends BaseController
         ->where('society_id', $society_id);
 
         if($request->is_shared_list){
-               $query->where('sharedocumentflat', function ($query) use ($block_flat_id) {
-                    $query->where('block_flat_id', $block_flat_id);
-                });
+            $query->whereHas('sharedocumentflat', function ($subQuery) use ($block_flat_id) {
+                $subQuery->where('block_flat_id', $block_flat_id);
+            });
         }else{
             $query->where('created_by', $user_id);
             $query->where('document_folder_id', $request->folder_id);
@@ -152,8 +152,6 @@ class SocietyDocumentController extends BaseController
 
         }
         $query->with('sharedocumentflat', 'document_file');
-
-
         $query->orderBy('created_at', 'DESC');
         $perPage = 10;
         $documents = $query->paginate($perPage);
