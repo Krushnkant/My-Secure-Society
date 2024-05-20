@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\ServiceProvider;
 use App\Models\ServiceVendor;
+use App\Models\SocietyVisitor;
 use App\Models\VisitorGatepass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -172,7 +173,6 @@ class VisitorController extends BaseController
 
         $visitor_type = $request->input('visitor_type');
         $date = $request->input('date');
-        $page_no = $request->input('page_no', 1);
 
         $gatepassQuery = VisitorGatepass::with('user','daily_help_provider','service_vendor.service_vendor_file','visitor_image')
             ->where('society_id', $society_id);
@@ -185,7 +185,7 @@ class VisitorController extends BaseController
             $gatepassQuery->whereDate('created_at', $date);
         }
 
-        $gatepasses = $gatepassQuery->orderBy('created_at', 'DESC')->paginate(10, ['*'], 'page', $page_no);
+        $gatepasses = $gatepassQuery->orderBy('created_at', 'DESC')->paginate(10);
 
         $gatepass_arr = [];
         foreach ($gatepasses as $gatepass) {
@@ -219,7 +219,7 @@ class VisitorController extends BaseController
         }
 
         $data['gatepass_list'] = $gatepass_arr;
-        $data['total_gatepass'] = $gatepasses->total();
+        $data['total_records'] = $gatepasses->total();
 
         return $this->sendResponseWithData($data, "Gatepass list retrieved successfully.");
 
@@ -244,48 +244,249 @@ class VisitorController extends BaseController
         $gatepassQuery = VisitorGatepass::with('user','daily_help_provider','service_vendor.service_vendor_file','visitor_image')
         ->where('society_id', $society_id);
 
-    if ($request->has('gatepass_id') && $request->gatepass_id != "") {
-        $gatepassQuery->where('visitor_gatepass_id', $request->gatepass_id);
-    }
+        if ($request->has('gatepass_id') && $request->gatepass_id != "") {
+            $gatepassQuery->where('visitor_gatepass_id', $request->gatepass_id);
+        }
 
-    if ($request->has('visit_code') && $request->visit_code != "") {
-        $gatepassQuery->where('visit_code', $request->visit_code);
-    }
+        if ($request->has('visit_code') && $request->visit_code != "") {
+            $gatepassQuery->where('visit_code', $request->visit_code);
+        }
 
-    $gatepass = $gatepassQuery->first();
+        $gatepass = $gatepassQuery->first();
 
         if (!$gatepass) {
             return $this->sendError(404, "Gatepass not found", "Invalid Gatepass", []);
         }
-
-        $data = [];
-        $data['gatepass_id'] = $gatepass->visitor_gatepass_id;
-        $data['visitor_type'] = $gatepass->visitor_type;
-        $data['service_vendor_id'] = $gatepass->service_vendor_id ?? 0;
-        $data['daily_help_provider_id'] = $gatepass->daily_help_provider_id ?? 0;
-        $data['daily_help_service_name'] = optional($gatepass->daily_help_provider)->service_name ?? '';
+        $data = array();
+        $temp['gatepass_id'] = $gatepass->visitor_gatepass_id;
+        $temp['visitor_type'] = $gatepass->visitor_type;
+        $temp['service_vendor_id'] = $gatepass->service_vendor_id ?? 0;
+        $temp['daily_help_provider_id'] = $gatepass->daily_help_provider_id ?? 0;
+        $temp['daily_help_service_name'] = optional($gatepass->daily_help_provider)->service_name ?? '';
         if($gatepass->service_vendor_id > 0){
-            $data['company_name'] = optional($gatepass->service_vendor)->vendor_company_name ?? '';
-            $data['company_icon'] =   isset($gatepass->service_vendor->service_vendor_file) ? url($gatepass->service_vendor->service_vendor_file->file_url) : '';
+            $temp['company_name'] = optional($gatepass->service_vendor)->vendor_company_name ?? '';
+            $temp['company_icon'] =   isset($gatepass->service_vendor->service_vendor_file) ? url($gatepass->service_vendor->service_vendor_file->file_url) : '';
         }else{
-            $data['company_name'] = $gatepass->company_name;
-            $data['company_icon'] = '';
+            $temp['company_name'] = $gatepass->company_name;
+            $temp['company_icon'] = '';
         }
-        $data['visitor_mobile_no'] = $gatepass->visitor_mobile_no;
-        $data['visitor_image'] = isset($gatepass->visitor_image) ? url($gatepass->visitor_image->file_url) : '';
-        $data['invitation_message'] = $gatepass->invitation_message;
-        $data['total_visitors'] = $gatepass->total_visitors;
-        $data['from_date'] = Carbon::parse($gatepass->valid_from_date)->format('Y-m-d');
-        $data['to_date'] = Carbon::parse($gatepass->valid_to_date)->format('Y-m-d');
-        $data['allowed_days'] = explode(',', $gatepass->allowed_days);
-        $data['from_time'] = Carbon::parse($gatepass->valid_from_time)->format('H:i');
-        $data['to_time'] = Carbon::parse($gatepass->valid_to_time)->format('H:i');
-        $data['block_flat_id'] = $gatepass->block_flat_id;
-        $data['society_id'] = $gatepass->society_id;
-        $data['added_by_user_id'] = $gatepass->created_by;
-        $data['added_by_user_full_name'] = $gatepass->user->full_name;
+        $temp['visitor_name'] = $gatepass->visitor_name;
+        $temp['visitor_mobile_no'] = $gatepass->visitor_mobile_no;
+        $temp['visitor_image'] = isset($gatepass->visitor_image) ? url($gatepass->visitor_image->file_url) : '';
+        $temp['invitation_message'] = $gatepass->invitation_message;
+        $temp['total_visitors'] = $gatepass->total_visitors;
+        $temp['from_date'] = Carbon::parse($gatepass->valid_from_date)->format('d-m-Y');
+        $temp['to_date'] = Carbon::parse($gatepass->valid_to_date)->format('d-m-Y');
+        $temp['allowed_days'] = explode(',', $gatepass->allowed_days);
+        $temp['from_time'] = Carbon::parse($gatepass->valid_from_time)->format('H:i');
+        $temp['to_time'] = Carbon::parse($gatepass->valid_to_time)->format('H:i');
+        $temp['block_flat_id'] = $gatepass->block_flat_id;
+        $temp['society_id'] = $gatepass->society_id;
+        array_push($data, $temp);
 
         return $this->sendResponseWithData($data, "Gatepass details retrieved successfully.");
+    }
+
+    public function delete_gatepass(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+        $validator = Validator::make($request->all(), [
+            'gatepass_id' => 'required|integer|exists:visitor_gatepass,visitor_gatepass_id,deleted_at,NULL',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $gatepass = VisitorGatepass::find($request->gatepass_id);
+        if ($gatepass) {
+            $gatepass->delete();
+        }
+        return $this->sendResponseSuccess("Gatepass deleted successfully.");
+    }
+
+    public function save_new_visitor(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
+        $rules = [
+            'visitor_id' => 'required',
+            'block_flat_id' => 'required',
+            'visitor_type' => 'required|integer|in:1,2,3,4',
+            'service_vendor_id' => [
+                'required_if:visitor_type,1,3,4',
+                'integer',
+                function ($attribute, $value, $fail) {
+                    if ($value != 0 && !ServiceVendor::where('service_vendor_id', $value)->exists()) {
+                        $fail("The selected service vendor does not exist.");
+                    }
+                },
+            ],
+            'daily_help_provider_id' => [
+                'required_if:visitor_type,4',
+                'integer',
+                function ($attribute, $value, $fail) {
+                    if ($value != 0 && !ServiceProvider::where('daily_help_provider_id', $value)->exists()) {
+                        $fail("The selected daily help provider does not exist.");
+                    }
+                },
+            ],
+            'company_name' => 'nullable|string|max:100',
+            'vehicle_number' => 'nullable|string|max:10|required_if:visitor_type,2',
+            'total_visitors' => 'required|integer|min:1',
+            'visitor_name' => 'required|string|max:100',
+            'visitor_mobile_no' => 'required|string|digits:10',
+        ];
+
+        if ($request->block_flat_id != 0) {
+            $rules['block_flat_id'] .= '|exists:block_flat,block_flat_id,deleted_at,NULL';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
+
+        if ($request->has('visitor_id') && $request->visitor_id != 0) {
+            // Update existing gatepass
+            $visitor = SocietyVisitor::find($request->visitor_id);
+            if (!$visitor) {
+                return $this->sendError(404, 'visitor not found.', "Not Found", []);
+            }
+            $visitor->updated_by = Auth::user()->user_id;
+        } else {
+            // Create new gatepass
+            $visitor = new SocietyVisitor();
+            $visitor->created_by = Auth::user()->user_id;
+            $visitor->updated_by = Auth::user()->user_id;
+            $visitor->society_id = $society_id;
+        }
+        $visitor->block_flat_id = $request->block_flat_id;
+        $visitor->visitor_type = $request->input('visitor_type');
+        $visitor->service_vendor_id = $request->input('service_vendor_id');
+        $visitor->daily_help_provider_id = $request->input('daily_help_provider_id');
+        $visitor->company_name = $request->input('company_name');
+        $visitor->visitor_name = $request->input('visitor_name');
+        $visitor->visitor_mobile_no = $request->input('visitor_mobile_no');
+        $visitor->total_visitors = $request->input('total_visitors');
+        $visitor->visitor_user_id = 0;
+        $visitor->approved_by = 0;
+        $visitor->entry_time = now();
+        $visitor->visitor_status = 4;
+        $visitor->save();
+
+        // Prepare the response data
+        $data['visitor_id'] = $visitor->society_visitor_id;
+        $data['visitor_status'] = $visitor->visitor_status;
+
+        // Return success response
+        return $this->sendResponseWithData($data, "visitor saved successfully");
+    }
+
+
+    public function visitor_list(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
+        $rules = [
+            'visitor_type' => 'required|integer|in:0,1,2,3,4',
+            'date' => 'nullable|date_format:Y-m-d',
+            'visitor_status' => 'required|integer|in:0,1,2,3,4,5',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
+
+        $visitor_type = $request->input('visitor_type');
+        $visitor_status = $request->input('visitor_status');
+        $date = $request->input('date');
+
+        $visitorQuery = SocietyVisitor::with('user','daily_help_provider','service_vendor.service_vendor_file')
+            ->where('society_id', $society_id);
+
+        if ($visitor_type != 0) {
+            $visitorQuery->where('visitor_type', $visitor_type);
+        }
+
+        if ($visitor_status != 0) {
+            $visitorQuery->where('visitor_status', $visitor_status);
+        }
+
+        if ($date) {
+            $visitorQuery->whereDate('created_at', $date);
+        }
+
+        $gatevisitor = $visitorQuery->orderBy('created_at', 'DESC')->paginate(10);
+
+        $visitor_arr = [];
+        foreach ($gatevisitor as $visitor) {
+            $temp['visitor_id'] = $visitor->society_visitor_id;
+            $temp['visitor_type'] = $visitor->visitor_type;
+            $temp['daily_help_service_name'] = optional($visitor->daily_help_provider)->service_name ?? '';
+            if($visitor->service_vendor_id > 0){
+                $temp['company_name'] = optional($visitor->service_vendor)->vendor_company_name ?? '';
+                $temp['company_icon'] =   isset($visitor->service_vendor->service_vendor_file) ? url($visitor->service_vendor->service_vendor_file->file_url) : '';
+            }else{
+                $temp['company_name'] = $visitor->company_name;
+                $temp['company_icon'] = '';
+            }
+            $temp['visitor_name'] = $visitor->visitor_name;
+            $temp['visitor_mobile_no'] = $visitor->visitor_mobile_no;
+            $temp['visitor_image'] = isset($visitor->visitor_image) ? url($visitor->visitor_image->file_url) : '';
+            $temp['total_visitors'] = $visitor->total_visitors;
+            $temp['visit_time'] = Carbon::parse($visitor->entry_time)->format('d-m-Y H:i:s');
+            $temp['added_by_user_id'] = $visitor->created_by;
+            $temp['added_by_user_full_name'] = $visitor->user->full_name;
+            $temp['visit_to_block_flat_no'] = getUserBlockAndFlat($visitor->created_by);
+
+            array_push($visitor_arr, $temp);
+        }
+
+        $data['visitor_list'] = $visitor_arr;
+        $data['total_records'] = $gatevisitor->toArray()['total'];
+
+        return $this->sendResponseWithData($data, "visitor list retrieved successfully.");
+
+    }
+
+    public function visitor_change_status(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+        $validator = Validator::make($request->all(), [
+            'visitor_id' => 'required|integer|exists:society_visitor,society_visitor_id,deleted_at,NULL',
+            'visitor_status' => 'required|integer|in:1,2,3,4,5',
+            'is_delivered_at_gate' => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $visitor = SocietyVisitor::find($request->visitor_id);
+        if ($visitor) {
+            $visitor->visitor_status = $request->visitor_status;
+            if($request->visitor_status == 1 || $request->visitor_status == 2){
+               $visitor->approved_by = auth()->id();
+            }
+            $visitor->save();
+        }
+        return $this->sendResponseSuccess("visitor update status successfully.");
     }
 
 

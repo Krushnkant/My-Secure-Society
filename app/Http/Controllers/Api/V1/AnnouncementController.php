@@ -7,7 +7,7 @@ use App\Models\Announcement;
 use App\Models\AnnouncementFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use JWTAuth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
 
 class AnnouncementController extends BaseController
@@ -47,7 +47,7 @@ class AnnouncementController extends BaseController
         if($request->announcement_id == 0){
             $announcement = New Announcement();
             $announcement->society_id = $society_id;
-            $announcement->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $announcement->created_at = now();
             $announcement->created_by = Auth::user()->user_id;
             $announcement->updated_by = Auth::user()->user_id;
             $action ="Added";

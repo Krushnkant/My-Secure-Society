@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('society_id')->index();
             $table->integer('block_flat_id')->index();
             $table->integer('service_vendor_id')->index();
+            $table->string('company_name', 100)->nullable();
             $table->integer('total_parcel');
             $table->string('courier_note', 100)->nullable();
             $table->integer('collection_otp');

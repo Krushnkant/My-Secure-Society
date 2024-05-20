@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\EmergencyContactController;
 use App\Http\Controllers\Api\V1\EmergencyAlertController;
 use App\Http\Controllers\Api\V1\BusinessProfileController;
 use App\Http\Controllers\Api\V1\BloodDonateController;
+use App\Http\Controllers\Api\V1\DeliveredCourierController;
 use App\Http\Controllers\Api\V1\ServiceProviderControler;
 use App\Http\Controllers\Api\V1\VisitorController;
 
@@ -135,6 +136,15 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('gatepass/list',[VisitorController::class,'gatepass_list']);
     Route::post('gatepass/get',[VisitorController::class,'get_gatepass']);
     Route::post('gatepass/delete',[VisitorController::class,'delete_gatepass']);
+
+    Route::post('visitor/new/save',[VisitorController::class,'save_new_visitor']);
+    Route::post('visitor/list',[VisitorController::class,'visitor_list']);
+    Route::post('visitor/change_status',[VisitorController::class,'visitor_change_status']);
+
+    Route::post('delivered_at_gate/new_item/save',[DeliveredCourierController::class,'save_courier_delivered_at_gate']);
+    Route::post('delivered_at_gate/courier/list',[DeliveredCourierController::class,'delivered_at_gate_courier_list']);
+    Route::post('delivered_at_gate/courier/get',[DeliveredCourierController::class,'get_courier_delivered_at_gate']);
+    Route::post('delivered_at_gate/courier/change_status',[DeliveredCourierController::class,'delivered_at_gate_courier_change_status']);
 
 });
 
