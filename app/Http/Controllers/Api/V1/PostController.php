@@ -394,7 +394,7 @@ class PostController extends BaseController
             $post->save();
             if($request->status == 3){
                 $postParent = DailyPost::find($post->parent_post_id);
-                if($postParent->total_comment > 0){
+                if(isset($postParent) && $postParent->total_comment > 0){
                     $postParent->total_comment -= 1;
                     $postParent->save();
                 }
