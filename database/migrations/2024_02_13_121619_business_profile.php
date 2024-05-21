@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('business_profile', function (Blueprint $table) {
             $table->bigIncrements('business_profile_id')->index();
+            $table->integer('business_category_id')->index();
             $table->string('business_name', 100);
             $table->string('business_icon')->nullable();
             $table->string('phone_number', 15);

@@ -51,7 +51,10 @@ class PostController extends BaseController
             'event_time' => 'sometimes|required_if:post_type,3|date',
             'event_venue' => 'required_if:post_type,3',
             'poll_options' => 'required_if:post_type,2',
-            'media_files.*' => 'nullable|file|mimetypes:image/jpeg,image/png,video/mp4,video/quicktime|max:20480',
+            'media_files' => 'array',
+            'media_files.*.file' => 'nullable|file|mimetypes:image/jpeg,image/png,video/mp4,video/quicktime|max:20480',
+            'media_files.*.daily_post_file_id' => 'nullable|integer|exists:daily_post_files,daily_post_file_id',
+            'media_files.*.is_deleted' => 'nullable|boolean',
         ];
 
         $messages = [
@@ -87,7 +90,7 @@ class PostController extends BaseController
         }
 
         if ($request->post_type != 4) {
-            if (empty($request->file('media_files')) && empty($request->bg_color)) {
+            if (empty($request->media_files) && empty($request->bg_color)) {
                 return $this->sendError(422, 'Background color is required when media files are empty.', "Validation Error", []);
             }
         }
@@ -122,12 +125,20 @@ class PostController extends BaseController
         $post->save();
 
         if ($post) {
-            if ($request->hasFile('media_files')) {
-                $files = $request->file('media_files');
-                foreach ($files as $file) {
-                    $fileType = getFileType($file);
-                    $fileUrl = UploadImage($file, 'images/daily_post');
-                    $this->storeFileEntry($post->society_daily_post_id, $fileType, $fileUrl);
+            if ($request->has('media_files')) {
+                foreach ($request->media_files as $media) {
+                    if (isset($media['is_deleted']) && $media['is_deleted']) {
+                        // Delete the file if marked for deletion
+                        if (isset($media['daily_post_file_id'])) {
+                            DailyPostFile::where('daily_post_file_id', $media['daily_post_file_id'])->delete();
+                        }
+                    } elseif (isset($media['file'])) {
+                        // Upload new file
+                        $file = $media['file'];
+                        $fileType = getFileType($file);
+                        $fileUrl = UploadImage($file, 'images/daily_post');
+                        $this->storeFileEntry($post->society_daily_post_id, $fileType, $fileUrl);
+                    }
                 }
             }
             if ($request->post_type == 2) {
@@ -280,6 +291,9 @@ class PostController extends BaseController
             $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
             $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
             $temp['poll_options'] = $option_arr;
+            $temp['can_edit'] = true;
+            $temp['can_delete'] = true;
+            $temp['post_status'] = $post->estatus;
 
             array_push($post_arr, $temp);
         }
@@ -343,6 +357,9 @@ class PostController extends BaseController
         $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
         $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
         $temp['poll_options'] = $option_arr;
+        $temp['can_edit'] = true;
+        $temp['can_delete'] = true;
+        $temp['post_status'] = $post->estatus;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Get Post Details Successfully.");
     }

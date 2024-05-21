@@ -30,6 +30,16 @@ class BloodDonateController extends BaseController
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
+        Validator::extend('valid_state', function ($attribute, $value, $parameters, $validator) {
+            $countryId = $parameters[0];
+            return \DB::table('state')->where('state_id', $value)->where('country_id', $countryId)->exists();
+        });
+
+        Validator::extend('valid_city', function ($attribute, $value, $parameters, $validator) {
+            $stateId = $parameters[0];
+            return \DB::table('city')->where('city_id', $value)->where('state_id', $stateId)->exists();
+        });
+
         $rules = [
             'request_id' => 'required',
             'blood_group' => 'required|string|in:A+,A-,B+,B-,O+,O-,AB+,AB-',
@@ -41,16 +51,22 @@ class BloodDonateController extends BaseController
             'hospital_address' => 'required|string|max:255',
             'landmark' => 'required|string|max:50',
             'pin_code' => 'required|integer',
-            'city_id' => 'required|integer|exists:city',
-            'state_id' => 'required|integer|exists:state',
-            'country_id' => 'required|integer|exists:country',
+            'city_id' => 'required|integer|exists:city,city_id',
+            'state_id' => 'required|integer|exists:state,state_id|valid_city:' . $request->city_id,
+            'country_id' => 'required|integer|exists:country,country_id|valid_state:' . $request->state_id,
         ];
 
         if ($request->input('request_id') != 0) {
             $rules['request_id'] .= '|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL,society_id,'.$society_id;
         }
 
-        $validator = Validator::make($request->all(), $rules);
+        $messages = [
+            'expected_time.after' => 'The expected time field must be a future time after 2 hours.',
+            'valid_state' => 'The selected state does not belong to the specified country.',
+            'valid_city' => 'The selected city does not belong to the specified state.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);

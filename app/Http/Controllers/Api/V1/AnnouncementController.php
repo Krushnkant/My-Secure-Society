@@ -29,7 +29,7 @@ class AnnouncementController extends BaseController
         $request->merge(['society_id'=>$society_id]);
         $rules = [
             'announcement_id' => 'required|numeric',
-            'featured_image' => 'required|image|mimes:jpeg,png,jpg',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg',
             'title' => 'required|max:100',
             'description' => 'required|max:1000',
             'society_id' => 'required|exists:society',
@@ -63,6 +63,13 @@ class AnnouncementController extends BaseController
 
         if($announcement){
             if ($request->hasFile('featured_image')) {
+                $existingFile = AnnouncementFile::where('announcement_id', $announcement->announcement_id)->first();
+                if ($existingFile) {
+                    // Optionally delete the file from storage
+                    // Storage::delete($existingFile->file_url);
+                    $existingFile->delete();
+                }
+
                 $file = $request->file('featured_image');
                 $fileUrl = UploadImage($file,'images/announcement');
                 $fileType = getFileType($file);
@@ -135,8 +142,12 @@ class AnnouncementController extends BaseController
 
     public function delete_announcement(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
         $validator = Validator::make($request->all(), [
-            'announcement_id' => 'required|exists:announcement,announcement_id,deleted_at,NULL',
+            'announcement_id' => 'required|exists:announcement,announcement_id,deleted_at,NULL,society_id,'.$society_id,
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -153,8 +164,12 @@ class AnnouncementController extends BaseController
 
     public function get_announcement(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
         $validator = Validator::make($request->all(), [
-            'announcement_id' => 'required|exists:announcement,announcement_id,deleted_at,NULL',
+            'announcement_id' => 'required|exists:announcement,announcement_id,deleted_at,NULL,society_id,'.$society_id,
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);

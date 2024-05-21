@@ -28,4 +28,24 @@ class BusinessProfile extends Model
     {
         return $this->hasOne(User::class,'user_id', 'created_by');
     }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id', 'country_id');
+    }
+
+    public function state()
+    {
+        return $this->belongsTo(State::class, 'state_id', 'state_id');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id', 'city_id');
+    }
+
+    public function business_category()
+    {
+        return $this->belongsTo(BusinessCategory::class, 'business_category_id', 'business_category_id');
+    }
 }

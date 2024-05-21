@@ -57,7 +57,7 @@ class EmergencyAlertController extends BaseController
 
     public function emergency_alert_list(Request $request)
     {
-        $contacts = EmergencyAlert::with('society_member.user')->paginate(10);
+        $contacts = EmergencyAlert::with('society_member.user')->orderBy('created_at', 'desc')->paginate(10);
         $contact_arr = array();
         foreach ($contacts as $contact) {
             $flat_info = getSocietyBlockAndFlatInfo($contact->society_member['block_flat_id']);

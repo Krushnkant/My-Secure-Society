@@ -52,6 +52,17 @@ class BusinessProfileController extends BaseController
 
     public function save_business_profile(Request $request)
     {
+
+        Validator::extend('valid_state', function ($attribute, $value, $parameters, $validator) {
+            $countryId = $parameters[0];
+            return \DB::table('state')->where('state_id', $value)->where('country_id', $countryId)->exists();
+        });
+
+        Validator::extend('valid_city', function ($attribute, $value, $parameters, $validator) {
+            $stateId = $parameters[0];
+            return \DB::table('city')->where('city_id', $value)->where('state_id', $stateId)->exists();
+        });
+
         // Validation rules
         $rules = [
             'profile_id' => 'required',
@@ -61,9 +72,9 @@ class BusinessProfileController extends BaseController
             'business_description' => 'required|string|max:500',
             'street_address1' => 'required|string|max:255',
             'pin_code' => 'required|integer',
-            'city_id' => 'required|integer',
-            'state_id' => 'required|integer',
-            'country_id' => 'required|integer',
+            'city_id' => 'required|integer|exists:city,city_id',
+            'state_id' => 'required|integer|exists:state,state_id|valid_city:' . $request->city_id,
+            'country_id' => 'required|integer|exists:country,country_id|valid_state:' . $request->state_id,
             'business_icon' => 'required|image', // Assuming business_icon is an image file
             'image_files' => 'required|array|min:1|max:5',
             'image_files.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -82,7 +93,7 @@ class BusinessProfileController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $businessProfile = BusinessProfile::find($request->contact_id);
+        $businessProfile = BusinessProfile::find($request->profile_id);
         $action = "updated";
         if (!$businessProfile) {
             $businessProfile = new BusinessProfile();
@@ -178,7 +189,7 @@ class BusinessProfileController extends BaseController
         }
 
         // Retrieve business profiles based on parameters
-        $query = BusinessProfile::with('user')->where('estatus',1);
+        $query = BusinessProfile::with('user','city','state','country')->where('estatus',1);
         if ($request->has('category_id') && $request->input('category_id') != 0) {
             $query->where('category_id', $request->category_id);
         }
@@ -195,6 +206,7 @@ class BusinessProfileController extends BaseController
         foreach ($profiles as $profile) {
             $temp['profile_id'] = $profile->business_profile_id;
             $temp['business_name'] = $profile->business_name;
+            $temp['category_name'] = $profile->business_category->business_category_name;
             $temp['business_icon'] = $profile->business_icon != ""?url($profile->business_icon):"";
             $temp['mobile_no'] = $profile->phone_number;
             $temp['website_url'] = $profile->website_url;
@@ -205,13 +217,13 @@ class BusinessProfileController extends BaseController
             $temp['pin_code'] = $profile->pin_code;
             $temp['latitude'] = $profile->latitude;
             $temp['longitude'] = $profile->longitude;
-            $temp['city'] = $profile->city_id;
-            $temp['state'] = $profile->state_id;
-            $temp['country'] = $profile->country_id;
+            $temp['city'] = $profile->city->city_name;
+            $temp['state'] = $profile->state->state_name;
+            $temp['country'] = $profile->country->country_name;
             $temp['user_id'] = isset($profile->user)?$profile->user->user_id:"";
             $temp['user_fullname'] = isset($profile->user)?$profile->user->full_name:"";
             $temp['user_profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
-            $temp['user_block_flat_no'] = "";
+            $temp['user_block_flat_no'] = getUserBlockAndFlat($profile->created_by);
             array_push($profile_arr, $temp);
         }
 
@@ -243,7 +255,6 @@ class BusinessProfileController extends BaseController
         $image_files = [];
         foreach ($profile->image_files as $image_file) {
             $file_temp['business_profile_id'] = $image_file->business_profile_id;
-            $file_temp['file_type'] = $image_file->file_type;
             $file_temp['file_url'] = url($image_file->file_url);
             array_push($image_files, $file_temp);
         }
@@ -274,7 +285,7 @@ class BusinessProfileController extends BaseController
         $temp['user_id'] = isset($profile->user)?$profile->user->user_id:"";
         $temp['user_fullname'] = isset($profile->user)?$profile->user->full_name:"";
         $temp['user_profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
-        $temp['user_block_flat_no'] = "";
+        $temp['user_block_flat_no'] = getUserBlockAndFlat($profile->created_by);
         $temp['image_files'] = $image_files;
         $temp['pdf_file'] = $profile->pdf_file;
 
