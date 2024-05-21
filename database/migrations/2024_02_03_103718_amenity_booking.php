@@ -17,9 +17,11 @@ return new class extends Migration
             $table->integer('amenity_id')->index();
             $table->integer('amenity_slot_id')->index();
             $table->integer('booking_no')->index();
+            $table->integer('no_of_person');
+            $table->decimal('amount', 10, 2);
+            $table->decimal('total_amount', 10, 2);
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->decimal('total_amount', 10, 2);
             $table->integer('booking_status')->enum([1, 2, 3])->default(1)->comment('1 - Confirmed, 2 - Pending, 3 - Cancelled')->index();
             $table->integer('payment_status')->enum([1, 2, 3, 4, 5])->default(1)->comment('1 - Paid, 2 - Pending, 3 - Cancelled, 4 - Failed, 5 - Refunded')->index();
             $table->dateTime('created_at')->nullable();
