@@ -28,7 +28,7 @@ class BannerController extends BaseController
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
-        $banners = PostBanner::where('estatus',1)->where('society_id',$society_id)->get();
+        $banners = PostBanner::where('estatus',1)->where('user_id',auth()->id())->where('society_id',$society_id)->get();
         $banner_arr = array();
         foreach ($banners as $banner) {
             $temp['post_banner_id'] = $banner->post_banner_id;
@@ -63,7 +63,7 @@ class BannerController extends BaseController
         if($request->banner_for == 1){
             $rules['business_profile_id'] .= '|exists:business_profile,business_profile_id,deleted_at,NULL';
         }
-    
+
         if ($request->banner_for == 2) {
             $rules['society_member_id'] = [
                 'required',
@@ -79,7 +79,7 @@ class BannerController extends BaseController
                 },
             ];
         }
-        
+
 
         $validator = Validator::make($request->all(), $rules);
 

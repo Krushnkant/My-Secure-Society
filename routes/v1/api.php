@@ -119,6 +119,7 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('blood_donate/request/change_status',[BloodDonateController::class,'change_status_request_blood_donate']);
     Route::post('blood_donate/request/reply',[BloodDonateController::class,'reply_request_blood_donate']);
     Route::post('blood_donate/request/reply/list',[BloodDonateController::class,'reply_request_blood_donate_list']);
+    Route::post('blood_donate/request/reply/delete',[BloodDonateController::class,'reply_request_blood_donate_delete']);
 
     Route::get('daily_help/service/list',[ServiceProviderControler::class,'daily_help_service_list']);
     Route::post('daily_help/service_provider/save',[ServiceProviderControler::class,'save_service_provider']);

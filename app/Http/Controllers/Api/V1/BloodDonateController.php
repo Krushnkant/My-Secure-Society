@@ -30,14 +30,19 @@ class BloodDonateController extends BaseController
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
+        $designation_id = $this->payload['designation_id'];
+        if($designation_id == ""){
+            return $this->sendError(400,'designation Not Found.', "Not Found", []);
+        }
+
         Validator::extend('valid_state', function ($attribute, $value, $parameters, $validator) {
             $countryId = $parameters[0];
-            return \DB::table('state')->where('state_id', $value)->where('country_id', $countryId)->exists();
+            return \DB::table('state')->where('state_id', $countryId)->where('country_id', $value)->exists();
         });
 
         Validator::extend('valid_city', function ($attribute, $value, $parameters, $validator) {
             $stateId = $parameters[0];
-            return \DB::table('city')->where('city_id', $value)->where('state_id', $stateId)->exists();
+            return \DB::table('city')->where('city_id', $stateId)->where('state_id', $value)->exists();
         });
 
         $rules = [
@@ -74,12 +79,17 @@ class BloodDonateController extends BaseController
 
         if($request->request_id == 0){
             $blood = New BloodDonate();
-            $blood->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $blood->created_at = now();
             $blood->created_by = Auth::user()->user_id;
             $blood->updated_by = Auth::user()->user_id;
             $action = "Added";
         }else{
             $blood = BloodDonate::find($request->request_id);
+            if(getResidentDesignation($designation_id) == "Society Member"){
+                if($blood->created_by != auth()->id()){
+                    return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+                }
+            }
             if (!$blood)
             {
                 return $this->sendError(404,'request id Not Exist.', "Not Found Error", []);
@@ -173,9 +183,13 @@ class BloodDonateController extends BaseController
 
     public function get_request_blood_donate(Request $request)
     {
-        $user_id =  Auth::user()->user_id;
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+
         $validator = Validator::make($request->all(), [
-            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL',
+            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL,society_id,'.$society_id,
         ]);
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -226,8 +240,8 @@ class BloodDonateController extends BaseController
         $rules = [
             'request_id' => [
                 'required',
-                Rule::exists('blood_donate_request', 'blood_donate_request_id')->where(function ($query) use ($user_id) {
-                    $query->where('created_by', $user_id)
+                Rule::exists('blood_donate_request', 'blood_donate_request_id')->where(function ($query) use ($user_id,$society_id) {
+                    $query->where('created_by', $user_id)->where('society_id', $society_id)
                         ->whereNull('deleted_at')
                         ->where('request_status', '=', 1);  // Only allow if status is Open (1)
                 })
@@ -262,7 +276,7 @@ class BloodDonateController extends BaseController
 
         $rules = [
             'reply_id' => 'required',
-            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL',
+            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL,society_id,'.$society_id,
             // 'required_blood_bottle_qty' => 'required|integer|min:1',
             'reply_message' => 'required|string|max:255',
         ];
@@ -279,7 +293,7 @@ class BloodDonateController extends BaseController
 
         if($request->reply_id == 0){
             $blood = New BloodDonateRequestResponse();
-            $blood->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $blood->created_at = now();
             $blood->created_by = Auth::user()->user_id;
             $blood->updated_by = Auth::user()->user_id;
             $action = "Added";
@@ -310,10 +324,9 @@ class BloodDonateController extends BaseController
         if($society_id == ""){
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
-        $user_id = Auth::id();
 
         $rules = [
-            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL',
+            'request_id' => 'required|exists:blood_donate_request,blood_donate_request_id,deleted_at,NULL,society_id,'.$society_id,
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -342,4 +355,39 @@ class BloodDonateController extends BaseController
         $data['request_list'] = $blood_arr;
         return $this->sendResponseWithData($data, "All Request Retrieved Successfully.");
     }
+
+    public function reply_request_blood_donate_delete(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
+        $user_id = Auth::id();
+
+        $rules = [
+            'reply_id' => [
+                'required',
+                Rule::exists('blood_donate_request_response', 'blood_donate_request_response_id')->where(function ($query) use ($user_id) {
+                    $query->where('created_by', $user_id)
+                        ->whereNull('deleted_at');
+                })
+            ]
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
+
+        $blood = BloodDonateRequestResponse::find($request->reply_id);
+        if ($blood) {
+            $blood->response_status = 3;
+            $blood->save();
+            $blood->delete();
+        }
+        return $this->sendResponseSuccess("Reply deleted successfully.");
+    }
+
 }
