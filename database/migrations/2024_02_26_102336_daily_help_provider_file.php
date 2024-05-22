@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('daily_help_providerFile');
+        Schema::dropIfExists('daily_help_provider_file');
     }
 };
