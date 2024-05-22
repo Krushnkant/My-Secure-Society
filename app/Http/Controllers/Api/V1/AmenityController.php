@@ -39,8 +39,10 @@ class AmenityController extends BaseController
             'description' => 'required|string|max:500',
             'is_chargable' => 'required|in:1,2',
             'allowed_payment_type' => 'required|in:1,2,3',
-            'max_booking_per_slot' => 'required|integer',
-            'max_people_per_booking' => 'required|integer',
+            'booking_type' => 'required|in:1,2',
+            'max_capacity' => 'required|integer',
+            // 'max_booking_per_slot' => 'required|integer',
+            // 'max_people_per_booking' => 'required|integer',
             'image_files' => 'required|array|min:1|max:5',
             'image_files.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'pdf_file' => 'nullable|file|mimes:pdf|max:2048',
@@ -72,8 +74,8 @@ class AmenityController extends BaseController
         $amenity->amenity_description = $request->description;
         $amenity->is_chargeable = $request->is_chargable;
         $amenity->applicable_payment_type = $request->allowed_payment_type;
-        $amenity->max_booking_per_slot = $request->max_booking_per_slot;
-        $amenity->max_people_per_booking = $request->max_people_per_booking;
+        $amenity->booking_type = $request->booking_type;
+        $amenity->max_capacity = $request->max_capacity;
         $amenity->save();
 
 
@@ -154,8 +156,8 @@ class AmenityController extends BaseController
             $temp['description'] = $amenity->amenity_description;
             $temp['is_chargable'] = $amenity->is_chargeable;
             $temp['allowed_payment_type'] = $amenity->applicable_payment_type;
-            $temp['max_booking_per_slot'] = $amenity->max_booking_per_slot;
-            $temp['max_people_per_booking'] = $amenity->max_people_per_booking;
+            $temp['booking_type'] = $amenity->booking_type;
+            $temp['max_capacity'] = $amenity->max_capacity;
             $temp['image_urls'] = $amenity->amenity_images;
             $temp['pdf_url'] = $amenity->amenity_pdf;
 
@@ -165,6 +167,36 @@ class AmenityController extends BaseController
         $data['amenity_list'] = $amenity_arr;
         $data['total_records'] = $amenities->toArray()['total'];
         return $this->sendResponseWithData($data, "All Amenity Successfully.");
+    }
+
+    public function amenity_slot_list(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id,'.$society_id,
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        $slots = AmenitySlot::where('society_id', $society_id)->where('estatus', 1)->get();
+
+        $slot_arr = [];
+        foreach ($slots as $slot) {
+            $temp['slot_id'] = $slot->slot_id;
+            $temp['from_time'] = $slot->entry_time;
+            $temp['to_time'] = $slot->exit_time;
+            $temp['booking_fee'] = $slot->rent_amount;
+            $temp['available_booking'] = 0;
+            array_push($slot_arr, $temp);
+        }
+
+        $data['slot_list'] = $slot_arr;
+        return $this->sendResponseWithData($data, "All Amenity Slot Successfully.");
     }
 
     public function delete_amenity(Request $request)
@@ -226,8 +258,8 @@ class AmenityController extends BaseController
         $temp['description'] = $amenity->amenity_description;
         $temp['is_chargable'] = $amenity->is_chargeable;
         $temp['allowed_payment_type'] = $amenity->applicable_payment_type;
-        $temp['max_booking_per_slot'] = $amenity->max_booking_per_slot;
-        $temp['max_people_per_booking'] = $amenity->max_people_per_booking;
+        $temp['booking_type'] = $amenity->booking_type;
+        $temp['max_capacity'] = $amenity->max_capacity;
         $temp['image_urls'] = $amenity->amenity_images;
         // $temp['pdf_url'] = $amenity->amenity_pdf;
         $temp['slot_list'] = $slot_arr;

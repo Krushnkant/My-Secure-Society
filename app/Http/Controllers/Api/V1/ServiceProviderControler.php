@@ -53,18 +53,33 @@ class ServiceProviderControler extends BaseController
         }
         // Validation rules
         $rules = [
-            'daily_help_provider_id' => 'required',
+            'user_id' => 'required',
             'daily_help_service_id' => 'required|exists:daily_help_service,daily_help_service_id,deleted_at,NULL',
             'full_name' => 'required|string|max:50',
-            'mobile_no' => 'required|digits:10',
             'gender' => ['required', Rule::in([1, 2])],
             'profile_pic' => 'required|image|mimes:jpeg,png,jpg',
             'indentity_proof_front_img' => 'required|image|mimes:jpeg,png,jpg',
             'indentity_proof_back_img' => 'required|image|mimes:jpeg,png,jpg',
         ];
 
-        if ($request->has('daily_help_provider_id') && $request->input('daily_help_provider_id') != 0) {
-            $rules['daily_help_provider_id'] .= '|exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL';
+        if ($request->has('user_id') && $request->input('user_id') != 0) {
+            $rules['user_id'] .= '|exists:user,user_id,deleted_at,NULL';
+        }
+
+        if ($request->user_id > 0) {
+            $rules['mobile_no'] = [
+                'required',
+                'numeric',
+                'digits:10',
+                Rule::unique('user')->where('user_type',5)->ignore($request->user_id,'user_id')->whereNull('deleted_at'),
+            ];
+        } else {
+            $rules['mobile_no'] = [
+                'required',
+                'numeric',
+                'digits:10',
+                Rule::unique('user')->where('user_type',5)->whereNull('deleted_at'),
+            ];
         }
 
         $validator = Validator::make($request->all(), $rules);
@@ -76,11 +91,12 @@ class ServiceProviderControler extends BaseController
         DB::beginTransaction();
         try {
 
-        if($request->daily_help_provider_id == 0){
+        if($request->user_id == 0){
             $user = new User();
             $user->user_code = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
             $user->full_name = $request->full_name;
             $user->mobile_no = $request->mobile_no;
+            $user->user_type = 5;
             $user->gender = $request->gender;
             $image_full_path = "";
             if ($request->hasFile('profile_pic')) {
@@ -102,9 +118,8 @@ class ServiceProviderControler extends BaseController
                 $serviceProvider->save();
             }
         }else{
-            $serviceProvider = ServiceProvider::find($request->post_id);
-            if($serviceProvider){
-                $user = User::find($serviceProvider->user_id);
+
+                $user = User::find($request->user_id);
 
                 $user->full_name = $request->full_name;
                 $user->mobile_no = $request->mobile_no;
@@ -123,10 +138,12 @@ class ServiceProviderControler extends BaseController
                 $user->profile_pic_url =  $image_full_path;
                 $user->updated_by = Auth::user()->user_id;
                 $user->save();
-            }
-            $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
-            $serviceProvider->updated_by = Auth::user()->user_id;
-            $serviceProvider->save();
+                $serviceProvider = ServiceProvider::where('user_id',$user->user_id)->first();
+                if($serviceProvider){
+                    $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
+                    $serviceProvider->updated_by = Auth::user()->user_id;
+                    $serviceProvider->save();
+                }
         }
 
         if ($request->hasFile('indentity_proof_front_img')) {
@@ -151,12 +168,11 @@ class ServiceProviderControler extends BaseController
         DB::commit();
 
         $data = array();
-        $temp['daily_help_provider_id'] = $serviceProvider->daily_help_provider_id;
+        $temp['user_id'] = $user->user_id;
         $temp['passcode'] = $user->user_code;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, 'Service Provider successfully');
         } catch (\Exception $e) {
-            dd($e);
             DB::rollBack();
             return $this->sendError(500, 'An error occurred while saving the service provider.', "Internal Server Error", []);
         }
