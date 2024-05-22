@@ -9,7 +9,7 @@ class ServiceProviderFile extends Model
 {
     use HasFactory;
 
-    protected $table = 'daily_help_providerfile';
+    protected $table = 'daily_help_provider_file';
     protected $primaryKey = 'daily_help_provider_file_id';
     public $timestamps = false;
 
