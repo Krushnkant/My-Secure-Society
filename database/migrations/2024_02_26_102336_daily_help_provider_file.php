@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('daily_help_providerFile', function (Blueprint $table) {
+        Schema::create('daily_help_provider_file', function (Blueprint $table) {
             $table->bigIncrements('daily_help_provider_file_id')->index();
             $table->integer('daily_help_provider_id')->index();
             $table->integer('file_view')->enum([1, 4, 5])->comment('1 - Front Side, 2 - Back Side')->index();
