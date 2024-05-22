@@ -53,7 +53,7 @@ class PostController extends BaseController
             'poll_options' => 'required_if:post_type,2',
             'media_files' => 'array',
             'media_files.*.file' => 'nullable|file|mimetypes:image/jpeg,image/png,video/mp4,video/quicktime|max:20480',
-            'media_files.*.daily_post_file_id' => 'nullable|integer|exists:daily_post_files,daily_post_file_id',
+            'media_files.*.daily_post_file_id' => 'nullable|integer|exists:daily_post_file,daily_post_file_id',
             'media_files.*.is_deleted' => 'nullable|boolean',
         ];
 

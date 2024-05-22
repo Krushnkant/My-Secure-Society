@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+use function PHPUnit\Framework\isEmpty;
+
 class BusinessProfileController extends BaseController
 {
     public function get_business_category(Request $request)
@@ -55,17 +57,22 @@ class BusinessProfileController extends BaseController
 
         Validator::extend('valid_state', function ($attribute, $value, $parameters, $validator) {
             $countryId = $parameters[0];
-            return \DB::table('state')->where('state_id', $value)->where('country_id', $countryId)->exists();
+            return \DB::table('state')->where('state_id', $countryId)->where('country_id', $value)->exists();
         });
 
         Validator::extend('valid_city', function ($attribute, $value, $parameters, $validator) {
             $stateId = $parameters[0];
-            return \DB::table('city')->where('city_id', $value)->where('state_id', $stateId)->exists();
+            return \DB::table('city')->where('city_id', $stateId)->where('state_id', $value)->exists();
+        });
+
+        Validator::extend('exists_in_business_profile_file', function ($attribute, $value, $parameters, $validator) {
+            return \DB::table('business_profile_file')->whereIn('business_profile_file_id', $value)->exists();
         });
 
         // Validation rules
         $rules = [
             'profile_id' => 'required',
+            'category_id' => 'required|exists:business_category,business_category_id,deleted_at,NULL',
             'business_name' => 'required|string|max:100',
             'mobile_no' => 'required|string|max:10',
             'website_url' => 'required|url|max:255',
@@ -82,11 +89,23 @@ class BusinessProfileController extends BaseController
         ];
 
         if ($request->has('profile_id') && $request->input('profile_id') != 0) {
-            $rules['profile_id'] .= '|exists:business_profile,business_profile_id,deleted_at,NULL';
+            if($request->deleted_file_id[0] != ""){
+                $rules['deleted_file_id'] .= 'nullable|array|exists_in_business_profile_file';
+            }
         }
 
+        if ($request->has('profile_id') && $request->input('profile_id') != 0) {
+            $rules['profile_id'] .= '|exists:business_profile,business_profile_id,deleted_at,NULL,created_by,'.auth()->id();
+        }
+
+        $messages = [
+            'valid_state' => 'The selected state does not belong to the specified country.',
+            'valid_city' => 'The selected city does not belong to the specified state.',
+            'exists_in_business_profile_file' => 'One or more selected files for deletion do not exist.',
+        ];
+
         // Validate the request data
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules,$messages);
 
         // If validation fails, return error response
         if ($validator->fails()) {
@@ -101,6 +120,7 @@ class BusinessProfileController extends BaseController
             $businessProfile->created_by = Auth::user()->user_id;
         }
         $businessProfile->updated_by = Auth::user()->user_id;
+        $businessProfile->business_category_id = $request->category_id;
         $businessProfile->business_name = $request->business_name;
         $businessProfile->phone_number = $request->mobile_no;
         $businessProfile->website_url = $request->website_url;
@@ -129,6 +149,7 @@ class BusinessProfileController extends BaseController
         $businessProfile->save();
 
         if($businessProfile){
+
             if ($request->hasFile('image_files')) {
                 $files = $request->file('image_files');
                 foreach ($files as $file) {
@@ -144,6 +165,23 @@ class BusinessProfileController extends BaseController
                 $fileType = getFileType($file);
                 $fileUrl = UploadImage($file,'images/business');
                 $this->storeFileEntry($businessProfile->business_profile_id, $fileType, $fileUrl);
+            }
+
+            // Handle deletion of files
+            if($action == "updated"){
+                if ($request->has('deleted_file_id')) {
+                    $deletedFileIds = $request->input('deleted_file_id');
+                    foreach ($deletedFileIds as $fileId) {
+                        $fileEntry = BusinessProfileFile::find($fileId);
+                        if ($fileEntry) {
+                            $filePath = public_path($fileEntry->file_url);
+                            if (file_exists($filePath)) {
+                                unlink($filePath);
+                            }
+                            $fileEntry->delete();
+                        }
+                    }
+                }
             }
 
         //   $BusinessPrifileCategory = New BusinessProfileCategory();
@@ -236,7 +274,7 @@ class BusinessProfileController extends BaseController
     {
         // Validate the request parameters
         $validator = Validator::make($request->all(), [
-            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL',
+            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL,created_by,'.auth()->id(),
         ]);
 
         // If validation fails, return error response
@@ -254,14 +292,14 @@ class BusinessProfileController extends BaseController
 
         $image_files = [];
         foreach ($profile->image_files as $image_file) {
-            $file_temp['business_profile_id'] = $image_file->business_profile_id;
+            $file_temp['file_id'] = $image_file->business_profile_file_id;
             $file_temp['file_url'] = url($image_file->file_url);
             array_push($image_files, $file_temp);
         }
 
         $pdf_file = [];
         if(isset($profile->pdf_file) && $profile->pdf_file != null){
-            $pdf_temp['business_profile_id'] = $profile->pdf_file->business_profile_id;
+            $pdf_temp['file_id'] = $profile->pdf_file->business_profile_file_id;
             $pdf_temp['file_type'] = $profile->pdf_file->file_type;
             $pdf_temp['file_url'] = url($profile->pdf_file->file_url);
             array_push($pdf_file, $pdf_temp);

@@ -169,14 +169,17 @@ class JwtMiddleware extends BaseMiddleware
             if ($request->route()->uri() == $v1 . 'amenity/booking/create' && is_add_resident(12) == 0) {
                 return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
-            if ($request->route()->uri() == $v1 . 'amenity/booking/list' && is_view_resident(59) == 0) {
+            if ($request->route()->uri() == $v1 . 'amenity/booking/list' && is_view_resident(12) == 0) {
                 return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
             if ($request->route()->uri() == $v1 . 'emergency_alert/create' && is_add_resident(13) == 0) {
                 return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
-            if ($request->route()->uri() == $v1 . 'emergency_alert/list' && is_view_resident(60) == 0) {
+            if ($request->route()->uri() == $v1 . 'emergency_alert/list' && is_view_resident(13) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'emergency_alert/delete' && is_view_resident(13) == 0) {
                 return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
@@ -190,12 +193,12 @@ class JwtMiddleware extends BaseMiddleware
                     }
                 }
 
-                if ($request->contact_id == 0 && is_add_resident(61) == 0) {
-                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-                }
-                if ($request->contact_id > 0 && is_edit_resident(61) == 0) {
-                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-                }
+                // if ($request->contact_id == 0 && is_add_resident(61) == 0) {
+                //     return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                // }
+                // if ($request->contact_id > 0 && is_edit_resident(61) == 0) {
+                //     return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                // }
             }
             if ($request->route()->uri() == $v1 . 'emergency_contact/list' && is_view_resident(14) == 0) {
                 return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
