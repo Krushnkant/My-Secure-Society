@@ -73,8 +73,8 @@ class EmergencyContactController extends BaseController
     public function emergency_contact_list(Request $request)
     {
         $society_id = $this->payload['society_id'];
-        if($society_id == ""){
-            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        if ($society_id == "") {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
         }
 
         $rules = [
@@ -84,20 +84,22 @@ class EmergencyContactController extends BaseController
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
         $query = EmergencyContact::where('estatus', 1);
 
         if ($request->contact_type == 1) {
             $query->where('contact_type', $request->contact_type);
-        }else if($request->contact_type == 2){
+        } else if ($request->contact_type == 2) {
             $query->where('contact_type', $request->contact_type)->where('master_id', $society_id);
-        }else{
+        } else {
             $query->where('contact_type', $request->contact_type)->where('master_id', $user_id = Auth::id());
         }
 
-        $contacts = $query->paginate(10);
+        // Order by name in ascending order
+        $contacts = $query->orderBy('name', 'ASC')->paginate(10);
+
         $contact_arr = array();
         foreach ($contacts as $contact) {
             $temp['contact_id'] = $contact->emergency_contact_id;

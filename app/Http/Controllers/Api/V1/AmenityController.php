@@ -34,24 +34,46 @@ class AmenityController extends BaseController
         }
         $request->merge(['society_id'=>$society_id]);
 
-        $validator = Validator::make($request->all(), [
+        // Custom validation rule for slot time conflict
+        Validator::extend('slot_conflict', function ($attribute, $value, $parameters, $validator) use ($request) {
+            $slots = $request->slot_list;
+            foreach ($slots as $index => $slot) {
+                foreach ($slots as $subIndex => $subSlot) {
+                    if ($index != $subIndex) {
+                        if (
+                            ($slot['from_time'] >= $subSlot['from_time'] && $slot['from_time'] < $subSlot['to_time']) ||
+                            ($slot['to_time'] > $subSlot['from_time'] && $slot['to_time'] <= $subSlot['to_time'])
+                        ) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }, 'Slot times conflict with each other.');
+
+        $rules = [
             'title' => 'required|string|max:100',
             'description' => 'required|string|max:500',
             'is_chargable' => 'required|in:1,2',
-            'allowed_payment_type' => 'required|in:1,2,3',
             'booking_type' => 'required|in:1,2',
             'max_capacity' => 'required|integer',
-            // 'max_booking_per_slot' => 'required|integer',
-            // 'max_people_per_booking' => 'required|integer',
             'image_files' => 'required|array|min:1|max:5',
-            'image_files.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'pdf_file' => 'nullable|file|mimes:pdf|max:2048',
-            'slot_list' => 'required|array|min:1',
+            'image_files.*.file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_files.*.amenity_file_id' => 'nullable|integer',
+            'image_files.*.is_deleted' => 'required|in:1,2',
+            'slot_list' => 'required|array|min:1|slot_conflict',
             'slot_list.*.from_time' => 'required|date_format:H:i',
             'slot_list.*.to_time' => 'required|date_format:H:i|after:slot_list.*.from_time',
             'slot_list.*.booking_fee' => 'required|numeric',
             'slot_list.*.is_deleted' => 'required|in:1,2',
-        ]);
+        ];
+
+        if ($request->is_chargable == 1) {
+            $rules['allowed_payment_type'] = 'required|in:1,2,3';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -73,18 +95,27 @@ class AmenityController extends BaseController
         $amenity->amenity_name = $request->title;
         $amenity->amenity_description = $request->description;
         $amenity->is_chargeable = $request->is_chargable;
-        $amenity->applicable_payment_type = $request->allowed_payment_type;
+        if ($request->is_chargable == 1) {
+            $amenity->applicable_payment_type = 3;
+        }
         $amenity->booking_type = $request->booking_type;
         $amenity->max_capacity = $request->max_capacity;
         $amenity->save();
 
 
-        if ($request->hasFile('image_files')) {
-            $files = $request->file('image_files');
-            foreach ($files as $file) {
-                $fileType = getFileType($file);
-                $fileUrl = UploadImage($file,'images/amenity');
-                $this->storeFileEntry($amenity->amenity_id, $fileType, $fileUrl);
+        if ($request->has('image_files')) {
+            foreach ($request->image_files as $imageFile) {
+                if ($imageFile['is_deleted'] == 2) {
+                    if (isset($imageFile['file'])) {
+                        $file = $imageFile['file'];
+                        $fileType = getFileType($file);
+                        $fileUrl = UploadImage($file, 'images/amenity');
+                        $this->storeFileEntry($amenity->amenity_id, $fileType, $fileUrl);
+                    }
+                } elseif ($imageFile['is_deleted'] == 1 && isset($imageFile['amenity_file_id'])) {
+                    // Handle deleting existing files if needed
+                    AmenityFile::destroy($imageFile['amenity_file_id']);
+                }
             }
         }
 
@@ -98,16 +129,22 @@ class AmenityController extends BaseController
 
         // Save slot data
         foreach ($request->slot_list as $slotData) {
-            $slot = new AmenitySlot();
-            $slot->amenity_id = $amenity->amenity_id;
-            $slot->entry_time = $slotData['from_time'];
-            $slot->exit_time = $slotData['to_time'];
-            $slot->rent_amount = $slotData['booking_fee'];
-            $slot->created_by = Auth::user()->user_id;
-            $slot->updated_by = Auth::user()->user_id;
-            $slot->save();
+            if ($slotData['is_deleted'] == 2) {
+                $slot = new AmenitySlot();
+                $slot->amenity_id = $amenity->amenity_id;
+                $slot->entry_time = $slotData['from_time'];
+                $slot->exit_time = $slotData['to_time'];
+                $slot->rent_amount = $slotData['booking_fee'];
+                $slot->created_by = Auth::user()->user_id;
+                $slot->updated_by = Auth::user()->user_id;
+                $slot->save();
+            } elseif ($slotData['is_deleted'] == 1 && isset($slotData['amenity_slot_id'])) {
+                // Handle deleting existing slots if needed
+                AmenitySlot::destroy($slotData['amenity_slot_id']);
+            }
         }
-        if($amenity){
+
+        if ($request->has('amenity_id') && $request->amenity_id == 0) {
             $notification_array['title'] = $amenity->title;
             $notification_array['message'] = $amenity->description;
             sendPushNotification($amenity->creategd_by,$notification_array,'amenity');
@@ -135,7 +172,7 @@ class AmenityController extends BaseController
             return $this->sendError(400, 'Society Not Found.', "Not Found", []);
         }
         $search_text = $request->input('search_text');
-        $AmenitiesQuery = Amenity::with('amenity_images','amenity_pdf')
+        $AmenitiesQuery = Amenity::with('amenity_images')
                                 ->where('society_id', $society_id)
                                 ->where('estatus', 1);
 
@@ -150,6 +187,10 @@ class AmenityController extends BaseController
 
         $amenity_arr = [];
         foreach ($amenities as $amenity) {
+            $image_urls = [];
+            foreach ($amenity->amenity_images as $image) {
+                $image_urls[] = url($image->file_url);
+            }
 
             $temp['amenity_id'] = $amenity->amenity_id;
             $temp['title'] = $amenity->amenity_name;
@@ -158,8 +199,7 @@ class AmenityController extends BaseController
             $temp['allowed_payment_type'] = $amenity->applicable_payment_type;
             $temp['booking_type'] = $amenity->booking_type;
             $temp['max_capacity'] = $amenity->max_capacity;
-            $temp['image_urls'] = $amenity->amenity_images;
-            $temp['pdf_url'] = $amenity->amenity_pdf;
+            $temp['image_urls'] = $image_urls;
 
             array_push($amenity_arr, $temp);
         }
@@ -177,26 +217,40 @@ class AmenityController extends BaseController
         }
 
         $validator = Validator::make($request->all(), [
-            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id,'.$society_id,
+            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id,' . $society_id,
         ]);
+
         if ($validator->fails()) {
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
+        $amenity = Amenity::where('estatus', 1)->where('amenity_id', $request->amenity_id)->first();
+
+        if (!$amenity) {
+            return $this->sendError(404, "You cannot get this amenity", "Invalid amenity", []);
+        }
+
+        $max_capacity = $amenity->max_capacity;
         $slots = AmenitySlot::where('amenity_id', $request->amenity_id)->where('estatus', 1)->get();
 
         $slot_arr = [];
         foreach ($slots as $slot) {
+            $booking_count = AmenityBooking::where('amenity_slot_id', $slot->amenity_slot_id)
+                ->where('booking_status', 1) // Assuming booking_status 1 means confirmed bookings
+                ->count();
+
+            $available_booking = $max_capacity - $booking_count;
+
             $temp['slot_id'] = $slot->amenity_slot_id;
             $temp['from_time'] = $slot->entry_time;
             $temp['to_time'] = $slot->exit_time;
             $temp['booking_fee'] = $slot->rent_amount;
-            $temp['available_booking'] = 0;
+            $temp['available_booking'] = $available_booking;
             array_push($slot_arr, $temp);
         }
 
         $data['slot_list'] = $slot_arr;
-        return $this->sendResponseWithData($data, "All Amenity Slot Successfully.");
+        return $this->sendResponseWithData($data, "All Amenity Slots Successfully.");
     }
 
     public function delete_amenity(Request $request)
@@ -237,19 +291,30 @@ class AmenityController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $amenity = Amenity::with('amenity_images','amenity_pdf','amenity_slots')->where('estatus',1)->where('amenity_id',$request->amenity_id)->first();
+        $amenity = Amenity::with('amenity_images','amenity_slots')->where('estatus',1)->where('amenity_id',$request->amenity_id)->first();
 
         if (!$amenity){
             return $this->sendError(404,"You can not get this amenity", "Invalid amenity", []);
         }
 
+        $image_urls = [];
+        foreach ($amenity->amenity_images as $image) {
+            $image_urls[] = url($image->file_url);
+        }
+
         $slot_arr = [];
         foreach($amenity->amenity_slots as $slot){
+            $booking_count = AmenityBooking::where('amenity_slot_id', $slot->amenity_slot_id)
+            ->where('booking_status', 1) // Assuming booking_status 1 means confirmed bookings
+            ->count();
+
+            $available_booking = $amenity->max_capacity - $booking_count;
+
             $slot_temp['slot_id'] = $slot->amenity_slot_id;
             $slot_temp['from_time'] = $slot->entry_time;
             $slot_temp['to_time'] = $slot->exit_time;
             $slot_temp['booking_fee'] = $slot->rent_amount;
-            $slot_temp['available_booking'] = "";
+            $slot_temp['available_booking'] = $available_booking;
             array_push($slot_arr, $slot_temp);
         }
         $data = array();
@@ -260,8 +325,7 @@ class AmenityController extends BaseController
         $temp['allowed_payment_type'] = $amenity->applicable_payment_type;
         $temp['booking_type'] = $amenity->booking_type;
         $temp['max_capacity'] = $amenity->max_capacity;
-        $temp['image_urls'] = $amenity->amenity_images;
-        // $temp['pdf_url'] = $amenity->amenity_pdf;
+        $temp['image_urls'] = $image_urls;
         $temp['slot_list'] = $slot_arr;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Get Amenity Details Successfully.");

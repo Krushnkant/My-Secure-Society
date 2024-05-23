@@ -282,7 +282,7 @@ class BloodDonateController extends BaseController
         ];
 
         if ($request->input('reply_id') != 0) {
-            $rules['reply_id'] .= '|exists:blood_donate_request_response,blood_donate_request_response_id,deleted_at,NULL';
+            $rules['reply_id'] .= '|exists:blood_donate_request_response,blood_donate_request_response_id,deleted_at,NULL,created_by,'.auth()->id();
         }
 
         $validator = Validator::make($request->all(), $rules);
@@ -352,7 +352,7 @@ class BloodDonateController extends BaseController
             array_push($blood_arr, $temp);
         }
 
-        $data['request_list'] = $blood_arr;
+        $data['reply_list'] = $blood_arr;
         return $this->sendResponseWithData($data, "All Request Retrieved Successfully.");
     }
 

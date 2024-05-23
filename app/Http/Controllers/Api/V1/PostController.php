@@ -13,6 +13,7 @@ use App\Models\DailyPostLike;
 use App\Models\DailyPostPoleOption;
 use App\Models\ResidentDesignation;
 use App\Models\PostReportOption;
+use Illuminate\Support\Carbon;
 
 class PostController extends BaseController
 {
@@ -48,7 +49,6 @@ class PostController extends BaseController
             'post_type' => 'required|in:1,2,3,4',
             'post_description' => 'required|max:500',
             'bg_color' => 'nullable|max:20',
-            'event_time' => 'sometimes|required_if:post_type,3|date',
             'event_venue' => 'required_if:post_type,3',
             'poll_options' => 'required_if:post_type,2',
             'media_files' => 'array',
@@ -64,6 +64,10 @@ class PostController extends BaseController
             'parent_post_id.not_zero' => 'The parent post ID must not be zero.',
 
         ];
+
+        if ($request->post_type == 3) {
+            $rules['event_time'] = 'sometimes|required_if:post_type,3|date';
+        }
 
         if ($request->post_type == 4) {
             $rules['parent_post_id'] .= '|not_zero';
@@ -84,6 +88,15 @@ class PostController extends BaseController
         }
 
         $validator = Validator::make($request->all(), $rules, $messages);
+
+        $validator->after(function ($validator) use ($request) {
+            if ($request->post_type == 3 && $request->filled('event_time')) {
+                $eventTime = Carbon::parse($request->event_time);
+                if ($eventTime->isPast()) {
+                    $validator->errors()->add('event_time', 'The event time must be a future date and time.');
+                }
+            }
+        });
 
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
@@ -286,13 +299,13 @@ class PostController extends BaseController
             $temp['event_time'] = $post->event_time;
             $temp['is_like'] = $post->isLike();
             $temp['user_id'] = $post->created_by;
-            $temp['full_name'] = $post->user->full_name;
+            $temp['full_name'] = isset($post->user->full_name) ? $post->user->full_name : '';
             $temp['block_flat_no'] = getUserBlockAndFlat($post->created_by);
             $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
             $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
             $temp['poll_options'] = $option_arr;
-            $temp['can_edit'] = true;
-            $temp['can_delete'] = true;
+            $temp['can_edit'] = $post->created_by == auth()->id();
+            $temp['can_delete'] = $post->created_by == auth()->id();
             $temp['post_status'] = $post->estatus;
 
             array_push($post_arr, $temp);
@@ -352,13 +365,13 @@ class PostController extends BaseController
         $temp['event_time'] = $post->event_time;
         $temp['is_like'] = $post->isLike();
         $temp['user_id'] = $post->created_by;
-        $temp['full_name'] = $post->user->full_name;
+        $temp['full_name'] = isset($post->user->full_name) ? $post->user->full_name : '';
         $temp['block_flat_no'] = getUserBlockAndFlat($post->created_by);
         $temp['profile_pic'] = isset($post->user->profile_pic_url) ? url($post->user->profile_pic_url) : "";
         $temp['post_date'] = $post->created_at->format('d-m-Y H:i:s');
         $temp['poll_options'] = $option_arr;
-        $temp['can_edit'] = true;
-        $temp['can_delete'] = true;
+        $temp['can_edit'] = $post->created_by == auth()->id();
+        $temp['can_delete'] = $post->created_by == auth()->id();
         $temp['post_status'] = $post->estatus;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Get Post Details Successfully.");

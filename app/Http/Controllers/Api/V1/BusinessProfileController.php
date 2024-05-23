@@ -210,7 +210,7 @@ class BusinessProfileController extends BaseController
     {
         $rules = [
             'user_id' => 'required|integer',
-            'list_type' => 'required|in:1,2',
+           // 'list_type' => 'required|in:1,2',
             'category_id' => 'required|integer',
         ];
         if ($request->has('category_id') && $request->input('category_id') != 0) {
@@ -232,10 +232,11 @@ class BusinessProfileController extends BaseController
             $query->where('category_id', $request->category_id);
         }
 
-        if ($request->list_type == 1) {
+        //if ($request->list_type == 1) {
             // Own Business Profile List
             $query->where('created_by', $request->user_id);
-        }
+        //}
+        $query->orderBy('business_name', 'ASC');
         $perPage = 10;
         $profiles = $query->paginate($perPage);
 
@@ -255,9 +256,9 @@ class BusinessProfileController extends BaseController
             $temp['pin_code'] = $profile->pin_code;
             $temp['latitude'] = $profile->latitude;
             $temp['longitude'] = $profile->longitude;
-            $temp['city'] = $profile->city->city_name;
-            $temp['state'] = $profile->state->state_name;
-            $temp['country'] = $profile->country->country_name;
+            $temp['city'] = isset($profile->city)?$profile->city->city_name:"";
+            $temp['state'] = isset($profile->state)?$profile->state->state_name:"";
+            $temp['country'] = isset($profile->state)?$profile->country->country_name:"";
             $temp['user_id'] = isset($profile->user)?$profile->user->user_id:"";
             $temp['user_fullname'] = isset($profile->user)?$profile->user->full_name:"";
             $temp['user_profile_pic'] = isset($profile->user) && $profile->profile_pic_url != ""?url($profile->user->profile_pic_url):"";
@@ -274,7 +275,7 @@ class BusinessProfileController extends BaseController
     {
         // Validate the request parameters
         $validator = Validator::make($request->all(), [
-            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL,created_by,'.auth()->id(),
+            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL',
         ]);
 
         // If validation fails, return error response
@@ -336,7 +337,7 @@ class BusinessProfileController extends BaseController
     {
 
         $validator = Validator::make($request->all(), [
-            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL',
+            'profile_id' => 'required|integer|exists:business_profile,business_profile_id,deleted_at,NULL,created_by,'.auth()->id(),
         ]);
 
         // If validation fails, return error response
