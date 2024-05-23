@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('amenity_description', 500)->nullable();
             $table->integer('is_chargeable')->enum([1, 2])->default(1)->comment('1 - True, 2 - false')->index();
             $table->integer('applicable_payment_type')->enum([1, 2, 3])->default(1)->comment('1 - Offline, 2 - Online, 3 - Other')->index();
-            $table->integer('booking_type')->comment('1 - Single Booking in Single Slot, 2 - Multiple Booking in Single Slot')->index();
+            $table->integer('booking_type')->enum([1, 2])->comment('1 - Single Booking in Single Slot, 2 - Multiple Booking in Single Slot')->index();
             $table->integer('max_capacity')->index();
             // $table->integer('max_booking_per_slot');
             // $table->integer('max_people_per_booking')->comment('0 - Unlimited If max_booking_per_slot is 1');
