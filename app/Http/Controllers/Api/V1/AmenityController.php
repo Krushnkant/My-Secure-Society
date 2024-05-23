@@ -183,11 +183,11 @@ class AmenityController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $slots = AmenitySlot::where('society_id', $society_id)->where('estatus', 1)->get();
+        $slots = AmenitySlot::where('amenity_id', $request->amenity_id)->where('estatus', 1)->get();
 
         $slot_arr = [];
         foreach ($slots as $slot) {
-            $temp['slot_id'] = $slot->slot_id;
+            $temp['slot_id'] = $slot->amenity_slot_id;
             $temp['from_time'] = $slot->entry_time;
             $temp['to_time'] = $slot->exit_time;
             $temp['booking_fee'] = $slot->rent_amount;
@@ -230,7 +230,7 @@ class AmenityController extends BaseController
         }
 
         $validator = Validator::make($request->all(), [
-            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id'.$society_id,
+            'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id,'.$society_id,
         ]);
 
         if ($validator->fails()) {

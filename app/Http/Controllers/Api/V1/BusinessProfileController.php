@@ -244,7 +244,7 @@ class BusinessProfileController extends BaseController
         foreach ($profiles as $profile) {
             $temp['profile_id'] = $profile->business_profile_id;
             $temp['business_name'] = $profile->business_name;
-            $temp['category_name'] = $profile->business_category->business_category_name;
+            $temp['category_name'] = isset($profile->business_category)?$profile->business_category->business_category_name:"";
             $temp['business_icon'] = $profile->business_icon != ""?url($profile->business_icon):"";
             $temp['mobile_no'] = $profile->phone_number;
             $temp['website_url'] = $profile->website_url;

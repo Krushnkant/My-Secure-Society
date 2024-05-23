@@ -120,7 +120,6 @@ class ServiceProviderControler extends BaseController
         }else{
 
                 $user = User::find($request->user_id);
-
                 $user->full_name = $request->full_name;
                 $user->mobile_no = $request->mobile_no;
                 $user->gender = $request->gender;
@@ -392,7 +391,7 @@ class ServiceProviderControler extends BaseController
         $work->block_flat_id = $block_flat_id;
         $work->work_start_time = $request->from_time;
         $work->work_end_time = $request->to_time;
-        $work->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+        $work->created_at = now();
         $work->created_by = Auth::user()->user_id;
         $work->updated_by = Auth::user()->user_id;
         $work->save();
@@ -466,7 +465,7 @@ class ServiceProviderControler extends BaseController
             $review->daily_help_provider_id = $request->daily_help_provider_id;
             $review->number_of_star = $request->rating;
             $review->review_text = $request->review_text;
-            $review->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $review->created_at = now();
             $review->created_by = Auth::user()->user_id;
             $review->updated_by = Auth::user()->user_id;
             $review->save();
