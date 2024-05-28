@@ -54,7 +54,7 @@ class PostController extends BaseController
             'media_files' => 'array',
             'media_files.*.file' => 'nullable|file|mimetypes:image/jpeg,image/png,video/mp4,video/quicktime|max:20480',
             'media_files.*.daily_post_file_id' => 'nullable|integer|exists:daily_post_file,daily_post_file_id',
-            'media_files.*.is_deleted' => 'nullable|boolean',
+            'media_files.*.is_deleted' => 'required|in:1,2',
         ];
 
         $messages = [
@@ -62,7 +62,8 @@ class PostController extends BaseController
             'poll_options.required_if' => 'The poll options field is required.',
             'poll_options.min_options_for_poll' => 'Minimum 2 options required in poll.',
             'parent_post_id.not_zero' => 'The parent post ID must not be zero.',
-
+            'media_files.required_without' => 'Min 1 Image is required',
+            'slot_list.*.to_time.date_format' => 'Send Time format in H:i.'
         ];
 
         if ($request->post_type == 3) {
@@ -140,7 +141,7 @@ class PostController extends BaseController
         if ($post) {
             if ($request->has('media_files')) {
                 foreach ($request->media_files as $media) {
-                    if (isset($media['is_deleted']) && $media['is_deleted']) {
+                    if (isset($media['is_deleted']) && $media['is_deleted'] == 1) {
                         // Delete the file if marked for deletion
                         if (isset($media['daily_post_file_id'])) {
                             DailyPostFile::where('daily_post_file_id', $media['daily_post_file_id'])->delete();

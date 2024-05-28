@@ -73,7 +73,12 @@ class AmenityController extends BaseController
             $rules['allowed_payment_type'] = 'required|in:1,2,3';
         }
 
-        $validator = Validator::make($request->all(), $rules);
+        $messages = [
+            'image_files.0.is_deleted.required' => 'Min 1 Image is required.',
+            'slot_list.*.to_time.date_format' => 'Send Time format in H:i',
+        ];
+
+        $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -267,13 +272,27 @@ class AmenityController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $post = Amenity::find($request->amenity_id);
-        if ($post) {
-            $post->estatus = 3;
-            $post->save();
-            $post->delete();
+        $amenity = Amenity::find($request->amenity_id);
+        if (!$amenity) {
+            return $this->sendError(404, 'Amenity not found.', "Not Found", []);
         }
-        return $this->sendResponseSuccess("post deleted Successfully.");
+
+        // Check for future bookings
+        $futureBookings = AmenityBooking::where('amenity_id', $request->amenity_id)
+            ->where('booking_date', '>', now())
+            ->exists();
+
+        if ($futureBookings) {
+            return $this->sendError(400, 'Amenity cannot be deleted due to future bookings.', "Deletion Error", []);
+        }
+
+        // Soft delete the amenity
+        $amenity->estatus = 3;
+        $amenity->save();
+        $amenity->delete();
+
+        return $this->sendResponseSuccess("Amenity deleted Successfully.");
+
     }
 
     public function get_amenity(Request $request)
