@@ -57,7 +57,14 @@ class EmergencyAlertController extends BaseController
 
     public function emergency_alert_list(Request $request)
     {
-        $contacts = EmergencyAlert::with('society_member.user')->orderBy('created_at', 'desc')->paginate(10);
+        $society_id = $this->payload['society_id'];
+        if (empty($society_id)) {
+            return $this->sendError(400, 'society ID not provided.', "Not Found", []);
+        }
+        //$contacts = EmergencyAlert::with('society_member.user')->orderBy('created_at', 'desc')->paginate(10);
+        $contacts = EmergencyAlert::whereHas('society_member', function ($query) use ($society_id) {
+            $query->where('society_id', $society_id);
+        })->with('society_member.user')->orderBy('created_at', 'desc')->paginate(10);
         $contact_arr = array();
         foreach ($contacts as $contact) {
             $flat_info = getSocietyBlockAndFlatInfo($contact->society_member['block_flat_id']);

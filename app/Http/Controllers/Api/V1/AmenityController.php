@@ -73,8 +73,9 @@ class AmenityController extends BaseController
             $rules['allowed_payment_type'] = 'required|in:1,2,3';
         }
 
+
         $messages = [
-            'image_files.0.is_deleted.required' => 'Min 1 Image is required.',
+            'image_files.*.is_deleted.required' => 'Min 1 Image is required.',
             'slot_list.*.to_time.date_format' => 'Send Time format in H:i',
         ];
 

@@ -11,6 +11,7 @@ use App\Models\DailyPost;
 use App\Models\DailyPostFile;
 use App\Models\DailyPostLike;
 use App\Models\DailyPostPoleOption;
+use App\Models\DailyPostPoleOptionVote;
 use App\Models\ResidentDesignation;
 use App\Models\PostReportOption;
 use Illuminate\Support\Carbon;
@@ -487,5 +488,53 @@ class PostController extends BaseController
         }
         $data['option_list'] = $option_arr;
         return $this->sendResponseWithData($data, "All Report Options Successfully.");
+    }
+
+
+
+    public function update_poll(Request $request)
+    {
+        $society_id = $this->payload['society_id'];
+        if (empty($society_id)) {
+            return $this->sendError(400, 'Society Not Found.', "Not Found", []);
+        }
+
+        $rules = [
+            'post_id' => 'required|integer|exists:society_daily_post,society_daily_post_id,deleted_at,NULL,estatus,1,society_id,' . $society_id,
+            'option_id' => 'required|integer|exists:daily_post_pole_option,daily_post_pole_option_id,society_daily_post_id,' . $request->post_id,
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
+
+        \DB::beginTransaction();
+        try {
+
+
+            $pollOption = DailyPostPoleOption::where('society_daily_post_id', $request->post_id)
+                                            ->where('daily_post_pole_option_id', $request->option_id)
+                                            ->first();
+            if (!$pollOption) {
+                return $this->sendError(404, 'Poll Option Not Found.', "Not Found", []);
+            }
+
+            $pollOptionVote = new DailyPostPoleOptionVote();
+            $pollOptionVote->daily_post_pole_option_id = $request->option_id;
+            $pollOptionVote->user_id = Auth::user()->user_id;
+            $pollOptionVote->save();
+
+            $pollOption->total_vote += 1;
+            $pollOption->save();
+
+            \DB::commit();
+
+            return $this->sendResponseSuccess("Poll Option updated Successfully");
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return $this->sendError(500, 'An error occurred while updating the post.', "Internal Server Error", []);
+        }
     }
 }
