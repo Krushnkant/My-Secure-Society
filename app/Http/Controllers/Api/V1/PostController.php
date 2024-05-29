@@ -512,8 +512,7 @@ class PostController extends BaseController
 
         \DB::beginTransaction();
         try {
-
-
+            // Check if the poll option exists
             $pollOption = DailyPostPoleOption::where('society_daily_post_id', $request->post_id)
                                             ->where('daily_post_pole_option_id', $request->option_id)
                                             ->first();
@@ -521,11 +520,35 @@ class PostController extends BaseController
                 return $this->sendError(404, 'Poll Option Not Found.', "Not Found", []);
             }
 
+            // Check if the user has already voted on this poll
+            $existingVote = DailyPostPoleOptionVote::where('user_id', Auth::user()->user_id)
+                                                ->whereHas('pollOption', function ($query) use ($request) {
+                                                    $query->where('society_daily_post_id', $request->post_id);
+                                                })
+                                                ->first();
+
+            if ($existingVote) {
+                // If the user has voted on the same option, return a validation error
+                if ($existingVote->daily_post_pole_option_id == $request->option_id) {
+                    return $this->sendError(422, 'You have already voted on this option.', "Validation Errors", []);
+                } else {
+                    // If the user has voted on a different option, delete the old vote and update vote counts
+                    $oldOption = DailyPostPoleOption::find($existingVote->daily_post_pole_option_id);
+                    if ($oldOption) {
+                        $oldOption->total_vote -= 1;
+                        $oldOption->save();
+                    }
+                    $existingVote->delete();
+                }
+            }
+
+            // Add the new vote
             $pollOptionVote = new DailyPostPoleOptionVote();
             $pollOptionVote->daily_post_pole_option_id = $request->option_id;
             $pollOptionVote->user_id = Auth::user()->user_id;
             $pollOptionVote->save();
 
+            // Update the total vote count for the selected option
             $pollOption->total_vote += 1;
             $pollOption->save();
 

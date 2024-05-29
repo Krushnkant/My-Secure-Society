@@ -32,14 +32,26 @@ class EmergencyContactController extends BaseController
             'contact_id' => 'required',
             'contact_type' => 'required|in:2,3',
             'name' => 'required|string|max:100',
-            'mobile_no' => 'required|numeric|digits:10',
+            'mobile_no' => 'required|numeric|digits:10|unique:emergency_contact,mobile_no,NULL,emergency_contact_id,deleted_at,NULL',
         ];
 
         if ($request->input('contact_id') != 0) {
             $rules['contact_id'] .= '|exists:emergency_contact,emergency_contact_id,deleted_at,NULL';
+            // Ignore the current record for unique mobile_no validation
+            $rules['mobile_no'] = [
+                'required',
+                'numeric',
+                'digits:10',
+                Rule::unique('emergency_contact', 'mobile_no')->ignore($request->contact_id, 'emergency_contact_id')->whereNull('deleted_at')
+            ];
         }
 
-        $validator = Validator::make($request->all(), $rules);
+        $messages = [
+            'service_list.*.daily_help_service_id.required' => 'The daily_help_service_id field is required.',
+            'service_list.*.is_deleted.required' => 'The is_deleted field is required.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);

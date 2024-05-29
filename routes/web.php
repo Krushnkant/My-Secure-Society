@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\OrderPaymentController;
 use App\Http\Controllers\Admin\EmergencyContactController;
 use App\Http\Controllers\Admin\ServiceVendorController;
 use App\Http\Controllers\Admin\SocietyMemberController;
+use App\Http\Controllers\Admin\VisitingHelpCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -188,6 +189,15 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','userpermission'],'as'=>'a
      Route::get('dailyhelpservice/{id}/delete',[DailyHelpServiceController::class,'delete'])->name('dailyhelpservice.delete');
      Route::get('dailyhelpservice/changestatus/{id}',[DailyHelpServiceController::class,'changestatus'])->name('dailyhelpservice.changestatus');
      Route::post('dailyhelpservice/multipledelete', [DailyHelpServiceController::class,'multipledelete'])->name('dailyhelpservice.multipledelete');
+
+       // Visiting Help Category
+    Route::get('visitinghelpcategory',[VisitingHelpCategoryController::class,'index'])->name('visitinghelpcategory.list');
+    Route::post('visitinghelpcategory/listdata',[VisitingHelpCategoryController::class,'listdata'])->name('visitinghelpcategory.listdata');
+    Route::post('visitinghelpcategory/add',[VisitingHelpCategoryController::class,'addorupdate'])->name('visitinghelpcategory.add');
+    Route::post('visitinghelpcategory/update',[VisitingHelpCategoryController::class,'addorupdate'])->name('visitinghelpcategory.update');
+    Route::get('visitinghelpcategory/{id}/edit',[VisitingHelpCategoryController::class,'edit'])->name('visitinghelpcategory.edit');
+    Route::get('visitinghelpcategory/{id}/delete',[VisitingHelpCategoryController::class,'delete'])->name('visitinghelpcategory.delete');
+    Route::post('visitinghelpcategory/multipledelete', [VisitingHelpCategoryController::class,'multipledelete'])->name('visitinghelpcategory.multipledelete');
 
 
 });

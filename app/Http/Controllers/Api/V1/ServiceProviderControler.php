@@ -282,13 +282,14 @@ class ServiceProviderControler extends BaseController
         $provider_arr = [];
         foreach ($providers as $provider) {
             $temp['daily_help_provider_id'] = $provider->daily_help_provider_id;
-            $temp['daily_help_user_id'] = $provider->user_id;
+            $temp['user_id'] = $provider->user_id;
             $temp['full_name'] = $provider->user->full_name ?? "";
             $temp['mobile_no'] = $provider->user->mobile_no ?? "";
             $temp['profile_pic'] = $provider->user->profile_pic_url ? url($provider->user->profile_pic_url) : "";
             $temp['service_name'] = $provider->daily_help_service->service_name ?? "";
             $temp['service_icon'] = $provider->daily_help_service->service_icon ?? "";
             $temp['rating'] = isset($provider->user_rating)?$provider->user_rating->rating:0;
+            $temp['total_reviews'] = isset($provider->user_rating)?$provider->user_rating->total_reviews:0;
 
             array_push($provider_arr, $temp);
         }
@@ -333,7 +334,7 @@ class ServiceProviderControler extends BaseController
 
         $data = array();
         $temp['daily_help_provider_id'] = $provider->daily_help_provider_id;
-        $temp['daily_help_user_id'] = $provider->user_id;
+        $temp['user_id'] = $provider->user_id;
         $temp['daily_help_user_passcode'] = isset($provider->user)?$provider->user->user_code:"";
         $temp['full_name'] = isset($provider->user)?$provider->user->full_name:"";
         $temp['mobile_no'] = isset($provider->user)?$provider->user->mobile_no:"";
@@ -342,6 +343,7 @@ class ServiceProviderControler extends BaseController
         $temp['service_name'] = isset($provider->daily_help_service)?$provider->daily_help_service->service_name:"";
         $temp['service_icon'] = $provider->daily_help_service->service_icon ?? "";
         $temp['rating'] = isset($provider->user_rating)?$provider->user_rating->rating:0;
+        $temp['total_reviews'] = isset($provider->user_rating)?$provider->user_rating->total_reviews:0;
         $temp['indentity_proof_front_img'] = isset($provider->front_img) ? url($provider->front_img->file_url):"";
         $temp['indentity_proof_back_img'] = isset($provider->back_img) ?url($provider->back_img->file_url):"";
         $temp['can_add_review'] = true;

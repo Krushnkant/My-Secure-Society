@@ -51,6 +51,7 @@ class Helpers{
             12 => 'Company Profile',
             13 => 'Service Vendor',
             14 => 'Daily Help Service',
+            15 => 'Visiting Help Category',
         ];
     }
 

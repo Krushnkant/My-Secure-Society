@@ -234,8 +234,11 @@ class BusinessProfileController extends BaseController
 
         //if ($request->list_type == 1) {
             // Own Business Profile List
-            $query->where('created_by', $request->user_id);
+
         //}
+        if ($request->has('user_id') && $request->input('user_id') != 0) {
+            $query->where('created_by', $request->user_id);
+        }
         $query->orderBy('business_name', 'ASC');
         $perPage = 10;
         $profiles = $query->paginate($perPage);

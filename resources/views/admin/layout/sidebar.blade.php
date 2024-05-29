@@ -53,6 +53,11 @@
                         <a href="{{ route('admin.dailyhelpservice.list') }}"><i class="fa fa-question-circle" aria-hidden="true"></i><span class="nav-text">Daily Help Service</span></a>
                     </li>
                     @endif
+                    @if(getUserDesignationId()==1 || (getUserDesignationId()!=1 && is_view(15)))
+                    <li>
+                        <a href="{{ route('admin.visitinghelpcategory.list') }}"><i class="fa fa-question-circle" aria-hidden="true"></i><span class="nav-text">Visiting Help Category</span></a>
+                    </li>
+                    @endif
                 </ul>
             </div>
         </div>

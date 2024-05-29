@@ -88,15 +88,17 @@ class VisitorController extends BaseController
             'company_name' => 'nullable|string|max:100',
             'vehicle_number' => 'nullable|string|max:10|required_if:visitor_type,2',
             'invitation_message' => 'nullable|string|max:300',
-            'total_visitors' => 'required|integer|min:1',
-            'from_date' => 'required|date_format:Y-m-d',
-            'to_date' => 'required|date_format:Y-m-d|after_or_equal:from_date',
+            // 'total_visitors' => 'required|integer|min:1',
+            'from_date' => 'required|date_format:Y-m-d|after_or_equal:today',
+            'to_date' => 'required|date_format:Y-m-d|after_or_equal:today|after_or_equal:from_date',
             'allowed_days' => 'required|array',
             'allowed_days.*' => 'in:Mon,Tue,Wed,Thu,Fri,Sat,Sun',
             'from_time' => 'required|date_format:H:i',
             'to_time' => 'required|date_format:H:i|after:from_time',
-            'visitor_name' => 'required|string|max:100',
-            'visitor_mobile_no' => 'required|string|digits:10',
+            'visitor_name' => 'required_if:visitor_type,2|string|max:100',
+            'visitor_mobile_no' => 'required_if:visitor_type,2|string|digits:10',
+            'visiting_help_category_id' => 'nullable|integer',
+            'visiting_help_category' => 'nullable|string|max:100',
         ];
 
         $msg = [
@@ -137,7 +139,7 @@ class VisitorController extends BaseController
         $gatepass->visitor_name = $request->input('visitor_name');
         $gatepass->visitor_mobile_no = $request->input('visitor_mobile_no');
         $gatepass->invitation_message = $request->input('invitation_message');
-        $gatepass->total_visitors = $request->input('total_visitors');
+        // $gatepass->total_visitors = $request->input('total_visitors');
         $gatepass->valid_from_date = $request->input('from_date');
         $gatepass->valid_to_date = $request->input('to_date');
         $gatepass->valid_from_time = $request->input('from_time');
@@ -204,7 +206,7 @@ class VisitorController extends BaseController
             $temp['visitor_mobile_no'] = $gatepass->visitor_mobile_no;
             $temp['visitor_image'] = isset($gatepass->visitor_image) ? url($gatepass->visitor_image->file_url) : '';
             $temp['invitation_message'] = $gatepass->invitation_message;
-            $temp['total_visitors'] = $gatepass->total_visitors;
+            // $temp['total_visitors'] = $gatepass->total_visitors;
             $temp['from_date'] = Carbon::parse($gatepass->valid_from_date)->format('d-m-Y');
             $temp['to_date'] = Carbon::parse($gatepass->valid_to_date)->format('d-m-Y');
             $temp['allowed_days'] = explode(',', $gatepass->allowed_days);
@@ -274,7 +276,7 @@ class VisitorController extends BaseController
         $temp['visitor_mobile_no'] = $gatepass->visitor_mobile_no;
         $temp['visitor_image'] = isset($gatepass->visitor_image) ? url($gatepass->visitor_image->file_url) : '';
         $temp['invitation_message'] = $gatepass->invitation_message;
-        $temp['total_visitors'] = $gatepass->total_visitors;
+        // $temp['total_visitors'] = $gatepass->total_visitors;
         $temp['from_date'] = Carbon::parse($gatepass->valid_from_date)->format('d-m-Y');
         $temp['to_date'] = Carbon::parse($gatepass->valid_to_date)->format('d-m-Y');
         $temp['allowed_days'] = explode(',', $gatepass->allowed_days);
@@ -348,7 +350,11 @@ class VisitorController extends BaseController
             $rules['block_flat_id'] .= '|exists:block_flat,block_flat_id,deleted_at,NULL';
         }
 
-        $validator = Validator::make($request->all(), $rules);
+        $msg = [
+            'vehicle_number.required_if' => 'The vehicle number field is required when visitor type is Cab.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $msg);
 
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
