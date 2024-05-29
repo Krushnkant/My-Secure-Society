@@ -54,12 +54,16 @@ class ServiceProviderControler extends BaseController
         // Validation rules
         $rules = [
             'user_id' => 'required',
-            'daily_help_service_id' => 'required|exists:daily_help_service,daily_help_service_id,deleted_at,NULL',
+            // 'daily_help_service_id' => 'required|exists:daily_help_service,daily_help_service_id,deleted_at,NULL',
             'full_name' => 'required|string|max:50',
             'gender' => ['required', Rule::in([1, 2])],
             'profile_pic' => 'required|image|mimes:jpeg,png,jpg',
             'indentity_proof_front_img' => 'required|image|mimes:jpeg,png,jpg',
             'indentity_proof_back_img' => 'required|image|mimes:jpeg,png,jpg',
+            'service_list' => 'required|array|min:1',
+            'service_list.*.daily_help_service_id' => 'required|exists:daily_help_service,daily_help_service_id,deleted_at,NULL',
+            'service_list.*.daily_help_provider_id' => 'nullable|integer',
+            'service_list.*.is_deleted' => 'required|in:1,2',
         ];
 
         if ($request->has('user_id') && $request->input('user_id') != 0) {
@@ -108,15 +112,15 @@ class ServiceProviderControler extends BaseController
             $user->updated_by = Auth::user()->user_id;
             $user->save();
 
-            if($user){
-                $serviceProvider = new ServiceProvider();
-                $serviceProvider->society_id = $society_id;
-                $serviceProvider->user_id = $user->user_id;
-                $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
-                $serviceProvider->created_by = Auth::user()->user_id;
-                $serviceProvider->updated_by = Auth::user()->user_id;
-                $serviceProvider->save();
-            }
+            // if($user){
+            //     $serviceProvider = new ServiceProvider();
+            //     $serviceProvider->society_id = $society_id;
+            //     $serviceProvider->user_id = $user->user_id;
+            //     $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
+            //     $serviceProvider->created_by = Auth::user()->user_id;
+            //     $serviceProvider->updated_by = Auth::user()->user_id;
+            //     $serviceProvider->save();
+            // }
         }else{
 
                 $user = User::find($request->user_id);
@@ -138,33 +142,57 @@ class ServiceProviderControler extends BaseController
                 $user->profile_pic_url =  $image_full_path;
                 $user->updated_by = Auth::user()->user_id;
                 $user->save();
-                $serviceProvider = ServiceProvider::where('user_id',$user->user_id)->first();
-                if($serviceProvider){
-                    $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
-                    $serviceProvider->updated_by = Auth::user()->user_id;
-                    $serviceProvider->save();
+                // $serviceProvider = ServiceProvider::where('user_id',$user->user_id)->first();
+                // if($serviceProvider){
+                //     $serviceProvider->daily_help_service_id = $request->daily_help_service_id;
+                //     $serviceProvider->updated_by = Auth::user()->user_id;
+                //     $serviceProvider->save();
+                // }
+        }
+
+        // Process service_list
+        foreach ($request->service_list as $serviceData) {
+            if ($serviceData['is_deleted'] == 2) {
+                if (isset($serviceData['daily_help_provider_id'])) {
+                    $service = ServiceProvider::find($serviceData['daily_help_provider_id']);
+                    $service->daily_help_service_id = $serviceData['daily_help_service_id'];
+                    $service->updated_by = Auth::user()->user_id;
+                    $service->save();
+                } else {
+                    $service = new ServiceProvider();
+                    $service->society_id = $society_id;
+                    $service->user_id = $user->user_id;
+                    $service->daily_help_service_id = $serviceData['daily_help_service_id'];
+                    $service->created_by = Auth::user()->user_id;
+                    $service->updated_by = Auth::user()->user_id;
+                    $service->save();
                 }
+
+                if ($request->hasFile('indentity_proof_front_img')) {
+                    // if(isset($businessProfile->business_icon)) {
+                    //     $old_image = public_path('images/profile_pic/' . $user->business_icon);
+                    //     if (file_exists($old_image)) {
+                    //         unlink($old_image);
+                    //     }
+                    // }
+                    $image = $request->file('indentity_proof_front_img');
+                    $fileType = getFileType($image);
+                    $fileUrl = UploadImage($image,'images/provider_indentity_proof');
+                    $this->storeFileEntry($service->daily_help_provider_id, $fileType, $fileUrl,1);
+                }
+
+                if ($request->hasFile('indentity_proof_back_img')) {
+                    $image = $request->file('indentity_proof_back_img');
+                    $fileType = getFileType($image);
+                    $fileUrl = UploadImage($image,'images/provider_indentity_proof');
+                    $this->storeFileEntry($service->daily_help_provider_id, $fileType, $fileUrl,2);
+                }
+            } elseif ($serviceData['is_deleted'] == 1 && isset($serviceData['daily_help_provider_id'])) {
+                ServiceProvider::destroy($serviceData['daily_help_provider_id']);
+            }
         }
 
-        if ($request->hasFile('indentity_proof_front_img')) {
-            // if(isset($businessProfile->business_icon)) {
-            //     $old_image = public_path('images/profile_pic/' . $user->business_icon);
-            //     if (file_exists($old_image)) {
-            //         unlink($old_image);
-            //     }
-            // }
-            $image = $request->file('indentity_proof_front_img');
-            $fileType = getFileType($image);
-            $fileUrl = UploadImage($image,'images/provider_indentity_proof');
-            $this->storeFileEntry($serviceProvider->daily_help_provider_id, $fileType, $fileUrl,1);
-        }
 
-        if ($request->hasFile('indentity_proof_back_img')) {
-            $image = $request->file('indentity_proof_back_img');
-            $fileType = getFileType($image);
-            $fileUrl = UploadImage($image,'images/provider_indentity_proof');
-            $this->storeFileEntry($serviceProvider->daily_help_provider_id, $fileType, $fileUrl,2);
-        }
         DB::commit();
 
         $data = array();
