@@ -229,7 +229,7 @@ class BusinessProfileController extends BaseController
         // Retrieve business profiles based on parameters
         $query = BusinessProfile::with('user','city','state','country')->where('estatus',1);
         if ($request->has('category_id') && $request->input('category_id') != 0) {
-            $query->where('category_id', $request->category_id);
+            $query->where('business_category_id', $request->category_id);
         }
 
         //if ($request->list_type == 1) {

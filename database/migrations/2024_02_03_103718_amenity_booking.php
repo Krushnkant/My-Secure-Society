@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('user_id')->index();
             $table->integer('amenity_id')->index();
             $table->integer('amenity_slot_id')->index();
-            $table->integer('booking_no')->index();
+            $table->string('booking_no', 20);
             $table->integer('no_of_person');
             $table->decimal('amount', 10, 2);
             $table->decimal('total_amount', 10, 2);

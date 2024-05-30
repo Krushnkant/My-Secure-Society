@@ -86,13 +86,20 @@ class ServiceProviderControler extends BaseController
             ];
         }
 
-            // Custom messages
         $messages = [
             'service_list.*.daily_help_service_id.required' => 'The daily_help_service_id field is required.',
             'service_list.*.is_deleted.required' => 'The is_deleted field is required.',
+            'service_list.*.daily_help_provider_id.required' => 'The selected service_list daily_help_provider_id is invalid.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
+
+         // Add conditional validation for daily_help_provider_id
+        $validator->sometimes('service_list.*.daily_help_provider_id', 'integer|exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL', function ($input) {
+            return isset($input->service_list) && is_array($input->service_list) && collect($input->service_list)->contains(function ($serviceData) {
+                return !empty($serviceData['daily_help_provider_id']) && $serviceData['daily_help_provider_id'] != 0;
+            });
+        });
 
 
         if ($validator->fails()) {
@@ -160,7 +167,7 @@ class ServiceProviderControler extends BaseController
         // Process service_list
         foreach ($request->service_list as $serviceData) {
             if ($serviceData['is_deleted'] == 2) {
-                if (isset($serviceData['daily_help_provider_id'])) {
+                if (isset($serviceData['daily_help_provider_id']) && $serviceData['daily_help_provider_id'] != "" && $serviceData['daily_help_provider_id'] != 0) {
                     $service = ServiceProvider::find($serviceData['daily_help_provider_id']);
                     $service->daily_help_service_id = $serviceData['daily_help_service_id'];
                     $service->updated_by = Auth::user()->user_id;
@@ -339,6 +346,11 @@ class ServiceProviderControler extends BaseController
             }
         }
 
+
+        $alreadyReviewed = ServiceProviderReview::where('created_by', Auth::id())
+            ->where('daily_help_provider_id', $provider->daily_help_provider_id)
+            ->exists();
+
         $data = array();
         $temp['daily_help_provider_id'] = $provider->daily_help_provider_id;
         $temp['user_id'] = $provider->user_id;
@@ -353,10 +365,8 @@ class ServiceProviderControler extends BaseController
         $temp['total_reviews'] = isset($provider->user_rating)?$provider->user_rating->total_reviews:0;
         $temp['indentity_proof_front_img'] = isset($provider->front_img) ? url($provider->front_img->file_url):"";
         $temp['indentity_proof_back_img'] = isset($provider->back_img) ?url($provider->back_img->file_url):"";
-        $temp['can_add_review'] = true;
+        $temp['can_add_review'] = !$alreadyReviewed;
         $temp['work_in_flats'] = $work_in_flats;
-
-
 
         array_push($data, $temp);
 

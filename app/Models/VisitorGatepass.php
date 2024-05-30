@@ -18,10 +18,10 @@ class VisitorGatepass extends Model
         return $this->hasOne(User::class,'user_id', 'created_by');
     }
 
-    public function daily_help_provider()
-    {
-        return $this->hasOne(ServiceProvider::class,'daily_help_provider_id', 'daily_help_provider_id');
-    }
+    // public function daily_help_provider()
+    // {
+    //     return $this->hasOne(ServiceProvider::class,'daily_help_provider_id', 'daily_help_provider_id');
+    // }
 
     public function service_vendor()
     {
@@ -31,5 +31,10 @@ class VisitorGatepass extends Model
     public function visitor_image()
     {
         return $this->hasOne(VisitorGatepassFile::class,'society_visitor_id', 'society_visitor_id');
+    }
+
+    public function visiting_help_categori()
+    {
+        return $this->hasOne(VisitingHelpCategory::class,'visiting_help_category_id', 'visiting_help_category_id');
     }
 }

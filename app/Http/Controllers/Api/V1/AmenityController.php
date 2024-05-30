@@ -281,7 +281,7 @@ class AmenityController extends BaseController
 
         // Check for future bookings
         $futureBookings = AmenityBooking::where('amenity_id', $request->amenity_id)
-            ->where('booking_date', '>', now())
+            ->where('end_date', '>', now())
             ->exists();
 
         if ($futureBookings) {
@@ -367,10 +367,10 @@ class AmenityController extends BaseController
         $validator = Validator::make($request->all(), [
             'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id,'.$society_id,
             'slot_id' => 'required|exists:amenity_slot,amenity_slot_id,deleted_at,NULL,amenity_id,'.$request->amenity_id,
-            'start_date' => 'date',
-            'end_date' => 'date',
-            'total_amount' => 'required|numeric',
-            'gateway_name' => 'required', // Gateway name is required
+            'start_date' => 'nullable|date|after_or_equal:today',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'total_amount' => 'required|numeric|min:0',
+            'gateway_name' => 'required|max:100', // Gateway name is required
             'payment_mode' => 'required|in:1,2,3', // Payment mode must be required and can only be 1, 2, or 3
             'payment_status' => 'required|in:1,2,3,4,5,6', // Payment status must be required and can only be 1, 2, 3, 4, 5, or 6
         ]);
@@ -378,6 +378,9 @@ class AmenityController extends BaseController
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
+
+        \DB::beginTransaction();
+        try {
 
         // Handle the request data and save the amenity details
         $amenity = new AmenityBooking();
@@ -388,6 +391,7 @@ class AmenityController extends BaseController
         $amenity->start_date = $request->start_date;
         $amenity->end_date = $request->end_date;
         $amenity->total_amount = $request->total_amount;
+        $amenity->booking_status = 2;
         $amenity->created_by = Auth::user()->user_id;
         $amenity->updated_by = Auth::user()->user_id;
         $amenity->save();
@@ -417,6 +421,8 @@ class AmenityController extends BaseController
             $invoiceItem->invoice_item_master_id = $amenity->amenity_booking_id;
             $invoiceItem->invoice_item_description = "Amenity Booking";
             $invoiceItem->invoice_item_amount = $request->total_amount;
+            $invoiceItem->updated_by = Auth::user()->user_id;
+            $invoiceItem->updated_at = now();
             $invoiceItem->save();
 
             // Create payment transaction
@@ -433,11 +439,15 @@ class AmenityController extends BaseController
             $paymentTransaction->save();
         }
 
-
-        $data = array();
-        $temp['amenity_booking_id'] = $amenity->amenity_booking_id;
-        array_push($data, $temp);
-        return $this->sendResponseWithData($data, "Amenity Booking Successfully.");
+            \DB::commit();
+            $data = array();
+            $temp['amenity_booking_id'] = $amenity->amenity_booking_id;
+            array_push($data, $temp);
+            return $this->sendResponseWithData($data, "Amenity Booking Successfully.");
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return $this->sendError(500, 'An error occurred while updating the post.', "Internal Server Error", []);
+        }
     }
 
     public function amenity_booking_list(Request $request)
@@ -461,9 +471,11 @@ class AmenityController extends BaseController
         $endDate = $request->input('end_date', now()); // Default to current date if end_date is not provided
 
 
-        $amenities_booking = AmenityBooking::with('amenity.amenity_images')->where('society_id', $society_id)
-                                ->where('society_id', $society_id)
-                                ->where('user_id', $request->user_id);
+        $amenities_booking = AmenityBooking::with(['amenity.amenity_images', 'slot'])
+                            ->whereHas('amenity', function($query) use ($society_id) {
+                                $query->where('society_id', $society_id);
+                            })
+                            ->where('user_id', $request->user_id);
 
         if ($request->filled('start_date')) {
             $amenities_booking->whereDate('start_date', '>=', $startDate);
@@ -476,22 +488,32 @@ class AmenityController extends BaseController
 
         $amenity_booking_arr = [];
         foreach ($amenities_booking as $booking) {
-            $temp['booking_id'] = $booking->booking_id;
+
+            $image_files = [];
+            if(isset($booking->amenity->amenity_images)){
+                foreach ($booking->amenity->amenity_images as $image_file) {
+                    $file_temp['file_id'] = $image_file->amenity_file_id;
+                    $file_temp['file_url'] = url($image_file->file_url);
+                    array_push($image_files, $file_temp);
+                }
+            }
+
+            $temp['booking_id'] = $booking->amenity_booking_id;
             $temp['user_id'] = $booking->user_id;
             $temp['amenity_id'] = $booking->amenity_id;
-            $temp['amenity_name'] = $booking->amenity->title;
+            $temp['amenity_name'] = $booking->amenity->amenity_name;
             $temp['amenity_description'] = $booking->amenity->amenity_description;
-            $temp['image_files'] = $booking->amenity->amenity_images;
+            $temp['image_files'] = $image_files;
             $temp['start_date'] = $booking->start_date;
             $temp['end_date'] = $booking->end_date;
-            $temp['entry_time'] = $booking->start_date;
-            $temp['exit_time'] = $booking->end_date;
+            $temp['entry_time'] = $booking->slot->entry_time;
+            $temp['exit_time'] = $booking->slot->exit_time;
             $temp['total_amount'] = $booking->total_amount;
             $temp['booking_status'] = $booking->booking_status;
             array_push($amenity_booking_arr, $temp);
         }
 
-        $data['amenity_booking_list'] = $amenity_booking_arr;
+        $data['booking_list'] = $amenity_booking_arr;
         $data['total_records'] = $amenities_booking->toArray()['total'];
         return $this->sendResponseWithData($data, "All Amenity Booking Successfully.");
     }
@@ -500,7 +522,7 @@ class AmenityController extends BaseController
     {
 
         $validator = Validator::make($request->all(), [
-            'booking_id' => 'required|exists:amenity_booking,amenity_booking_id,deleted_at,NULL',
+            'booking_id' => 'required|exists:amenity_booking,amenity_booking_id',
             'booking_status' => 'required|in:1,3',
         ]);
 
@@ -514,21 +536,20 @@ class AmenityController extends BaseController
         if (!$booking) {
             return $this->sendError(404,'Booking not found.', "Not Found", []);
         }
-
-        if ($booking->status === 'Pending') {
+        if ($booking->booking_status === 2) {
             $newStatus = $request->input('booking_status');
 
             if ($newStatus == 1) {
-                $booking->status = 'Confirmed';
+                $booking->booking_status = 1;
             } elseif ($newStatus == 3) {
                 $entryTime = strtotime($booking->created_at);
                 $currentTime = time();
                 // Check if cancellation is allowed before 3 hours of entry time
                 if (($entryTime - $currentTime) > (3 * 3600)) {
-                    $booking->status = 'Cancelled';
+                    $booking->booking_status = 3;
                     // Invoice::where('invoice_type',6)->
                 } else {
-                    return response()->json(['error' => 'Cannot cancel booking less than 3 hours before entry time'], 400);
+                    return $this->sendError(400,'Cannot cancel booking less than 3 hours before entry time.', "Invalid", []);
                 }
             }
 
