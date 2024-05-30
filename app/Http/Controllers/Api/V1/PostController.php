@@ -278,6 +278,7 @@ class PostController extends BaseController
             foreach ($post->poll_options as $option) {
                 $option_temp['option_id'] = $option->daily_post_pole_option_id;
                 $option_temp['option_text'] = $option->option_text;
+                $option_temp['total_vote'] = $option->total_vote;
                 $option_temp['is_voted'] = $option->isVoted();
                 array_push($option_arr, $option_temp);
             }
@@ -344,6 +345,7 @@ class PostController extends BaseController
         foreach ($post->poll_options as $option) {
             $option_temp['option_id'] = $option->daily_post_pole_option_id;
             $option_temp['option_text'] = $option->option_text;
+            $option_temp['total_vote'] = $option->total_vote;
             $option_temp['is_voted'] = $option->isVoted();
             array_push($option_arr, $option_temp);
         }

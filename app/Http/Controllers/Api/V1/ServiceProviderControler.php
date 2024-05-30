@@ -86,7 +86,14 @@ class ServiceProviderControler extends BaseController
             ];
         }
 
-        $validator = Validator::make($request->all(), $rules);
+            // Custom messages
+        $messages = [
+            'service_list.*.daily_help_service_id.required' => 'The daily_help_service_id field is required.',
+            'service_list.*.is_deleted.required' => 'The is_deleted field is required.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
 
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
@@ -422,7 +429,7 @@ class ServiceProviderControler extends BaseController
         $work->block_flat_id = $block_flat_id;
         $work->work_start_time = $request->from_time;
         $work->work_end_time = $request->to_time;
-        $work->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+        $work->created_at = now();
         $work->created_by = Auth::user()->user_id;
         $work->updated_by = Auth::user()->user_id;
         $work->save();
@@ -496,7 +503,7 @@ class ServiceProviderControler extends BaseController
             $review->daily_help_provider_id = $request->daily_help_provider_id;
             $review->number_of_star = $request->rating;
             $review->review_text = $request->review_text;
-            $review->created_at = new \DateTime(null, new \DateTimeZone('Asia/Kolkata'));
+            $review->created_at = now();
             $review->created_by = Auth::user()->user_id;
             $review->updated_by = Auth::user()->user_id;
             $review->save();

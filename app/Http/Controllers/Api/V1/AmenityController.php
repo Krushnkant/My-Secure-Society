@@ -75,7 +75,8 @@ class AmenityController extends BaseController
 
 
         $messages = [
-            'image_files.*.is_deleted.required' => 'Min 1 Image is required.',
+            'image_files.*.is_deleted.required' => 'image is_delete field is required.',
+            'slot_list.*.is_deleted.required' => 'slot list is_delete field is required.',
             'slot_list.*.to_time.date_format' => 'Send Time format in H:i',
         ];
 

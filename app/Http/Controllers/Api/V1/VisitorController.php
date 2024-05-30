@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ServiceProvider;
 use App\Models\ServiceVendor;
 use App\Models\SocietyVisitor;
+use App\Models\VisitingHelpCategory;
 use App\Models\VisitorGatepass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -55,6 +56,19 @@ class VisitorController extends BaseController
         }
         $data['vendor_list'] = $venders_arr;
         return $this->sendResponseWithData($data, "All Service vendor Retrieved Successfully.");
+    }
+
+    public function visiting_help_category_list(Request $request)
+    {
+        $categories = VisitingHelpCategory::orderBy('visiting_help_category_name', 'asc')->get();
+        $category_arr = array();
+        foreach ($categories as $category) {
+            $temp['visiting_help_category_id'] = $category->visiting_help_category_id;
+            $temp['visiting_help_category'] = $category->visiting_help_category_name;
+            array_push($category_arr, $temp);
+        }
+        $data['category_list'] = $category_arr;
+        return $this->sendResponseWithData($data, "All Category Retrieved Successfully.");
     }
 
     public function save_gatepass(Request $request)

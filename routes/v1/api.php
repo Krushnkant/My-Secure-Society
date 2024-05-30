@@ -144,6 +144,8 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('visitor/list',[VisitorController::class,'visitor_list']);
     Route::post('visitor/change_status',[VisitorController::class,'visitor_change_status']);
 
+    Route::post('visiting_help/category/list',[VisitorController::class,'visiting_help_category_list']);
+
     Route::post('delivered_at_gate/new_item/save',[DeliveredCourierController::class,'save_courier_delivered_at_gate']);
     Route::post('delivered_at_gate/courier/list',[DeliveredCourierController::class,'delivered_at_gate_courier_list']);
     Route::post('delivered_at_gate/courier/get',[DeliveredCourierController::class,'get_courier_delivered_at_gate']);

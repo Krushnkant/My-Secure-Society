@@ -297,6 +297,7 @@ class BloodDonateController extends BaseController
             $blood->created_by = Auth::user()->user_id;
             $blood->updated_by = Auth::user()->user_id;
             $action = "Added";
+            $blood->blood_donate_request_id = $request->request_id;
         }else{
             $blood = BloodDonateRequestResponse::find($request->reply_id);
             if (!$blood)
@@ -306,7 +307,7 @@ class BloodDonateController extends BaseController
             $blood->updated_by = Auth::user()->user_id;
             $action = "Updated";
         }
-        $blood->blood_donate_request_id = $request->request_id;
+
         $blood->blood_bottle_qty =0;
         $blood->message = $request->reply_message;
         $blood->save();
