@@ -277,7 +277,7 @@ class VisitorController extends BaseController
         $temp['gatepass_id'] = $gatepass->visitor_gatepass_id;
         $temp['visitor_type'] = $gatepass->visitor_type;
         $temp['service_vendor_id'] = $gatepass->service_vendor_id ?? 0;
-        $temp['daily_help_provider_id'] = $gatepass->daily_help_provider_id ?? 0;
+        // $temp['daily_help_provider_id'] = $gatepass->daily_help_provider_id ?? 0;
         $temp['daily_help_service_name'] = optional($gatepass->daily_help_provider)->service_name ?? '';
         if($gatepass->service_vendor_id > 0){
             $temp['company_name'] = optional($gatepass->service_vendor)->vendor_company_name ?? '';
