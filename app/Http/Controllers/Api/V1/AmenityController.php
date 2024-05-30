@@ -383,6 +383,7 @@ class AmenityController extends BaseController
         $amenity = new AmenityBooking();
         $amenity->user_id = Auth::id();
         $amenity->amenity_id = $request->amenity_id;
+        $amenity->booking_no = generateBookingNumber();
         $amenity->amenity_slot_id = $request->slot_id;
         $amenity->start_date = $request->start_date;
         $amenity->end_date = $request->end_date;

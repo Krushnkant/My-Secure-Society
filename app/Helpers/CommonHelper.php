@@ -311,6 +311,12 @@ function generateInvoiceNumber($societyId) {
     return $invoiceNumber;
 }
 
+function generateBookingNumber()
+{
+    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    return substr(str_shuffle($characters), 0, 8);
+}
+
 function calculateDueDate() {
     // Example: Due date is 30 days from the current date
     //return date('Y-m-d', strtotime('+30 days'));
