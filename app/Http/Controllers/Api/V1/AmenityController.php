@@ -366,7 +366,7 @@ class AmenityController extends BaseController
 
         $validator = Validator::make($request->all(), [
             'amenity_id' => 'required|exists:amenity,amenity_id,deleted_at,NULL,society_id,'.$society_id,
-            'slot_id' => 'required|exists:amenity_slot,amenity_slot_id,deleted_at,NULL,amenity_id'.$request->amenity_id,
+            'slot_id' => 'required|exists:amenity_slot,amenity_slot_id,deleted_at,NULL,amenity_id,'.$request->amenity_id,
             'start_date' => 'date',
             'end_date' => 'date',
             'total_amount' => 'required|numeric',
