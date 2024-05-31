@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('company_name', 100)->nullable();
             $table->integer('visiting_help_category_id')->index();
             $table->string('visiting_help_category', 100)->nullable();
+            $table->integer('is_delivered_at_gate')->enum([1, 2])->comment('1 - True, 2 - False');
             // $table->integer('daily_help_provider_id')->comment('0 If Visitor Gatepass is not for DailyHelp Service Provider')->index();
             // $table->integer('visitor_user_id')->comment('0 for Non App User')->index();
             $table->string('visitor_name', 100)->nullable();
