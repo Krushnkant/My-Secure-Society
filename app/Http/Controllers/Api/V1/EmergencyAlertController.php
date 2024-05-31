@@ -48,6 +48,12 @@ class EmergencyAlertController extends BaseController
         $emergencyContact->created_at = now();
         $emergencyContact->save();
 
+
+        $notification_array['title'] = "alert";
+        $notification_array['message'] = $request->alert_message;
+        sendPushNotification($emergencyContact->creategd_by,$notification_array,'alert');
+
+
         $data = array();
         $temp['emergency_alert_id'] = $emergencyContact->emergency_alert_id;
         array_push($data, $temp);

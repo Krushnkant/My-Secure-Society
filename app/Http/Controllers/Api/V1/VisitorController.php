@@ -90,15 +90,15 @@ class VisitorController extends BaseController
                     }
                 },
             ],
-            'daily_help_provider_id' => [
-                'required_if:visitor_type,4',
-                'integer',
-                function ($attribute, $value, $fail) {
-                    if ($value != 0 && !ServiceProvider::where('daily_help_provider_id', $value)->exists()) {
-                        $fail("The selected daily help provider does not exist.");
-                    }
-                },
-            ],
+            // 'daily_help_provider_id' => [
+            //     'required_if:visitor_type,4',
+            //     'integer',
+            //     function ($attribute, $value, $fail) {
+            //         if ($value != 0 && !ServiceProvider::where('daily_help_provider_id', $value)->exists()) {
+            //             $fail("The selected daily help provider does not exist.");
+            //         }
+            //     },
+            // ],
             'company_name' => 'nullable|string|max:100',
             'vehicle_number' => 'nullable|string|max:10|required_if:visitor_type,2',
             'invitation_message' => 'nullable|string|max:300',
@@ -109,21 +109,27 @@ class VisitorController extends BaseController
             'allowed_days.*' => 'in:Mon,Tue,Wed,Thu,Fri,Sat,Sun',
             'from_time' => 'required|date_format:H:i',
             'to_time' => 'required|date_format:H:i|after:from_time',
-            'visitor_name' => 'required_if:visitor_type,2|string|max:100',
-            'visitor_mobile_no' => 'required_if:visitor_type,2|string|digits:10',
-            'visiting_help_category_id' => 'nullable|integer',
-            'visiting_help_category' => 'nullable|string|max:100',
+            'visitor_name' => 'nullable|string|max:100|required_if:visitor_type,3',
+            'visitor_mobile_no' => 'nullable|required_if:visitor_type,3|string|digits:10',
+            'is_delivered_at_gate' => 'required|in:1,2',
         ];
 
         $msg = [
             'allowed_days.required' => 'Allowed days are required.',
             'allowed_days.array' => 'Allowed days must be an array.',
             'allowed_days.*.in' => 'Allowed days must be one of the following: Mon, Tue, Wed, Thu, Fri, Sat, Sun.',
+            'visitor_name.required_if' => 'The visitor name field is required when visitor type is guest',
+            'visitor_mobile_no.required_if' => 'The visitor mobile no field is required when visitor type is guest',
+            'vehicle_number.required_if' => 'The vehicle number field is required when visitor type is Cab.',
         ];
 
-        // if ($request->gatepass_id != 0) {
-        //     $rules['gatepass_id'] .= '|exists:society_daily_post,society_daily_post_id,deleted_at,NULL';
-        // }
+        if ($request->visiting_help_category_id > 0 ) {
+            $rules['visiting_help_category_id'] = 'required|exists:visiting_help_category,visiting_help_category_id,deleted_at,NULL';
+        }
+
+        if ($request->visiting_help_category_id == 0 || $request->visiting_help_category_id == "") {
+            $rules['visiting_help_category'] = 'required|string|max:100';
+        }
 
         $validator = Validator::make($request->all(), $rules,$msg);
 
@@ -148,7 +154,7 @@ class VisitorController extends BaseController
         }
         $gatepass->visitor_type = $request->input('visitor_type');
         $gatepass->service_vendor_id = $request->input('service_vendor_id');
-        $gatepass->daily_help_provider_id = $request->input('daily_help_provider_id');
+        // $gatepass->daily_help_provider_id = $request->input('daily_help_provider_id');
         $gatepass->company_name = $request->input('company_name');
         $gatepass->visitor_name = $request->input('visitor_name');
         $gatepass->visitor_mobile_no = $request->input('visitor_mobile_no');
@@ -160,6 +166,9 @@ class VisitorController extends BaseController
         $gatepass->valid_to_time = $request->input('to_time');
         $gatepass->visit_code = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $gatepass->allowed_days =implode(',',$request->input('allowed_days'));
+        $gatepass->is_delivered_at_gate = $request->input('is_delivered_at_gate');
+        $gatepass->visiting_help_category_id = $request->input('visiting_help_category_id');
+        $gatepass->visiting_help_category = $request->input('visiting_help_category');
         $gatepass->save();
 
         // Prepare the response data
@@ -190,7 +199,7 @@ class VisitorController extends BaseController
         $visitor_type = $request->input('visitor_type');
         $date = $request->input('date');
 
-        $gatepassQuery = VisitorGatepass::with('user','daily_help_provider','service_vendor.service_vendor_file','visitor_image')
+        $gatepassQuery = VisitorGatepass::with('user','service_vendor.service_vendor_file','visitor_image','visiting_help_categori')
             ->where('society_id', $society_id);
 
         if ($visitor_type != 0) {
@@ -207,7 +216,8 @@ class VisitorController extends BaseController
         foreach ($gatepasses as $gatepass) {
             $temp['gatepass_id'] = $gatepass->visitor_gatepass_id;
             $temp['visitor_type'] = $gatepass->visitor_type;
-            $temp['daily_help_service_name'] = optional($gatepass->daily_help_provider)->service_name ?? '';
+            $temp['visiting_help_category_id'] = $gatepass->visiting_help_category_id;
+            $temp['visiting_help_category'] = optional($gatepass->visiting_help_categori)->visiting_help_category_name ?? $gatepass->visiting_help_category;
             if($gatepass->service_vendor_id > 0){
                 $temp['company_name'] = optional($gatepass->service_vendor)->vendor_company_name ?? '';
                 $temp['company_icon'] =   isset($gatepass->service_vendor->service_vendor_file) ? url($gatepass->service_vendor->service_vendor_file->file_url) : '';
@@ -230,6 +240,7 @@ class VisitorController extends BaseController
             $temp['added_by_user_id'] = $gatepass->created_by;
             $temp['added_by_user_full_name'] = $gatepass->user->full_name;
             $temp['visit_to_block_flat_no'] = getUserBlockAndFlat($gatepass->created_by);
+            $temp['is_delivered_at_gate'] = $gatepass->is_delivered_at_gate;
 
             array_push($gatepass_arr, $temp);
         }
@@ -257,7 +268,7 @@ class VisitorController extends BaseController
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-        $gatepassQuery = VisitorGatepass::with('user','daily_help_provider','service_vendor.service_vendor_file','visitor_image')
+        $gatepassQuery = VisitorGatepass::with('user','service_vendor.service_vendor_file','visitor_image','visiting_help_categori')
         ->where('society_id', $society_id);
 
         if ($request->has('gatepass_id') && $request->gatepass_id != "") {
@@ -277,8 +288,8 @@ class VisitorController extends BaseController
         $temp['gatepass_id'] = $gatepass->visitor_gatepass_id;
         $temp['visitor_type'] = $gatepass->visitor_type;
         $temp['service_vendor_id'] = $gatepass->service_vendor_id ?? 0;
-        // $temp['daily_help_provider_id'] = $gatepass->daily_help_provider_id ?? 0;
-        $temp['daily_help_service_name'] = optional($gatepass->daily_help_provider)->service_name ?? '';
+        $temp['visiting_help_category_id'] = $gatepass->visiting_help_category_id;
+        $temp['visiting_help_category'] = optional($gatepass->visiting_help_categori)->visiting_help_category_name ?? $gatepass->visiting_help_category;
         if($gatepass->service_vendor_id > 0){
             $temp['company_name'] = optional($gatepass->service_vendor)->vendor_company_name ?? '';
             $temp['company_icon'] =   isset($gatepass->service_vendor->service_vendor_file) ? url($gatepass->service_vendor->service_vendor_file->file_url) : '';
@@ -298,12 +309,13 @@ class VisitorController extends BaseController
         $temp['to_time'] = Carbon::parse($gatepass->valid_to_time)->format('H:i');
         $temp['block_flat_id'] = $gatepass->block_flat_id;
         $temp['society_id'] = $gatepass->society_id;
+        $temp['is_delivered_at_gate'] = $gatepass->is_delivered_at_gate;
         array_push($data, $temp);
 
         return $this->sendResponseWithData($data, "Gatepass details retrieved successfully.");
     }
 
-    public function delete_gatepass(Request $request)
+    public function gatepass_change_status(Request $request)
     {
         $society_id = $this->payload['society_id'];
         if($society_id == ""){
@@ -319,9 +331,10 @@ class VisitorController extends BaseController
 
         $gatepass = VisitorGatepass::find($request->gatepass_id);
         if ($gatepass) {
-            $gatepass->delete();
+            $gatepass->gatepass_status = $request->status;
+            $gatepass->save();
         }
-        return $this->sendResponseSuccess("Gatepass deleted successfully.");
+        return $this->sendResponseSuccess("Gatepass change status successfully.");
     }
 
     public function save_new_visitor(Request $request)
@@ -355,13 +368,21 @@ class VisitorController extends BaseController
             ],
             'company_name' => 'nullable|string|max:100',
             'vehicle_number' => 'nullable|string|max:10|required_if:visitor_type,2',
-            'total_visitors' => 'required|integer|min:1',
+            // 'total_visitors' => 'required|integer|min:1',
             'visitor_name' => 'required|string|max:100',
             'visitor_mobile_no' => 'required|string|digits:10',
         ];
 
         if ($request->block_flat_id != 0) {
             $rules['block_flat_id'] .= '|exists:block_flat,block_flat_id,deleted_at,NULL';
+        }
+
+        if ($request->visiting_help_category_id > 0 ) {
+            $rules['visiting_help_category_id'] = 'required|exists:visiting_help_category,visiting_help_category_id,deleted_at,NULL';
+        }
+
+        if ($request->visiting_help_category_id == 0 || $request->visiting_help_category_id == "") {
+            $rules['visiting_help_category'] = 'required|string|max:100';
         }
 
         $msg = [
@@ -395,11 +416,13 @@ class VisitorController extends BaseController
         $visitor->company_name = $request->input('company_name');
         $visitor->visitor_name = $request->input('visitor_name');
         $visitor->visitor_mobile_no = $request->input('visitor_mobile_no');
-        $visitor->total_visitors = $request->input('total_visitors');
-        $visitor->visitor_user_id = 0;
+        // $visitor->total_visitors = $request->input('total_visitors');
+        // $visitor->visitor_user_id = 0;
         $visitor->approved_by = 0;
         $visitor->entry_time = now();
         $visitor->visitor_status = 4;
+        $visitor->visiting_help_category_id = $request->input('visiting_help_category_id');
+        $visitor->visiting_help_category = $request->input('visiting_help_category');
         $visitor->save();
 
         // Prepare the response data
@@ -434,7 +457,7 @@ class VisitorController extends BaseController
         $visitor_status = $request->input('visitor_status');
         $date = $request->input('date');
 
-        $visitorQuery = SocietyVisitor::with('user','daily_help_provider','service_vendor.service_vendor_file')
+        $visitorQuery = SocietyVisitor::with('user','daily_help_provider','service_vendor.service_vendor_file','visiting_help_categori')
             ->where('society_id', $society_id);
 
         if ($visitor_type != 0) {
@@ -456,6 +479,8 @@ class VisitorController extends BaseController
             $temp['visitor_id'] = $visitor->society_visitor_id;
             $temp['visitor_type'] = $visitor->visitor_type;
             $temp['daily_help_service_name'] = optional($visitor->daily_help_provider)->service_name ?? '';
+            $temp['visiting_help_category_id'] = $visitor->visiting_help_category_id;
+            $temp['visiting_help_category'] = optional($visitor->visiting_help_categori)->visiting_help_category_name ?? $gatepass->visiting_help_category;
             if($visitor->service_vendor_id > 0){
                 $temp['company_name'] = optional($visitor->service_vendor)->vendor_company_name ?? '';
                 $temp['company_icon'] =   isset($visitor->service_vendor->service_vendor_file) ? url($visitor->service_vendor->service_vendor_file->file_url) : '';
@@ -466,7 +491,7 @@ class VisitorController extends BaseController
             $temp['visitor_name'] = $visitor->visitor_name;
             $temp['visitor_mobile_no'] = $visitor->visitor_mobile_no;
             $temp['visitor_image'] = isset($visitor->visitor_image) ? url($visitor->visitor_image->file_url) : '';
-            $temp['total_visitors'] = $visitor->total_visitors;
+            // $temp['total_visitors'] = $visitor->total_visitors;
             $temp['visit_time'] = Carbon::parse($visitor->entry_time)->format('d-m-Y H:i:s');
             $temp['added_by_user_id'] = $visitor->created_by;
             $temp['added_by_user_full_name'] = $visitor->user->full_name;

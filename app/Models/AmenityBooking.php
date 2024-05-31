@@ -15,4 +15,9 @@ class AmenityBooking extends Model
     {
         return $this->hasOne(Amenity::class,'amenity_id', 'amenity_id');
     }
+
+    public function slot()
+    {
+        return $this->hasOne(AmenitySlot::class,'amenity_slot_id', 'amenity_slot_id');
+    }
 }

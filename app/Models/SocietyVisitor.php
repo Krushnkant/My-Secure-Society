@@ -27,4 +27,9 @@ class SocietyVisitor extends Model
     {
         return $this->hasOne(ServiceVendor::class,'service_vendor_id', 'service_vendor_id');
     }
+
+    public function visiting_help_categori()
+    {
+        return $this->hasOne(VisitingHelpCategory::class,'visiting_help_category_id', 'visiting_help_category_id');
+    }
 }

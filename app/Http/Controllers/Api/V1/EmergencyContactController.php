@@ -32,24 +32,65 @@ class EmergencyContactController extends BaseController
             'contact_id' => 'required',
             'contact_type' => 'required|in:2,3',
             'name' => 'required|string|max:100',
-            'mobile_no' => 'required|numeric|digits:10|unique:emergency_contact,mobile_no,NULL,emergency_contact_id,deleted_at,NULL',
         ];
 
-        if ($request->input('contact_id') != 0) {
-            $rules['contact_id'] .= '|exists:emergency_contact,emergency_contact_id,deleted_at,NULL';
-            // Ignore the current record for unique mobile_no validation
+        if ($request->input('contact_type') == 2) {
+            // Society Emergency Contact
             $rules['mobile_no'] = [
                 'required',
                 'numeric',
                 'digits:10',
-                Rule::unique('emergency_contact', 'mobile_no')->ignore($request->contact_id, 'emergency_contact_id')->whereNull('deleted_at')
+                Rule::unique('emergency_contact', 'mobile_no')->where(function ($query) use ($society_id) {
+                    return $query->where('master_id', $society_id)->whereNull('deleted_at');
+                })
+            ];
+        } else {
+            // Personal Emergency Contact
+            $rules['mobile_no'] = [
+                'required',
+                'numeric',
+                'digits:10',
+                Rule::unique('emergency_contact', 'mobile_no')->where(function ($query) {
+                    return $query->where('master_id', Auth::id())->whereNull('deleted_at');
+                })
             ];
         }
 
+        if ($request->input('contact_id') != 0) {
+            $rules['contact_id'] .= '|exists:emergency_contact,emergency_contact_id,deleted_at,NULL';
+
+            if ($request->input('contact_type') == 2) {
+                // Society Emergency Contact
+                $rules['mobile_no'] = [
+                    'required',
+                    'numeric',
+                    'digits:10',
+                    Rule::unique('emergency_contact', 'mobile_no')
+                        ->ignore($request->contact_id, 'emergency_contact_id')
+                        ->where(function ($query) use ($society_id) {
+                            return $query->where('master_id', $society_id)->whereNull('deleted_at');
+                        })
+                ];
+            } else {
+                // Personal Emergency Contact
+                $rules['mobile_no'] = [
+                    'required',
+                    'numeric',
+                    'digits:10',
+                    Rule::unique('emergency_contact', 'mobile_no')
+                        ->ignore($request->contact_id, 'emergency_contact_id')
+                        ->where(function ($query) {
+                            return $query->where('master_id', Auth::id())->whereNull('deleted_at');
+                        })
+                ];
+            }
+        }
+
         $messages = [
-            'service_list.*.daily_help_service_id.required' => 'The daily_help_service_id field is required.',
-            'service_list.*.is_deleted.required' => 'The is_deleted field is required.',
+            'mobile_no.unique' => 'The mobile no has already been Added.',
         ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         $validator = Validator::make($request->all(), $rules, $messages);
 

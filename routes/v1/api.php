@@ -138,7 +138,7 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('gatepass/save',[VisitorController::class,'save_gatepass']);
     Route::post('gatepass/list',[VisitorController::class,'gatepass_list']);
     Route::post('gatepass/get',[VisitorController::class,'get_gatepass']);
-    Route::post('gatepass/delete',[VisitorController::class,'delete_gatepass']);
+    Route::post('gatepass/change_status',[VisitorController::class,'gatepass_change_status']);
 
     Route::post('visitor/new/save',[VisitorController::class,'save_new_visitor']);
     Route::post('visitor/list',[VisitorController::class,'visitor_list']);
