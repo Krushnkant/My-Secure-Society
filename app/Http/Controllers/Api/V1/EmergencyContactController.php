@@ -181,6 +181,10 @@ class EmergencyContactController extends BaseController
         }
 
         $contact = EmergencyContact::find($request->contact_id);
+        if($contact->contact_type == 3 && $contact->created_by != auth()->id()){
+            return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+        }
+
         if($contact->contact_type == 2 && $contact->master_id != $society_id){
             return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
         }

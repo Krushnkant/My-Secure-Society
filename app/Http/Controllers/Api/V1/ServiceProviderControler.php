@@ -51,6 +51,8 @@ class ServiceProviderControler extends BaseController
         if($society_id == ""){
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
+
+
         // Validation rules
         $rules = [
             'user_id' => 'required',
@@ -138,6 +140,10 @@ class ServiceProviderControler extends BaseController
         }else{
 
                 $user = User::find($request->user_id);
+                $designation_id = $this->payload['designation_id'];
+                if(getResidentDesignation($designation_id) == "Society Member" &&  $user->created_by != auth()->id()){
+                    return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+                }
 
                 $user->full_name = $request->full_name;
                 $user->mobile_no = $request->mobile_no;
@@ -375,6 +381,10 @@ class ServiceProviderControler extends BaseController
 
     public function delete_service_provider(Request $request)
     {
+        $designation_id = $this->payload['designation_id'];
+        if($designation_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
 
         $validator = Validator::make($request->all(), [
             'daily_help_provider_id' => 'required|exists:daily_help_provider,daily_help_provider_id,deleted_at,NULL',
@@ -391,6 +401,9 @@ class ServiceProviderControler extends BaseController
 
         // Find the profile to delete
         $provider = ServiceProvider::find($request->daily_help_provider_id);
+        if(getResidentDesignation($designation_id) == "Society Member" &&  $provider->created_by != auth()->id()){
+            return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+        }
         $provider->estatus = 3;
         $provider->save();
         $provider->delete();

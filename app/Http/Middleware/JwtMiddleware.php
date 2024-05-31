@@ -40,8 +40,14 @@ class JwtMiddleware extends BaseMiddleware
             //     return response()->json(array('success'=>false,'status_code' => 401, 'error' => 'Unauthorized',  'message3' => $message), 401);
             // }
 
-            if(!isset($request->calling_by) && ($request->calling_by != 1 || $request->calling_by != 2)){
-                return response()->json(array('success' => false, 'status_code' => 422, 'error' => 'Validation Error',  'message' => "calling_by field is invalid"), 422);
+
+
+            if(!isset($request->calling_by)){
+                return response()->json(array('success' => false, 'status_code' => 422, 'error' => 'Validation Error',  'message' => "The calling by field is required."), 422);
+            }
+
+            if($request->calling_by != 1 && $request->calling_by != 2){
+                return response()->json(array('success' => false, 'status_code' => 422, 'error' => 'Validation Error',  'message' => "calling by field is invalid"), 422);
             }
 
             if ($request->route()->uri() == $v1 . 'family_member/list' && is_view_resident(2) == 0 && $request->calling_by == 1) {
@@ -165,9 +171,6 @@ class JwtMiddleware extends BaseMiddleware
                     return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
             }
-
-
-
 
             if ($request->route()->uri() == $v1 . 'daily_post/list' && is_view_resident(10) == 0) {
                 return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
@@ -391,7 +394,6 @@ class JwtMiddleware extends BaseMiddleware
 
             if($request->calling_by == 1){
                 if ($request->route()->uri() == $v1 . 'delivered_at_gate/new_item/save') {
-
                     if ($request->contact_id == 0 && is_add_resident(30) == 0) {
                         return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                     }
