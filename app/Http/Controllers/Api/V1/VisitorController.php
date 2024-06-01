@@ -80,7 +80,7 @@ class VisitorController extends BaseController
 
         $rules = [
             'gatepass_id' => 'required',
-            'visitor_type' => 'required|integer|in:1,2,3,4',
+            'visitor_type' => 'required|integer|in:1,2,3,4,5',
             'service_vendor_id' => [
                 'required_if:visitor_type,1,3,4',
                 'integer',
@@ -123,12 +123,15 @@ class VisitorController extends BaseController
             'vehicle_number.required_if' => 'The vehicle number field is required when visitor type is Cab.',
         ];
 
-        if ($request->visiting_help_category_id > 0 ) {
-            $rules['visiting_help_category_id'] = 'required|exists:visiting_help_category,visiting_help_category_id,deleted_at,NULL';
-        }
+        if($request->visitor_type == "")
+        {
+            if ($request->visiting_help_category_id > 0 ) {
+                $rules['visiting_help_category_id'] = 'required|exists:visiting_help_category,visiting_help_category_id,deleted_at,NULL';
+            }
 
-        if ($request->visiting_help_category_id == 0 || $request->visiting_help_category_id == "") {
-            $rules['visiting_help_category'] = 'required|string|max:100';
+            if ($request->visiting_help_category_id == 0 || $request->visiting_help_category_id == "") {
+                $rules['visiting_help_category'] = 'required|string|max:100';
+            }
         }
 
         $validator = Validator::make($request->all(), $rules,$msg);
@@ -323,6 +326,7 @@ class VisitorController extends BaseController
         }
         $validator = Validator::make($request->all(), [
             'gatepass_id' => 'required|integer|exists:visitor_gatepass,visitor_gatepass_id,deleted_at,NULL',
+            'status' => 'required|in:3',
         ]);
 
         if ($validator->fails()) {

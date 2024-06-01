@@ -454,7 +454,7 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 31, // Daily Help Member
                                 "can_view" => 1,
-                                "can_add" => 1,
+                                "can_add" => 0,
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 0,
@@ -577,7 +577,7 @@ class SocietyController extends Controller
                                 "can_view" => 1,
                                 "can_add" => 0,
                                 "can_edit" => 0,
-                                "can_delete" => 0,
+                                "can_delete" => 1,
                                 "can_print" => 1,
                                 "updated_at" => now(),
                                 "updated_by" => 1
@@ -1114,7 +1114,7 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 31, // Daily Help Member
                                 "can_view" => 1,
-                                "can_add" => 1,
+                                "can_add" => 0,
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
@@ -1804,7 +1804,7 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 31, // Daily Help Member
                                 "can_view" => 1,
-                                "can_add" => 1,
+                                "can_add" => 0,
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,

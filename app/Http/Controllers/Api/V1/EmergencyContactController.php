@@ -92,10 +92,25 @@ class EmergencyContactController extends BaseController
 
         $validator = Validator::make($request->all(), $rules, $messages);
 
-        $validator = Validator::make($request->all(), $rules, $messages);
-
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+        }
+
+        // Check the maximum limit of personal emergency contacts
+        if ($request->input('contact_type') == 3) {
+            $personalContactsCount = EmergencyContact::where('master_id', Auth::id())
+                ->where('contact_type', 3)
+                ->whereNull('deleted_at')
+                ->count();
+
+            if ($personalContactsCount >= 3) {
+                return $this->sendError(400, 'You can only save a maximum of 3 personal emergency contacts.', "Limit Exceeded", []);
+            }
+        }
+
+        $designation_id = $this->payload['society_id'];
+        if(getResidentDesignation($designation_id) != "Society Admin" &&  $request->contact_type == 2){
+            return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
         }
 
         $emergencyContact = EmergencyContact::find($request->contact_id);

@@ -279,13 +279,13 @@ class AmenityController extends BaseController
             return $this->sendError(404, 'Amenity not found.', "Not Found", []);
         }
 
-        // Check for future bookings
+         // Check for future bookings
         $futureBookings = AmenityBooking::where('amenity_id', $request->amenity_id)
-            ->where('end_date', '>', now())
-            ->exists();
+        ->where('end_date', '>', now())
+        ->exists();
 
         if ($futureBookings) {
-            return $this->sendError(400, 'Amenity cannot be deleted due to future bookings.', "Deletion Error", []);
+            return $this->sendError(400, 'The Amenity cannot be deleted due to this Amenity has been booked for the future days.', "Deletion Error", []);
         }
 
         // Soft delete the amenity
@@ -457,15 +457,23 @@ class AmenityController extends BaseController
             return $this->sendError(400, 'Society Not Found.', "Not Found", []);
         }
 
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:user,user_id,deleted_at,NULL',
+        $rules = [
+            'amenity_id' => 'required',
+            'user_id' => 'required',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-        ]);
+        ];
+
+        if ($request->input('user_id') != 0) {
+            $rules['user_id'] .= '|exists:user,user_id,deleted_at,NULL';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
+
 
         $startDate = $request->input('start_date', now()->subMonth()); // Default to one month ago if start_date is not provided
         $endDate = $request->input('end_date', now()); // Default to current date if end_date is not provided
@@ -474,8 +482,24 @@ class AmenityController extends BaseController
         $amenities_booking = AmenityBooking::with(['amenity.amenity_images', 'slot'])
                             ->whereHas('amenity', function($query) use ($society_id) {
                                 $query->where('society_id', $society_id);
-                            })
-                            ->where('user_id', $request->user_id);
+                            });
+
+        $designation_id = $this->payload['designation_id'];
+        if(getResidentDesignation($designation_id) == "Society Member"){
+            $amenities_booking->where('user_id', Auth::user()->user_id);
+        }else{
+            if ($request->input('user_id') != 0) {
+               $amenities_booking->where('user_id', $request->user_id);
+            }
+        }
+
+        if ($request->amenity_id != 0) {
+            $amenity = Amenity::find($request->amenity_id);
+            if (!$amenity) {
+                return $this->sendError(404, 'Amenity not found.', "Not Found", []);
+            }
+            $amenities_booking->where('amenity_id', $request->amenity_id);
+        }
 
         if ($request->filled('start_date')) {
             $amenities_booking->whereDate('start_date', '>=', $startDate);
@@ -510,6 +534,7 @@ class AmenityController extends BaseController
             $temp['exit_time'] = $booking->slot->exit_time;
             $temp['total_amount'] = $booking->total_amount;
             $temp['booking_status'] = $booking->booking_status;
+            $temp['payment_status'] = $booking->payment_status;
             array_push($amenity_booking_arr, $temp);
         }
 
@@ -534,19 +559,37 @@ class AmenityController extends BaseController
         $booking = AmenityBooking::find($request->input('booking_id'));
 
         if (!$booking) {
-            return $this->sendError(404,'Booking not found.', "Not Found", []);
+            return $this->sendError(404, 'Booking not found.', "Not Found", []);
         }
+
+        // Check if the booking status is already canceled
+        if ($booking->booking_status == 3) {
+            return $this->sendError(400, 'Booking status cannot be updated as it is already canceled.', "Invalid", []);
+        }
+
         if ($booking->booking_status === 2) {
             $newStatus = $request->input('booking_status');
+
+            $designation_id = $this->payload['society_id'];
+            if(getResidentDesignation($designation_id) == "Society Member" && $newStatus == 1){
+                return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+            }
 
             if ($newStatus == 1) {
                 $booking->booking_status = 1;
             } elseif ($newStatus == 3) {
+                if (now()->greaterThan($booking->start_date)) {
+                    return $this->sendError(400, 'Cannot cancel booking after the start date.', "Invalid", []);
+                }
                 $entryTime = strtotime($booking->created_at);
                 $currentTime = time();
                 // Check if cancellation is allowed before 3 hours of entry time
                 if (($entryTime - $currentTime) > (3 * 3600)) {
+                    if ($booking->payment_status == 1) {
+                        $booking->payment_status = 5; // Refund payment status
+                    }
                     $booking->booking_status = 3;
+
                     // Invoice::where('invoice_type',6)->
                 } else {
                     return $this->sendError(400,'Cannot cancel booking less than 3 hours before entry time.', "Invalid", []);
