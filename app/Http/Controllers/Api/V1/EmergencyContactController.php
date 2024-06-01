@@ -103,6 +103,19 @@ class EmergencyContactController extends BaseController
         if (!$emergencyContact) {
             $emergencyContact = new EmergencyContact();
             $action = "saved";
+        }else{
+            if($emergencyContact->contact_type == 3 && $emergencyContact->created_by != auth()->id()){
+                return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+            }
+
+            if($emergencyContact->contact_type == 2 && $emergencyContact->master_id != $society_id){
+                return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+            }
+
+            $designation_id = $this->payload['society_id'];
+            if(getResidentDesignation($designation_id) != "Society Admin" &&  $emergencyContact->created_by != auth()->id()){
+                return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
+            }
         }
         if($request->contact_type == 2){
             $emergencyContact->master_id = $society_id;
