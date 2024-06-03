@@ -344,7 +344,7 @@ class BloodDonateController extends BaseController
             $temp['request_id'] = $blood->blood_donate_request_id;
             $temp['reply_message'] = $blood->message;
             $temp['reply_by_user_id'] = isset($blood->user)?$blood->user->user_id:"";
-            $temp['reply_by_user_full_name'] = isset($blood->user)?$blood->user->full_name:"User ".$blood->user->user_id;
+            $temp['reply_by_user_full_name'] = isset($blood->user) && $blood->user->full_name != "" ? $blood->user->full_name:"User ".$blood->user->user_id;
             $temp['reply_by_user_profile_pic'] = isset($blood->user) && $blood->profile_pic_url != ""?url($blood->user->profile_pic_url):"";
             $temp['reply_by_user_mobile_no'] = isset($blood->user)?$blood->user->mobile_no:"";
             $temp['request_by_user_block_flat_no'] = getUserBlockAndFlat($blood->created_by);

@@ -567,41 +567,39 @@ class AmenityController extends BaseController
             return $this->sendError(400, 'Booking status cannot be updated as it is already canceled.', "Invalid", []);
         }
 
-        if ($booking->booking_status === 2) {
-            $newStatus = $request->input('booking_status');
 
-            $designation_id = $this->payload['society_id'];
-            if(getResidentDesignation($designation_id) == "Society Member" && $newStatus == 1){
-                return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
-            }
+        $newStatus = $request->input('booking_status');
 
-            if ($newStatus == 1) {
-                $booking->booking_status = 1;
-            } elseif ($newStatus == 3) {
-                if (now()->greaterThan($booking->start_date)) {
-                    return $this->sendError(400, 'Cannot cancel booking after the start date.', "Invalid", []);
-                }
-                $entryTime = strtotime($booking->created_at);
-                $currentTime = time();
-                // Check if cancellation is allowed before 3 hours of entry time
-                if (($entryTime - $currentTime) > (3 * 3600)) {
-                    if ($booking->payment_status == 1) {
-                        $booking->payment_status = 5; // Refund payment status
-                    }
-                    $booking->booking_status = 3;
-
-                    // Invoice::where('invoice_type',6)->
-                } else {
-                    return $this->sendError(400,'Cannot cancel booking less than 3 hours before entry time.', "Invalid", []);
-                }
-            }
-
-            // Save the updated booking status
-            $booking->save();
-            return $this->sendResponseSuccess("Booking status updated successfully.");
-        } else {
-            return $this->sendError(400,'Booking status cannot be changed from Pending.', "Invalid", []);
+        $designation_id = $this->payload['society_id'];
+        if(getResidentDesignation($designation_id) == "Society Member" && $newStatus == 1){
+            return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
         }
+
+        if ($newStatus == 1) {
+            $booking->booking_status = 1;
+        } elseif ($newStatus == 3) {
+            if (now()->greaterThan($booking->start_date)) {
+                return $this->sendError(400, 'Cannot cancel booking after the start date.', "Invalid", []);
+            }
+            // $entryTime = strtotime($booking->created_at);
+            // $currentTime = time();
+            // Check if cancellation is allowed before 3 hours of entry time
+          //  if (($entryTime - $currentTime) > (3 * 3600)) {
+                if ($booking->payment_status == 1) {
+                    $booking->payment_status = 5; // Refund payment status
+                }
+                $booking->booking_status = 3;
+
+                // Invoice::where('invoice_type',6)->
+            // } else {
+            //     return $this->sendError(400,'Cannot cancel booking less than 3 hours before entry time.', "Invalid", []);
+            // }
+        }
+
+        // Save the updated booking status
+        $booking->save();
+        return $this->sendResponseSuccess("Booking status updated successfully.");
+
     }
 
 }

@@ -123,7 +123,7 @@ class VisitorController extends BaseController
             'vehicle_number.required_if' => 'The vehicle number field is required when visitor type is Cab.',
         ];
 
-        if($request->visitor_type == "")
+        if($request->visitor_type == 5)
         {
             if ($request->visiting_help_category_id > 0 ) {
                 $rules['visiting_help_category_id'] = 'required|exists:visiting_help_category,visiting_help_category_id,deleted_at,NULL';
@@ -213,7 +213,7 @@ class VisitorController extends BaseController
             $gatepassQuery->whereDate('created_at', $date);
         }
 
-        $gatepasses = $gatepassQuery->orderBy('created_at', 'DESC')->paginate(10);
+        $gatepasses = $gatepassQuery->orderBy('valid_from_date', 'DESC')->paginate(10);
 
         $gatepass_arr = [];
         foreach ($gatepasses as $gatepass) {
@@ -334,6 +334,9 @@ class VisitorController extends BaseController
         }
 
         $gatepass = VisitorGatepass::find($request->gatepass_id);
+        if ($gatepass->gatepass_status == 3) {
+            return $this->sendError(400, 'Gatepass status cannot be updated as it is already canceled.', "Invalid", []);
+        }
         if ($gatepass) {
             $gatepass->gatepass_status = $request->status;
             $gatepass->save();
