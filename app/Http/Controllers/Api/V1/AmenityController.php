@@ -566,11 +566,8 @@ class AmenityController extends BaseController
         if ($booking->booking_status == 3) {
             return $this->sendError(400, 'Booking status cannot be updated as it is already canceled.', "Invalid", []);
         }
-
-
         $newStatus = $request->input('booking_status');
-
-        $designation_id = $this->payload['society_id'];
+        $designation_id = $this->payload['designation_id'];
         if(getResidentDesignation($designation_id) == "Society Member" && $newStatus == 1){
             return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
         }

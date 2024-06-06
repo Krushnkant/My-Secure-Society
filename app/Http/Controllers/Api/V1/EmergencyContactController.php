@@ -108,7 +108,7 @@ class EmergencyContactController extends BaseController
             }
         }
 
-        $designation_id = $this->payload['society_id'];
+        $designation_id = $this->payload['designation_id'];
         if(getResidentDesignation($designation_id) != "Society Admin" &&  $request->contact_type == 2){
             return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
         }
@@ -127,7 +127,7 @@ class EmergencyContactController extends BaseController
                 return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
             }
 
-            $designation_id = $this->payload['society_id'];
+            $designation_id = $this->payload['designation_id'];
             if(getResidentDesignation($designation_id) != "Society Admin" &&  $emergencyContact->created_by != auth()->id()){
                 return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
             }
