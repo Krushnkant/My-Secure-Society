@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\BusinessProfileController;
 use App\Http\Controllers\Api\V1\BloodDonateController;
 use App\Http\Controllers\Api\V1\DeliveredCourierController;
 use App\Http\Controllers\Api\V1\ServiceProviderControler;
+use App\Http\Controllers\Api\V1\SocietyDepartmentController;
 use App\Http\Controllers\Api\V1\VisitorController;
 
 /*
@@ -129,7 +130,7 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('daily_help/service_provider/get',[ServiceProviderControler::class,'get_service_provider']);
     Route::post('daily_help/service_provider/delete',[ServiceProviderControler::class,'delete_service_provider']);
 
-    
+
     Route::post('daily_help/service_provider/add_to_flat',[ServiceProviderControler::class,'service_provider_add_flat']);
     Route::post('daily_help/service_provider/delete_flat',[ServiceProviderControler::class,'service_provider_delete_flat']);
     Route::post('daily_help/service_provider/add_review',[ServiceProviderControler::class,'service_provider_add_review']);
@@ -152,6 +153,10 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('delivered_at_gate/courier/list',[DeliveredCourierController::class,'delivered_at_gate_courier_list']);
     Route::post('delivered_at_gate/courier/get',[DeliveredCourierController::class,'get_courier_delivered_at_gate']);
     Route::post('delivered_at_gate/courier/change_status',[DeliveredCourierController::class,'delivered_at_gate_courier_change_status']);
+
+    Route::post('department/save',[SocietyDepartmentController::class,'save_department']);
+    Route::post('department/list',[SocietyDepartmentController::class,'department_list']);
+    Route::post('department/delete',[SocietyDepartmentController::class,'delete_department']);
 
 });
 

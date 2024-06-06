@@ -531,6 +531,9 @@ class VisitorController extends BaseController
         }
 
         $visitor = SocietyVisitor::find($request->visitor_id);
+        if($visitor->visitor_status == $request->visitor_status) {
+            return $this->sendError(400, "You can't Update the Status, The visitor is already in the requested status.", "Bad Request", []);
+        }
         if ($visitor) {
             $visitor->visitor_status = $request->visitor_status;
             if($request->visitor_status == 1 || $request->visitor_status == 2){

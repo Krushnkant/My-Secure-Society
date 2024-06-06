@@ -52,7 +52,7 @@ class SocietyDepartmentController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        if($request->society_department_id == 0){
+        if($request->department_id == 0){
             $department = New SocietyDepartment();
             $department->society_id = $society_id;
             $department->created_at = now();
@@ -60,7 +60,7 @@ class SocietyDepartmentController extends BaseController
             $department->updated_by = Auth::user()->user_id;
             $action ="Added";
         }else{
-            $department = SocietyDepartment::find($request->society_department_id);
+            $department = SocietyDepartment::find($request->department_id);
             if($request->calling_by == 1 &&  $department->created_by != auth()->id()){
                 return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
             }
@@ -68,7 +68,7 @@ class SocietyDepartmentController extends BaseController
             $action ="Updated";
         }
 
-        $department->department_name = $request->title;
+        $department->department_name = $request->department_name;
         $department->save();
 
         $data = array();
@@ -89,7 +89,7 @@ class SocietyDepartmentController extends BaseController
         foreach ($departments as $department) {
             $temp['department_id'] = $department['society_department_id'];
             $temp['department_name'] = $department->department_name;
-            $temp['total_member'] = $department->announcement_description;
+            $temp['total_member'] = 0;
             array_push($department_arr, $temp);
         }
 
@@ -111,7 +111,7 @@ class SocietyDepartmentController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $department = SocietyDepartment::find($request->society_department_id);
+        $department = SocietyDepartment::find($request->department_id);
         if($request->calling_by == 1 &&  $department->created_by != auth()->id()){
             return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
         }

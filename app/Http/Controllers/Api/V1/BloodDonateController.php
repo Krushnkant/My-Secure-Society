@@ -256,6 +256,9 @@ class BloodDonateController extends BaseController
         }
 
         $blood = BloodDonate::find($request->request_id);
+        if($blood->request_status == $request->request_status) {
+            return $this->sendError(400, "You can't Update the Status, The request is already in the requested status.", "Bad Request", []);
+        }
         if ($blood) {
             $blood->request_status = $request->request_status;
             $blood->save();

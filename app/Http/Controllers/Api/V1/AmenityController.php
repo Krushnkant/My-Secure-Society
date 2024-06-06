@@ -562,6 +562,10 @@ class AmenityController extends BaseController
             return $this->sendError(404, 'Booking not found.', "Not Found", []);
         }
 
+        if($booking->booking_status == $request->booking_status) {
+            return $this->sendError(400, "You can't Update the Status, The booking is already in the requested status.", "Bad Request", []);
+        }
+
         // Check if the booking status is already canceled
         if ($booking->booking_status == 3) {
             return $this->sendError(400, 'Booking status cannot be updated as it is already canceled.', "Invalid", []);

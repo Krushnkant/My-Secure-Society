@@ -408,6 +408,9 @@ class PostController extends BaseController
         }
 
         $post = DailyPost::find($request->post_id);
+        if ($post->estatus == $request->status) {
+            return $this->sendError(400, "You can't Update the Status, The Post is already in the requested status.", "Bad Request", []);
+        }
         if(getResidentDesignation($designation_id) != "Society Admin"){
             if(($request->status == 3 || $request->status == 1) && $post->estatus == 5  &&  $post->created_by == auth()->id()){
                 return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
