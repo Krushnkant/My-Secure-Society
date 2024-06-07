@@ -363,7 +363,7 @@ class ServiceProviderControler extends BaseController
         $temp['daily_help_user_passcode'] = isset($provider->user)?$provider->user->user_code:"";
         $temp['full_name'] = isset($provider->user)?$provider->user->full_name:"";
         $temp['mobile_no'] = isset($provider->user)?$provider->user->mobile_no:"";
-        $temp['profile_pic'] = isset($provider->user) && $provider->profile_pic_url != ""?url($provider->user->profile_pic_url):"";
+        $temp['profile_pic'] = isset($provider->user) && $provider->user->profile_pic_url != ""?url($provider->user->profile_pic_url):"";
         $temp['gender'] = isset($provider->user)?$provider->user->gender:"";
         $temp['service_name'] = isset($provider->daily_help_service)?$provider->daily_help_service->service_name:"";
         $temp['service_icon'] = $provider->daily_help_service->service_icon ?? "";

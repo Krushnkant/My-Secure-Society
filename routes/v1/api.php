@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\V1\BloodDonateController;
 use App\Http\Controllers\Api\V1\DeliveredCourierController;
 use App\Http\Controllers\Api\V1\ServiceProviderControler;
 use App\Http\Controllers\Api\V1\SocietyDepartmentController;
+use App\Http\Controllers\Api\V1\StaffDutyAreaController;
+use App\Http\Controllers\Api\V1\StaffMemberController;
 use App\Http\Controllers\Api\V1\VisitorController;
 
 /*
@@ -157,6 +159,16 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('department/save',[SocietyDepartmentController::class,'save_department']);
     Route::post('department/list',[SocietyDepartmentController::class,'department_list']);
     Route::post('department/delete',[SocietyDepartmentController::class,'delete_department']);
+
+    Route::post('duty_area/save',[StaffDutyAreaController::class,'save_duty_area']);
+    Route::post('duty_area/list',[StaffDutyAreaController::class,'duty_area_list']);
+    Route::post('duty_area/get',[StaffDutyAreaController::class,'get_duty_area']);
+    Route::post('duty_area/delete',[StaffDutyAreaController::class,'delete_duty_area']);
+
+    Route::post('staff_member/save',[StaffMemberController::class,'save_staff_member']);
+    Route::post('staff_member/list',[StaffMemberController::class,'staff_member_list']);
+    Route::post('staff_member/get',[StaffMemberController::class,'get_staff_member']);
+    Route::post('staff_member/delete',[StaffMemberController::class,'delete_staff_member']);
 
 });
 
