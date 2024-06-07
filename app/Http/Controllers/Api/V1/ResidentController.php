@@ -121,9 +121,7 @@ class ResidentController extends BaseController
         // Validation rules
         $validator = Validator::make($request->all(), [
             'society_member_id' => 'required|exists:society_member,society_member_id,deleted_at,NULL',
-            'status' => [
-                'required',
-            ],
+            'status' => 'required|in:1,2,3,5',
         ]);
 
         // If validation fails, return the validation errors
@@ -139,6 +137,9 @@ class ResidentController extends BaseController
 
         // Update the status
         $society_member = SocietyMember::where('society_member_id', $request->society_member_id)->firstOrFail();
+        if ($society_member->estatus == $request->status) {
+            return $this->sendError(400, "You can't Update the Status, The Society Member is already in the requested status.", "Bad Request", []);
+        }
         $society_member->estatus = $request->status;
         $society_member->save();
         if($request->status == 3){

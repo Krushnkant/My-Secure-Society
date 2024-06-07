@@ -113,7 +113,7 @@ class ServiceProviderControler extends BaseController
 
         if($request->user_id == 0){
             $user = new User();
-            $user->user_code = str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
+            $user->user_code = rand(100000, 999999);
             $user->full_name = $request->full_name;
             $user->mobile_no = $request->mobile_no;
             $user->user_type = 5;
