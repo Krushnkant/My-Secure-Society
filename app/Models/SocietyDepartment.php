@@ -14,4 +14,11 @@ class SocietyDepartment extends Model
     protected $primaryKey = 'society_department_id';
 
     protected $dates = ['deleted_at'];
+
+
+
+    public function society_staff_members()
+    {
+        return $this->hasMany(StaffMember::class, 'society_department_id');
+    }
 }

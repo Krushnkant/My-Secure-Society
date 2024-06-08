@@ -557,6 +557,46 @@ class JwtMiddleware extends BaseMiddleware
             }
 
 
+            if($request->calling_by == 1){
+                if ($request->route()->uri() == $v1 . 'staff_member/duty_area/save') {
+
+                    if ($request->contact_id == 0 && is_add_resident(24) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(24) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/duty_area/list' && is_view_resident(24) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/duty_area/get' && is_view_resident(24) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/duty_area/delete' && is_delete_resident(24) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }else{
+                if ($request->route()->uri() == $v1 . 'staff_member/duty_area/save') {
+                    if ($request->contact_id == 0 && is_add_resident(68) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(68) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/duty_area/list' && is_view_resident(68) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/duty_area/get' && is_view_resident(68) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/duty_area/delete' && is_delete_resident(68) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }
+
+
 
             return $next($request);
 

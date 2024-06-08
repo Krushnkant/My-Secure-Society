@@ -487,7 +487,7 @@ class VisitorController extends BaseController
             $temp['visitor_type'] = $visitor->visitor_type;
             $temp['daily_help_service_name'] = optional($visitor->daily_help_provider)->service_name ?? '';
             $temp['visiting_help_category_id'] = $visitor->visiting_help_category_id;
-            $temp['visiting_help_category'] = optional($visitor->visiting_help_categori)->visiting_help_category_name ?? $gatepass->visiting_help_category;
+            $temp['visiting_help_category'] = optional($visitor->visiting_help_categori)->visiting_help_category_name ?? $visitor->visiting_help_category;
             if($visitor->service_vendor_id > 0){
                 $temp['company_name'] = optional($visitor->service_vendor)->vendor_company_name ?? '';
                 $temp['company_icon'] =   isset($visitor->service_vendor->service_vendor_file) ? url($visitor->service_vendor->service_vendor_file->file_url) : '';

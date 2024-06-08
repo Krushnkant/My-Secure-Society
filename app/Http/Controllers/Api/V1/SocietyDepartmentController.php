@@ -84,12 +84,12 @@ class SocietyDepartmentController extends BaseController
             return $this->sendError(400,'Society Not Found.', "Not Found", []);
         }
 
-        $departments = SocietyDepartment::where('society_id', $society_id)->where('estatus', 1)->orderBy('department_name', 'ASC')->paginate(10);
+        $departments = SocietyDepartment::with('society_staff_members')->where('society_id', $society_id)->where('estatus', 1)->orderBy('department_name', 'ASC')->paginate(10);
         $department_arr = array();
         foreach ($departments as $department) {
             $temp['department_id'] = $department['society_department_id'];
             $temp['department_name'] = $department->department_name;
-            $temp['total_member'] = 0;
+            $temp['total_member'] = count($department->society_staff_members);
             array_push($department_arr, $temp);
         }
 

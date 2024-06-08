@@ -72,7 +72,7 @@ class StaffDutyAreaController extends BaseController
         $area->save();
 
         $data = array();
-        $temp['visit_area_id'] = $area->staff_duty_area_id;
+        $temp['staff_duty_area_id'] = $area->staff_duty_area_id;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, "Duty Area ".$action." Successfully");
     }
@@ -123,7 +123,7 @@ class StaffDutyAreaController extends BaseController
         }
 
         $data = array();
-        $temp['visit_area_id'] = $area['staff_duty_area_id'];
+        $temp['staff_duty_area_id'] = $area['staff_duty_area_id'];
         $temp['area_name'] = $area->area_name;
         array_push($data, $temp);
 
