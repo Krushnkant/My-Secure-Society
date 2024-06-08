@@ -517,6 +517,46 @@ class JwtMiddleware extends BaseMiddleware
             }
 
 
+            if($request->calling_by == 1){
+                if ($request->route()->uri() == $v1 . 'staff_member/save') {
+
+                    if ($request->contact_id == 0 && is_add_resident(23) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(23) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/list' && is_view_resident(23) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/get' && is_view_resident(23) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/delete' && is_delete_resident(23) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }else{
+                if ($request->route()->uri() == $v1 . 'staff_member/save') {
+                    if ($request->contact_id == 0 && is_add_resident(67) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(67) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/list' && is_view_resident(67) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/get' && is_view_resident(67) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/delete' && is_delete_resident(67) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }
+
+
 
             return $next($request);
 
