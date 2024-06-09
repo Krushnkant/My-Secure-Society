@@ -596,6 +596,23 @@ class JwtMiddleware extends BaseMiddleware
                 }
             }
 
+            if($request->calling_by == 1){
+                if ($request->route()->uri() == $v1 . 'staff_member/fill_attendance' && is_add_resident(25) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/attendance/list' && is_view_resident(25) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }else{
+                if ($request->route()->uri() == $v1 . 'staff_member/fill_attendance' && is_add_resident(69) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'staff_member/attendance/list' && is_view_resident(69) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+
+            }
+
 
 
             return $next($request);
