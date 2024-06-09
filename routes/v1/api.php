@@ -175,6 +175,9 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('staff_member/duty_area/get',[StaffMemberController::class,'get_staff_member_duty_area']);
     Route::post('staff_member/duty_area/delete',[StaffMemberController::class,'delete_staff_member_duty_area']);
 
+    Route::post('staff_member/fill_attendance',[StaffMemberController::class,'staff_member_fill_attendance']);
+    Route::post('staff_member/attendance/list',[StaffMemberController::class,'staff_member_attendance_list']);
+
 });
 
 Route::post('country/list', [UserController::class, 'get_country']);

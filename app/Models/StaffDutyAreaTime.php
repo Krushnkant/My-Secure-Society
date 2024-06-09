@@ -10,7 +10,7 @@ class StaffDutyAreaTime extends Model
 {
     use HasFactory,SoftDeletes;
     protected $table = 'staff_duty_area_time';
-    protected $primaryKey = 'staff_duty_area_time_id';
+    protected $primaryKey = 'duty_area_time_id';
     protected $dates = ['deleted_at'];
 
     public function duty_area()

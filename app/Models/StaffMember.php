@@ -13,6 +13,11 @@ class StaffMember extends Model
     protected $primaryKey = 'society_staff_member_id';
     protected $dates = ['deleted_at'];
 
+    public function areatime()
+    {
+        return $this->hasOne(StaffDutyAreaTime::class,'society_staff_member_id', 'society_staff_member_id')->where('is_standing_location',1);
+    }
+
     public function user()
     {
         return $this->hasOne(User::class,'user_id', 'user_id');
