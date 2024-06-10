@@ -155,7 +155,9 @@ class AuthController extends BaseController
         // }
 
         $validator = Validator::make($request->all(), [
-            'block_flat_id' => 'required|integer|exists:block_flat,block_flat_id,deleted_at,NULL'
+            'block_flat_id' => 'required|integer|exists:block_flat,block_flat_id,deleted_at,NULL',
+            'firebase_token' => 'required',
+            'firebase_id' => 'required',
         ]);
 
         if($validator->fails()){
@@ -184,6 +186,10 @@ class AuthController extends BaseController
             }
             $userJwt = ['user_id' => $user->user_id,'block_flat_id'=> isset($user->societymember)?$user->societymember->block_flat_id:"",'society_id'=> isset($user->societymember)?$user->societymember->society_id:"",'society_member_id'=> isset($user->societymember)?$user->societymember->society_member_id:"",'designation_id'=> isset($user->societymember)?$user->societymember->resident_designation_id:"",'authority'=> $authority_array ];
             $data['token'] = JWTAuth::claims($userJwt)->fromUser($user);
+
+            $user->token = $request->firebase_token;
+            $user->firebase_id = $request->firebase_id;
+            $user->save();
             return $this->sendResponseWithData($data,'Token get successfully.');
         }else{
             return $this->sendError(400,'User Not Found.', "verification Failed", []);

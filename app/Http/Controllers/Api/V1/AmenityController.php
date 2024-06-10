@@ -369,6 +369,8 @@ class AmenityController extends BaseController
             'slot_id' => 'required|exists:amenity_slot,amenity_slot_id,deleted_at,NULL,amenity_id,'.$request->amenity_id,
             'start_date' => 'nullable|date|after_or_equal:today',
             'end_date' => 'nullable|date|after_or_equal:start_date',
+            'no_of_person' => 'required|numeric|min:1',
+            'price' => 'required|numeric|min:0',
             'total_amount' => 'required|numeric|min:0',
             'gateway_name' => 'required|max:100', // Gateway name is required
             'payment_mode' => 'required|in:1,2,3', // Payment mode must be required and can only be 1, 2, or 3
@@ -390,6 +392,8 @@ class AmenityController extends BaseController
         $amenity->amenity_slot_id = $request->slot_id;
         $amenity->start_date = $request->start_date;
         $amenity->end_date = $request->end_date;
+        $amenity->no_of_person = $request->no_of_person;
+        $amenity->amount = $request->price;
         $amenity->total_amount = $request->total_amount;
         $amenity->booking_status = 2;
         $amenity->created_by = Auth::user()->user_id;
@@ -532,6 +536,8 @@ class AmenityController extends BaseController
             $temp['end_date'] = $booking->end_date;
             $temp['entry_time'] = $booking->slot->entry_time;
             $temp['exit_time'] = $booking->slot->exit_time;
+            $temp['no_of_person'] = $booking->no_of_person;
+            $temp['price'] = $booking->amount;
             $temp['total_amount'] = $booking->total_amount;
             $temp['booking_status'] = $booking->booking_status;
             $temp['payment_status'] = $booking->payment_status;
