@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\EmergencyAlertController;
 use App\Http\Controllers\Api\V1\BusinessProfileController;
 use App\Http\Controllers\Api\V1\BloodDonateController;
 use App\Http\Controllers\Api\V1\DeliveredCourierController;
+use App\Http\Controllers\Api\V1\DesignationController;
 use App\Http\Controllers\Api\V1\ServiceProviderControler;
 use App\Http\Controllers\Api\V1\SocietyDepartmentController;
 use App\Http\Controllers\Api\V1\StaffDutyAreaController;
@@ -178,10 +179,13 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('staff_member/fill_attendance',[StaffMemberController::class,'staff_member_fill_attendance']);
     Route::post('staff_member/attendance/list',[StaffMemberController::class,'staff_member_attendance_list']);
 
-    Route::post('staff_member/designation/save',[StaffMemberController::class,'save_staff_member_duty_area']);
-    Route::post('staff_member/designation/list',[StaffMemberController::class,'staff_member_duty_area_list']);
-    Route::post('staff_member/designation/get',[StaffMemberController::class,'get_staff_member_duty_area']);
-    Route::post('staff_member/designation/delete',[StaffMemberController::class,'delete_staff_member_duty_area']);
+    Route::post('designation/save',[DesignationController::class,'save_designation']);
+    Route::post('designation/list',[DesignationController::class,'designation_list']);
+    Route::post('designation/get',[DesignationController::class,'get_designation']);
+    Route::post('designation/change_status',[DesignationController::class,'change_status']);
+
+    Route::post('designation/authority/get',[DesignationController::class,'get_designation_authority']);
+    Route::post('designation/authority/set',[DesignationController::class,'set_designation_authority']);
 
 });
 

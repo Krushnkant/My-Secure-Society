@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('designation_name', 30);
             $table->integer('can_update_authority_claims')->enum([1, 2])->default(1)->comment('1 - True, 2 - False')->index();
             $table->integer('estatus')->enum([1, 2, 3, 4])->default(1)->comment('1 - Active, 2 - InActive, 3 - Delete, 4 - Pending')->index();
+            $table->integer('use_for')->enum([1, 2])->default(1)->comment('1 - Resident, 2 - Staff Member')->index();
             $table->dateTime('created_at')->nullable();
             $table->integer('created_by')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
