@@ -22,4 +22,9 @@ class StaffMember extends Model
     {
         return $this->hasOne(User::class,'user_id', 'user_id');
     }
+
+    public function designation()
+    {
+        return $this->hasOne(ResidentDesignation::class,'resident_designation_id', 'resident_designation_id');
+    }
 }

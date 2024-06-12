@@ -18,6 +18,11 @@ class SocietyVisitor extends Model
         return $this->hasOne(User::class,'user_id', 'created_by');
     }
 
+    public function approved_user()
+    {
+        return $this->hasOne(User::class,'user_id', 'approved_by');
+    }
+
     public function daily_help_provider()
     {
         return $this->hasOne(ServiceProvider::class,'daily_help_provider_id', 'daily_help_provider_id');
@@ -31,5 +36,10 @@ class SocietyVisitor extends Model
     public function visiting_help_categori()
     {
         return $this->hasOne(VisitingHelpCategory::class,'visiting_help_category_id', 'visiting_help_category_id');
+    }
+
+    public function visitor_images()
+    {
+        return $this->hasMany(SocietyVisitorFile::class,'society_visitor_id', 'society_visitor_id');
     }
 }

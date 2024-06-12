@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ServiceProvider;
 use App\Models\ServiceVendor;
 use App\Models\SocietyVisitor;
+use App\Models\SocietyVisitorFile;
 use App\Models\VisitingHelpCategory;
 use App\Models\VisitorGatepass;
 use Illuminate\Http\Request;
@@ -378,6 +379,8 @@ class VisitorController extends BaseController
             // 'total_visitors' => 'required|integer|min:1',
             'visitor_name' => 'required|string|max:100',
             'visitor_mobile_no' => 'required|string|digits:10',
+            'visitor_images' => 'required|array|min:1|max:10',
+            'visitor_images.*' => 'image|max:2048',
         ];
 
         if ($request->block_flat_id != 0) {
@@ -432,12 +435,31 @@ class VisitorController extends BaseController
         $visitor->visiting_help_category = $request->input('visiting_help_category');
         $visitor->save();
 
-        // Prepare the response data
+        if($visitor){
+            if ($request->hasFile('visitor_images')) {
+                $files = $request->file('visitor_images');
+                foreach ($files as $file) {
+                    $fileType = getFileType($file);
+                    $fileUrl = UploadImage($file, 'images/visitor_image');
+                    $this->storeFileEntry($visitor->society_visitor_id, $fileType, $fileUrl);
+                }
+            }
+        }
+
         $data['visitor_id'] = $visitor->society_visitor_id;
         $data['visitor_status'] = $visitor->visitor_status;
 
-        // Return success response
         return $this->sendResponseWithData($data, "visitor saved successfully");
+    }
+
+    public function storeFileEntry($Id, $fileType, $fileUrl)
+    {
+        $fileEntry = new SocietyVisitorFile();
+        $fileEntry->society_visitor_id = $Id;
+        $fileEntry->file_type = $fileType;
+        $fileEntry->file_url = $fileUrl;
+        $fileEntry->uploaded_at = now();
+        $fileEntry->save();
     }
 
 
@@ -464,7 +486,7 @@ class VisitorController extends BaseController
         $visitor_status = $request->input('visitor_status');
         $date = $request->input('date');
 
-        $visitorQuery = SocietyVisitor::with('user','daily_help_provider','service_vendor.service_vendor_file','visiting_help_categori')
+        $visitorQuery = SocietyVisitor::with('user','approved_user','daily_help_provider','service_vendor.service_vendor_file','visiting_help_categori','visitor_images')
             ->where('society_id', $society_id);
 
         if ($visitor_type != 0) {
@@ -483,6 +505,10 @@ class VisitorController extends BaseController
 
         $visitor_arr = [];
         foreach ($gatevisitor as $visitor) {
+            $image_urls = [];
+            foreach ($visitor->visitor_images as $image) {
+                $image_urls[] = url($image->file_url);
+            }
             $temp['visitor_id'] = $visitor->society_visitor_id;
             $temp['visitor_type'] = $visitor->visitor_type;
             $temp['daily_help_service_name'] = optional($visitor->daily_help_provider)->service_name ?? '';
@@ -503,6 +529,9 @@ class VisitorController extends BaseController
             $temp['added_by_user_id'] = $visitor->created_by;
             $temp['added_by_user_full_name'] = $visitor->user->full_name;
             $temp['visit_to_block_flat_no'] = getUserBlockAndFlat($visitor->created_by);
+            $temp['visitor_images'] = $image_urls;
+            $temp['approved_by'] = $visitor->approved_by;
+            $temp['approved_by_user_full_name'] = isset($visitor->approved_user)?$visitor->approved_user->full_name:"";
 
             array_push($visitor_arr, $temp);
         }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('society_staff_member_id')->index();
             $table->integer('user_id')->index();
             $table->integer('society_department_id')->index();
+            $table->integer('resident_designation_id')->index();
             $table->string('duty_note', 255)->nullable();
             $table->time('duty_start_time')->nullable();
             $table->time('duty_end_time')->nullable();

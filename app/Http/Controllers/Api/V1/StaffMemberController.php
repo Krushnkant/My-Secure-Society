@@ -36,6 +36,7 @@ class StaffMemberController extends BaseController
         $rules = [
             'staff_member_id' => 'required',
             'department_id' => 'required|exists:society_department,society_department_id,deleted_at,NULL,society_id,'.$society_id,
+            'designation_id' => 'required|exists:resident_designation,resident_designation_id,deleted_at,NULL,use_for,2,society_id,'.$society_id,
             'full_name' => 'required|string|max:50',
             'gender' => ['required', Rule::in([1, 2])],
             'profile_pic' => 'required|image|mimes:jpeg,png,jpg',
@@ -94,6 +95,7 @@ class StaffMemberController extends BaseController
                 $staff = new StaffMember();
                 $staff->user_id = $user->user_id;
                 $staff->society_department_id = $request->department_id;
+                $staff->resident_designation_id = $request->designation_id;
                 $staff->created_by = Auth::user()->user_id;
                 $staff->updated_by = Auth::user()->user_id;
                 $staff->save();
@@ -125,6 +127,7 @@ class StaffMemberController extends BaseController
                 $user->save();
                 if($staff){
                     $staff->society_department_id = $request->department_id;
+                    $staff->resident_designation_id = $request->designation_id;
                     $staff->updated_by = Auth::user()->user_id;
                     $staff->save();
                 }
@@ -166,7 +169,7 @@ class StaffMemberController extends BaseController
         }
 
         // Retrieve service providers based on parameters
-        $query = StaffMember::with(['areatime.duty_area', 'user'])->where('estatus', 1);
+        $query = StaffMember::with(['areatime.duty_area', 'user','designation'])->where('estatus', 1);
 
         if ($request->has('department_id') && $request->input('department_id') != 0) {
             $query->where('society_department_id', $request->department_id);
@@ -180,6 +183,8 @@ class StaffMemberController extends BaseController
             $temp['staff_member_id'] = $staff->society_staff_member_id;
             $temp['stand_area_id'] =  $staff->areatime->staff_duty_area_id;
             $temp['stand_area_name'] = $staff->areatime->duty_area->area_name;
+            $temp['designation_id'] =  $staff->resident_designation_id;
+            $temp['designation_name'] = $staff->designation->designation_name ?? "";
             $temp['duty_start_time'] = $staff->duty_start_time;
             $temp['duty_end_time'] = $staff->duty_end_time;
             $temp['full_name'] = $staff->user->full_name ?? "";
@@ -211,6 +216,7 @@ class StaffMemberController extends BaseController
 
         $data = array();
         $temp['staff_member_id'] = $staff->society_staff_member_id;
+        $temp['designation_id'] =  $staff->resident_designation_id;
         $temp['user_id'] = $staff->user_id;
         $temp['daily_help_user_passcode'] = isset($staff->user)?$staff->user->user_code:"";
         $temp['full_name'] = isset($staff->user)?$staff->user->full_name:"";
