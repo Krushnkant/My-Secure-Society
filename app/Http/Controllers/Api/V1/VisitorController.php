@@ -532,6 +532,7 @@ class VisitorController extends BaseController
             $temp['visitor_images'] = $image_urls;
             $temp['approved_by'] = $visitor->approved_by;
             $temp['approved_by_user_full_name'] = isset($visitor->approved_user)?$visitor->approved_user->full_name:"";
+            $temp['visitor_status'] = $visitor->visitor_status;
 
             array_push($visitor_arr, $temp);
         }

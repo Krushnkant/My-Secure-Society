@@ -34,7 +34,7 @@ class DesignationController extends BaseController
             'designation_name' => [
                 'required',
                 'max:60',
-                Rule::unique('resident_designation', 'resident_designation')
+                Rule::unique('resident_designation', 'designation_name')
                 ->ignore($request->designation_id, 'resident_designation_id')
                     ->whereNull('deleted_at'),
             ]
@@ -58,7 +58,7 @@ class DesignationController extends BaseController
             $designation->updated_by = Auth::user()->user_id;
             $action ="Added";
         }else{
-            $designation = ResidentDesignation::find($request->staff_duty_area_id);
+            $designation = ResidentDesignation::find($request->designation_id);
             if($request->calling_by == 1 &&  $designation->created_by != auth()->id()){
                 return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
             }

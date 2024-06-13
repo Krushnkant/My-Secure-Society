@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\SocietyDepartment;
+use App\Models\StaffMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -115,6 +116,12 @@ class SocietyDepartmentController extends BaseController
         if($request->calling_by == 1 &&  $department->created_by != auth()->id()){
             return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
         }
+
+        $isReferenced = StaffMember::where('society_department_id', $department->society_department_id)->exists();
+        if ($isReferenced) {
+            return $this->sendError(400, 'Department cannot be deleted because it is referenced in other records.', "Bad Request", []);
+        }
+
         if ($department) {
             $department->estatus = 3;
             $department->save();

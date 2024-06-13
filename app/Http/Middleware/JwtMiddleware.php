@@ -613,6 +613,32 @@ class JwtMiddleware extends BaseMiddleware
 
             }
 
+            if ($request->route()->uri() == $v1 . 'designation/save') {
+                if ($request->contact_id == 0 && is_add_resident(53) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->contact_id > 0 && is_edit_resident(53) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }
+            if ($request->route()->uri() == $v1 . 'designation/list' && is_view_resident(53) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'designation/get' && is_view_resident(53) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'designation/change_status' && is_edit_resident(53) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+
+
+            if ($request->route()->uri() == $v1 . 'designation/authority/get' && is_view_resident(54) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'designation/authority/set' && is_edit_resident(54) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+
 
 
             return $next($request);
