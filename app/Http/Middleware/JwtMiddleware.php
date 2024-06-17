@@ -483,20 +483,40 @@ class JwtMiddleware extends BaseMiddleware
                 return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
-            if ($request->route()->uri() == $v1 . 'department/save') {
-                if ($request->contact_id == 0 && is_add_resident(51) == 0) {
+            if($request->calling_by == 1){
+                if ($request->route()->uri() == $v1 . 'department/save') {
+                    if ($request->contact_id == 0 && is_add_resident(33) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(33) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'department/list' && is_view_resident(33) == 0) {
                     return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
-                if ($request->contact_id > 0 && is_edit_resident(51) == 0) {
+                if ($request->route()->uri() == $v1 . 'department/delete' && is_delete_resident(33) == 0) {
                     return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
+            }else{
+                if ($request->route()->uri() == $v1 . 'department/save') {
+                    if ($request->contact_id == 0 && is_add_resident(51) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(51) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'department/list' && is_view_resident(51) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'department/delete' && is_delete_resident(51) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+
             }
-            if ($request->route()->uri() == $v1 . 'department/list' && is_view_resident(51) == 0) {
-                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }
-            if ($request->route()->uri() == $v1 . 'department/delete' && is_delete_resident(51) == 0) {
-                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
-            }
+
+
 
             if ($request->route()->uri() == $v1 . 'duty_area/save') {
                 if ($request->contact_id == 0 && is_add_resident(66) == 0) {
@@ -637,6 +657,45 @@ class JwtMiddleware extends BaseMiddleware
             }
             if ($request->route()->uri() == $v1 . 'designation/authority/set' && is_edit_resident(54) == 0) {
                 return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+
+            if($request->calling_by == 1){
+                if ($request->route()->uri() == $v1 . 'category/save') {
+                    if ($request->contact_id == 0 && is_add_resident(34) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(34) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'category/list' && is_view_resident(34) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'category/get' && is_view_resident(34) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'category/delete' && is_delete_resident(34) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }else{
+                if ($request->route()->uri() == $v1 . 'category/save') {
+                    if ($request->contact_id == 0 && is_add_resident(76) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(76) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'category/list' && is_view_resident(76) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'category/get' && is_view_resident(76) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'category/delete' && is_delete_resident(76) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+
             }
 
 

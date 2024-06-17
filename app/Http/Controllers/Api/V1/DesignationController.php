@@ -36,6 +36,7 @@ class DesignationController extends BaseController
                 'max:60',
                 Rule::unique('resident_designation', 'designation_name')
                 ->ignore($request->designation_id, 'resident_designation_id')
+                ->where('society_id',$society_id)
                     ->whereNull('deleted_at'),
             ]
         ];
@@ -745,7 +746,7 @@ class DesignationController extends BaseController
         $use_for = $request->input('use_for', 0);
 
         // Initialize the query
-        $query = ResidentDesignation::where('society_id', $society_id);
+        $query = ResidentDesignation::with('claim')->where('society_id', $society_id);
 
         // Apply search filter if search_text is provided
         if (!empty($search_text)) {
@@ -756,19 +757,37 @@ class DesignationController extends BaseController
             $query->where('use_for', $use_for);
         }
 
+        $designation_id = $this->payload['designation_id'];
+        if(getResidentDesignation($designation_id) == "Society Member"){
+            $query->where('estatus',1);
+        }
         // Order by designation name and paginate
         $designations = $query->orderBy('designation_name', 'ASC')->paginate(10);
         $designation_arr = array();
         foreach ($designations as $designation) {
+            $all_claim = [];
+            foreach($designation->claim as $claim){
+                $c_temp['authority_id'] = $claim->resident_designate_auth_id;
+                $c_temp['eauthority'] = $claim->eauthority;
+                $c_temp['authority_name'] = getAuthName($claim->eauthority);
+                $c_temp['can_view'] = $claim->can_view;
+                $c_temp['can_add'] = $claim->can_add;
+                $c_temp['can_edit'] = $claim->can_edit;
+                $c_temp['can_delete'] = $claim->can_delete;
+                $c_temp['can_print'] = $claim->can_print;
+                array_push($all_claim, $c_temp);
+            }
+
             $temp['designation_id'] = $designation->resident_designation_id;
             $temp['designation_name'] = $designation->designation_name;
-            $temp['can_update_permission'] = $designation->can_update_permission;
-            $temp['use_for'] = $designation->use_for;
+            $temp['can_update_permission'] = $designation->can_update_authority_claims ? True : False;
+            $temp['use_for'] = (int) $designation->use_for;
+            $temp['claim'] =  $all_claim;
             array_push($designation_arr, $temp);
         }
 
         $data['designation_list'] = $designation_arr;
-        $data['total_records'] = $designations->toArray()['total'];
+        $data['total_records'] = $designations->total();
         return $this->sendResponseWithData($data, "All Designation Successfully.");
     }
 
@@ -800,7 +819,7 @@ class DesignationController extends BaseController
         $data = array();
         $temp['designation_id'] = $designation->resident_designation_id;
         $temp['designation_name'] = $designation->designation_name;
-        $temp['use_for'] = $designation->use_for;
+        $temp['use_for'] = (int) $designation->use_for;
         array_push($data, $temp);
 
         return $this->sendResponseWithData($data, "Get Designation Successfully.");
@@ -861,6 +880,7 @@ class DesignationController extends BaseController
         foreach ($authorities as $authority) {
             $temp['authority_id'] = $authority->resident_designate_auth_id;
             $temp['eauthority'] = $authority->eauthority;
+            $temp['authority_name'] = getAuthName($authority->eauthority);
             $temp['can_view'] = $authority->can_view;
             $temp['can_add'] = $authority->can_add;
             $temp['can_edit'] = $authority->can_edit;
@@ -872,6 +892,38 @@ class DesignationController extends BaseController
         return $this->sendResponseWithData($data, "All Designation Authority Successfully.");
     }
 
+    // public function set_designation_authority(Request $request)
+    // {
+    //     $society_id = $this->payload['society_id'];
+    //     if($society_id == ""){
+    //         return $this->sendError(400,'Society Not Found.', "Not Found", []);
+    //     }
+
+    //     $rules = [
+    //         'authority_id' => 'required|numeric|exists:resident_designate_auth,resident_designate_auth_id',
+    //     ];
+
+    //     $validator = Validator::make($request->all(), $rules);
+
+    //     if ($validator->fails()) {
+    //         return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+    //     }
+
+    //     $authority = ResidentDesignationAuthority::find($request->authority_id);
+    //     $authority->updated_by = Auth::user()->user_id;
+    //     $authority->can_view = $request->can_view;
+    //     $authority->can_add = $request->can_add;
+    //     $authority->can_edit = $request->can_edit;
+    //     $authority->can_delete = $request->can_delete;
+    //     $authority->can_print = $request->can_print;
+    //     $authority->save();
+
+    //     $data = array();
+    //     $temp['authority_id'] = $authority->resident_designate_auth_id;
+    //     array_push($data, $temp);
+    //     return $this->sendResponseWithData($data, "authority set Successfully");
+    // }
+
     public function set_designation_authority(Request $request)
     {
         $society_id = $this->payload['society_id'];
@@ -880,7 +932,13 @@ class DesignationController extends BaseController
         }
 
         $rules = [
-            'authority_id' => 'required|numeric|exists:resident_designate_auth,resident_designate_auth_id',
+            'authorities' => 'required|array|min:1',
+            'authorities.*.authority_id' => 'required|numeric|exists:resident_designate_auth,resident_designate_auth_id',
+            'authorities.*.can_view' => 'required|in:0,1,2',
+            'authorities.*.can_add' => 'required|in:0,1,2',
+            'authorities.*.can_edit' => 'required|in:0,1,2',
+            'authorities.*.can_delete' => 'required|in:0,1,2',
+            'authorities.*.can_print' => 'required|in:0,1,2',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -889,19 +947,42 @@ class DesignationController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
-        $authority = ResidentDesignationAuthority::find($request->authority_id);
-        $authority->updated_by = Auth::user()->user_id;
-        $authority->can_view = $request->can_view;
-        $authority->can_add = $request->can_add;
-        $authority->can_edit = $request->can_edit;
-        $authority->can_delete = $request->can_delete;
-        $authority->can_print = $request->can_print;
-        $authority->save();
-
         $data = array();
-        $temp['authority_id'] = $authority->resident_designate_auth_id;
-        array_push($data, $temp);
-        return $this->sendResponseWithData($data, "authority set Successfully");
+
+        foreach ($request->authorities as $authorityData) {
+            $authority = ResidentDesignationAuthority::find($authorityData['authority_id']);
+            $designation = ResidentDesignation::find($authority->resident_designation_id);
+
+            // Check if the designation belongs to the same society
+            if ($designation->society_id != $society_id) {
+                return $this->sendError(403, 'You do not have permission to update this authority.', "Forbidden", []);
+            }
+
+            $authority->updated_by = Auth::user()->user_id;
+
+            if ($authorityData['can_view'] != 0) {
+                $authority->can_view = $authorityData['can_view'];
+            }
+            if ($authorityData['can_add'] != 0) {
+                $authority->can_add = $authorityData['can_add'];
+            }
+            if ($authorityData['can_edit'] != 0) {
+                $authority->can_edit = $authorityData['can_edit'];
+            }
+            if ($authorityData['can_delete'] != 0) {
+                $authority->can_delete = $authorityData['can_delete'];
+            }
+            if ($authorityData['can_print'] != 0) {
+                $authority->can_print = $authorityData['can_print'];
+            }
+
+            $authority->save();
+
+            $temp['authority_id'] = $authority->resident_designate_auth_id;
+            array_push($data, $temp);
+        }
+
+        return $this->sendResponseWithData($data, "Authorities set successfully");
     }
 
 

@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\BusinessProfileController;
 use App\Http\Controllers\Api\V1\BloodDonateController;
 use App\Http\Controllers\Api\V1\DeliveredCourierController;
 use App\Http\Controllers\Api\V1\DesignationController;
+use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceProviderControler;
 use App\Http\Controllers\Api\V1\SocietyDepartmentController;
 use App\Http\Controllers\Api\V1\StaffDutyAreaController;
@@ -186,6 +187,11 @@ Route::group(['middleware' => 'jwt'], function(){
 
     Route::post('designation/authority/get',[DesignationController::class,'get_designation_authority']);
     Route::post('designation/authority/set',[DesignationController::class,'set_designation_authority']);
+
+    Route::post('category/save',[ServiceCategoryController::class,'save_category']);
+    Route::post('category/list',[ServiceCategoryController::class,'category_list']);
+    Route::post('category/get',[ServiceCategoryController::class,'get_category']);
+    Route::post('category/delete',[ServiceCategoryController::class,'delete_category']);
 
 });
 
