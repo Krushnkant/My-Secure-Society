@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('service_request', function (Blueprint $table) {
             $table->bigIncrements('service_request_id')->index();
+            $table->integer('parent_service_request_id')->index()->comment('0 for Service Request or Non Zero for Service Request Reply');
             $table->integer('society_id')->index();
             $table->integer('society_block_id')->index();
             $table->integer('service_category_id')->index();

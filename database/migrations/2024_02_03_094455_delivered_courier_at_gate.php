@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('delivered_courier_at_gate', function (Blueprint $table) {
             $table->bigIncrements('delivered_courier_at_gate_id')->index();
+            $table->integer('visitor_id')->index();
             $table->integer('society_id')->index();
             $table->integer('block_flat_id')->index();
             $table->integer('service_vendor_id')->index();

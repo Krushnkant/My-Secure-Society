@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('service_request_reply', function (Blueprint $table) {
-            $table->bigIncrements('service_request_reply_id')->index();
-            $table->integer('service_request_id')->index();
-            $table->string('reply_description', 500);
-            $table->dateTime('created_at')->nullable();
-            $table->integer('created_by')->index();
-        });
+        // Schema::create('service_request_reply', function (Blueprint $table) {
+        //     $table->bigIncrements('service_request_reply_id')->index();
+        //     $table->integer('service_request_id')->index();
+        //     $table->string('reply_description', 500);
+        //     $table->dateTime('created_at')->nullable();
+        //     $table->integer('created_by')->index();
+        // });
     }
 
     /**
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('service_request_reply');
+        // Schema::dropIfExists('service_request_reply');
     }
 };
 
