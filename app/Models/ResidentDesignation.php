@@ -13,4 +13,9 @@ class ResidentDesignation extends Model
     protected $primaryKey = 'resident_designation_id';
 
     protected $dates = ['deleted_at'];
+
+    public function claim()
+    {
+        return $this->hasMany(ResidentDesignationAuthority::class, 'resident_designation_id', 'resident_designation_id');
+    }
 }

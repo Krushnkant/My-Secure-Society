@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 use App\Models\ServiceVendor;
 use App\Models\DeliveredCourier;
 use App\Models\DeliveredCourierFile;
+use App\Models\Flat;
 
 class DeliveredCourierController extends BaseController
 {
@@ -31,7 +32,8 @@ class DeliveredCourierController extends BaseController
 
         $rules = [
             'delivered_at_gate_id' => 'required',
-            'block_flat_id' => 'required',
+            'block_flat_id' => 'required|exists:block_flat,block_flat_id,deleted_at,NULL',
+            'visitor_id' => 'required|exists:society_visitor,society_visitor_id,deleted_at,NULL,society_id,'.$society_id,
             'service_vendor_id' => [
                 'required',
                 'integer',
@@ -44,14 +46,33 @@ class DeliveredCourierController extends BaseController
             'company_name' => 'nullable|string|max:100',
             'total_parcel' => 'required|integer',
             'courier_note' => 'nullable|string|max:100',
-            'courier_images' => 'required|array|min:1|max:10',
-            'courier_images.*' => 'image|max:2048',
+            'courier_images' => 'required|array|min:1|max:5',
+            'courier_images.*.file' => 'nullable|file|mimetypes:image/jpeg,image|max:20480',
+            'courier_images.*.file_id' => [
+            'nullable',
+            'integer',
+                function ($attribute, $value, $fail) {
+                    if ($value != 0 && !DeliveredCourierFile::where('delivered_courier_file_id', $value)->exists()) {
+                        $fail("The selected file ID does not exist.");
+                    }
+                }
+            ],
+            'courier_images.*.is_deleted' => 'required|in:1,2',
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+        $messages = [
+            'courier_images.required_without' => 'Min 1 image is required'
+        ];
+
+        $validator = Validator::make($request->all(), $rules,$messages);
 
         if ($validator->fails()) {
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
+        }
+
+        $blockFlat = Flat::with('society_block')->find($request->block_flat_id);
+        if (!$blockFlat || $blockFlat->society_block->society_id != $society_id) {
+            return $this->sendError(422, 'The selected Flat is not associated with the provided Society.', "Validation Errors", []);
         }
 
         if ($request->has('delivered_at_gate_id') && $request->delivered_at_gate_id != 0) {
@@ -68,6 +89,7 @@ class DeliveredCourierController extends BaseController
             $courier->updated_by = Auth::user()->user_id;
             $courier->society_id = $this->payload['society_id'];
         }
+        $courier->visitor_id = $request->visitor_id;
         $courier->block_flat_id = $request->block_flat_id;
         $courier->service_vendor_id = $request->input('service_vendor_id');
         $courier->company_name = $request->input('company_name');
@@ -78,12 +100,29 @@ class DeliveredCourierController extends BaseController
         $courier->save();
 
         if($courier){
-            if ($request->hasFile('courier_images')) {
-                $files = $request->file('courier_images');
-                foreach ($files as $file) {
-                    $fileType = getFileType($file);
-                    $fileUrl = UploadImage($file, 'images/delivered_courier');
-                    $this->storeFileEntry($courier->delivered_courier_at_gate_id, $fileType, $fileUrl);
+            // if ($request->hasFile('courier_images')) {
+            //     $files = $request->file('courier_images');
+            //     foreach ($files as $file) {
+            //         $fileType = getFileType($file);
+            //         $fileUrl = UploadImage($file, 'images/delivered_courier');
+            //         $this->storeFileEntry($courier->delivered_courier_at_gate_id, $fileType, $fileUrl);
+            //     }
+            // }
+
+            if ($request->has('courier_images')) {
+                foreach ($request->courier_images as $media) {
+                    if (isset($media['is_deleted']) && $media['is_deleted'] == 1) {
+                        // Delete the file if marked for deletion
+                        if (isset($media['file_id'])) {
+                            DeliveredCourierFile::where('delivered_courier_file_id', $media['file_id'])->delete();
+                        }
+                    } elseif (isset($media['file'])) {
+                        // Upload new file
+                        $file = $media['file'];
+                        $fileType = getFileType($file);
+                        $fileUrl = UploadImage($file, 'images/delivered_courier');
+                        $this->storeFileEntry($courier->delivered_courier_at_gate_id, $fileType, $fileUrl,$media['file_id']);
+                    }
                 }
             }
         }
@@ -95,9 +134,13 @@ class DeliveredCourierController extends BaseController
         return $this->sendResponseWithData($data, "Delivered At Gate saved successfully");
     }
 
-    public function storeFileEntry($Id, $fileType, $fileUrl)
+    public function storeFileEntry($Id, $fileType, $fileUrl,$file_id)
     {
-        $fileEntry = new DeliveredCourierFile();
+        if($file_id > 0){
+            $fileEntry = DeliveredCourierFile::find($file_id);
+        }else{
+            $fileEntry = new DeliveredCourierFile();
+        }
         $fileEntry->delivered_courier_at_gate_id = $Id;
         $fileEntry->file_type = $fileType;
         $fileEntry->file_url = $fileUrl;
@@ -153,7 +196,7 @@ class DeliveredCourierController extends BaseController
             $flat_info = getSocietyBlockAndFlatInfo($courier->block_flat_id);
             $temp['total_parcel'] = $courier->total_parcel;
             $temp['collection_otp'] = $courier->collection_otp;
-            $temp['parcel_image'] = isset($courier->parcel_image) ? url($courier->parcel_image->file_url) : '';
+            $temp['courier_images'] = isset($courier->parcel_image) ? url($courier->parcel_image->file_url) : '';
             $temp['block_flat_no'] =  $flat_info['block_name'] .'-'. $flat_info['flat_no'];
             $temp['collection_status'] = $courier->courier_collection_status;
             array_push($courier_arr, $temp);
@@ -189,9 +232,9 @@ class DeliveredCourierController extends BaseController
         }
         $parcel_images = [];
         foreach ($courier->parcel_images as $parcel_image) {
-            $file_temp['delivered_courier_file_id'] = $parcel_image->delivered_courier_file_id;
-            $file_temp['file_type'] = $parcel_image->file_type;
-            $file_temp['file_url'] = url($parcel_image->file_url);
+            $file_temp['file_id'] = $parcel_image->delivered_courier_file_id;
+            // $file_temp['file_type'] = $parcel_image->file_type;
+            $file_temp['file'] = url($parcel_image->file_url);
             array_push($parcel_images, $file_temp);
         }
         $data = array();
@@ -206,11 +249,10 @@ class DeliveredCourierController extends BaseController
         $flat_info = getSocietyBlockAndFlatInfo($courier->block_flat_id);
         $temp['total_parcel'] = $courier->total_parcel;
         $temp['collection_otp'] = $courier->collection_otp;
-        $temp['parcel_images'] = $parcel_images;
+        $temp['courier_images'] = $parcel_images;
         $temp['block_flat_id'] = $courier->block_flat_id;
         $temp['block_flat_no'] =  $flat_info['block_name'] .'-'. $flat_info['flat_no'];
         $temp['society_id'] = $courier->society_id;
-        $temp['collection_status'] = $courier->courier_collection_status;
         $temp['collection_status'] = $courier->courier_collection_status;
         $temp['courier_note'] = $courier->courier_note;
 

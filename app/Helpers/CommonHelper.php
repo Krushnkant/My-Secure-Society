@@ -176,6 +176,78 @@ function getModulesArray()
     ];
 }
 
+
+function getAuthName($auth_id)
+{
+    // Mapping of authorization IDs to their respective names
+    $authMap = [
+        1 => "Own Flat",
+        2 => "Own Family Member",
+        3 => "Own Festival Banner",
+        4 => "Own Festival Banner Configuration",
+        5 => "Own Folder",
+        6 => "Own Documents",
+        7 => "Society Member List",
+        8 => "Announcement",
+        9 => "Resident's Daily Post",
+        10 => "Own Daily Post",
+        11 => "Amenity",
+        12 => "Amenity Booking",
+        13 => "Emergency Alert",
+        14 => "My Emergency No",
+        15 => "Soc Emergency No",
+        16 => "Government Emergency No",
+        17 => "Resident's Business Profile",
+        18 => "Own Business Profile",
+        19 => "Resident's Society Payment",
+        20 => "Invoice",
+        21 => "Own Loan Request",
+        22 => "Own Complaint",
+        23 => "Staff Member",
+        24 => "Staff Member Duty Area",
+        25 => "Staff Member Attendance",
+        26 => "Maintenance Terms",
+        27 => "Loan Terms",
+        28 => "Pre Approved List / Gatepass",
+        29 => "Own Visitor List",
+        30 => "Delivered At Gate",
+        31 => "Daily Help Member",
+        32 => "Daily Help Member for My Flat",
+        33 => "Society Department",
+        34 => "Service Category",
+        51 => "Society Department",
+        52 => "Category for Society",
+        53 => "Society Member Designation",
+        54 => "Society Member Designation Authority",
+        55 => "Society Member List",
+        56 => "Society Member Request",
+        57 => "Announcement",
+        58 => "Amenity",
+        59 => "Amenity Booking",
+        60 => "Emergency Alert History",
+        61 => "Society Emergency No",
+        62 => "Resident's Society Payment",
+        63 => "Invoice",
+        64 => "Resident's Loan Request",
+        65 => "Resident's Complaint",
+        66 => "Duty Area",
+        67 => "Staff Member",
+        68 => "Staff Member Duty Area",
+        69 => "Staff Member Attendance",
+        70 => "Maintenance Terms",
+        71 => "Loan Terms",
+        72 => "Pre Approved List / Gatepass",
+        73 => "Visitor List",
+        74 => "Delivered At Gate",
+        75 => "Daily Help Member",
+        76 => "Service Category",
+    ];
+
+    // Return the corresponding authorization name
+    return $authMap[$auth_id] ?? "Unknown Authorization";
+}
+
+
 function getUserType($user_type_id)
 {
     if ($user_type_id == 1) {
