@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\V1\DeliveredCourierController;
 use App\Http\Controllers\Api\V1\DesignationController;
 use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceProviderControler;
+use App\Http\Controllers\Api\V1\ServiceRequestController;
 use App\Http\Controllers\Api\V1\SocietyDepartmentController;
 use App\Http\Controllers\Api\V1\StaffDutyAreaController;
 use App\Http\Controllers\Api\V1\StaffMemberController;
@@ -192,6 +193,13 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('category/list',[ServiceCategoryController::class,'category_list']);
     Route::post('category/get',[ServiceCategoryController::class,'get_category']);
     Route::post('category/delete',[ServiceCategoryController::class,'delete_category']);
+
+    Route::post('service_request/save',[ServiceRequestController::class,'save_service_request']);
+    Route::post('service_request/list',[ServiceRequestController::class,'service_request_list']);
+    Route::post('service_request/get',[ServiceRequestController::class,'get_service_request']);
+
+    Route::post('service_request/reply/save',[ServiceRequestController::class,'save_service_request_reply']);
+    Route::post('service_request/reply/list',[ServiceRequestController::class,'service_request_reply_list']);
 
 });
 

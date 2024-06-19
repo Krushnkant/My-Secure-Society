@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('service_category_id')->index();
             $table->integer('assigned_to_staff_member_id')->index();
             $table->string('service_request_number', 30)->unique()->comment('Format: SR-YYYYSocietyId+0001');
-            $table->string('service_subject', 200);
+            $table->string('service_subject', 200)->nullable();
             $table->string('service_description', 1000);
             // $table->integer('service_priority')->enum([1, 2, 3])->default(2)->comment('1 - High, 2 - Medium, 3 - Low')->index();
             $table->integer('service_request_status')->enum([1, 2, 3, 4, 5])->default(1)->comment('1 - Closed, 2 - Issue Raised, 3 - In Progress, 4 - ReOpened, 5 - In Hold')->index();

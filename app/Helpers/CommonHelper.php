@@ -383,6 +383,38 @@ function generateInvoiceNumber($societyId) {
     return $invoiceNumber;
 }
 
+// Function to generate a new service request number
+function generateServiceRequestNumber($societyId) {
+    // Get the current year
+    $currentYear = date('Y');
+
+    // Find the latest service request number for the current year and society
+    $latestRequest = \DB::table('service_request')
+        ->where('society_id', $societyId)
+        ->whereYear('created_at', $currentYear)
+        ->orderBy('service_request_id', 'desc')
+        ->first();
+
+    if ($latestRequest) {
+        // Extract the incrementing part from the latest service request number
+        $latestNumber = explode('-', $latestRequest->service_request_number);
+        $latestIncrement = (int) substr($latestNumber[2], -4);
+        // Increment the number
+        $newIncrement = $latestIncrement + 1;
+    } else {
+        // Start with 1 if no previous requests exist
+        $newIncrement = 1;
+    }
+
+    // Format the incrementing part with leading zeros
+    $formattedIncrement = str_pad($newIncrement, 4, '0', STR_PAD_LEFT);
+
+    // Construct the new service request number: SR-YYYYSocietyId-0001
+    $newServiceRequestNumber = 'SR-' . $currentYear . $societyId . '-' . $formattedIncrement;
+
+    return $newServiceRequestNumber;
+}
+
 function generateBookingNumber()
 {
     $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -414,6 +446,18 @@ function getReasonTypeName($reasonType)
         default:
             return 'Other';
     }
+}
+
+function getStatusName($status)
+{
+    $statusNames = [
+        1 => 'Closed',
+        2 => 'Issue Raised',
+        3 => 'In Progress',
+        4 => 'ReOpened',
+        5 => 'On Hold'
+    ];
+    return $statusNames[$status] ?? 'Unknown';
 }
 
 function send_sms($mobile_no, $otp)
