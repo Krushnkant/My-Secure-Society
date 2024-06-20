@@ -204,6 +204,7 @@ Route::group(['middleware' => 'jwt'], function(){
 
     Route::post('invoice/create',[InvoiceController::class,'create_invoice']);
     Route::post('invoice/list',[InvoiceController::class,'invoice_list']);
+    Route::post('invoice/get',[InvoiceController::class,'get_invoice']);
 
 });
 
