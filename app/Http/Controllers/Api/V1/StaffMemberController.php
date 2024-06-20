@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewStaffMemberMail;
 
 class StaffMemberController extends BaseController
 {
@@ -64,6 +66,22 @@ class StaffMemberController extends BaseController
             ];
         }
 
+        // if ($request->staff_member_id > 0) {
+        //     $rules['email_address'] = [
+        //         'required',
+        //         'email',
+        //         'max:50',
+        //         Rule::unique('user')->where('user_type',6)->ignore($staff->user_id,'user_id')->whereNull('deleted_at'),
+        //     ];
+        // } else{
+        //     $rules['email_address'] = [
+        //         'required',
+        //         'email',
+        //         'max:50',
+        //         Rule::unique('user')->where('user_type',6)->whereNull('deleted_at'),
+        //     ];
+        // }
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -71,13 +89,14 @@ class StaffMemberController extends BaseController
         }
 
         DB::beginTransaction();
-        try {
+
 
         if($request->staff_member_id == 0){
             $user = new User();
             $user->user_code = rand(100000, 999999);
             $user->full_name = $request->full_name;
             $user->mobile_no = $request->mobile_no;
+            $user->email = $request->email_address;
             $user->password = Hash::make($request->password);
             $user->user_type = 6;
             $user->gender = $request->gender;
@@ -99,6 +118,8 @@ class StaffMemberController extends BaseController
                 $staff->created_by = Auth::user()->user_id;
                 $staff->updated_by = Auth::user()->user_id;
                 $staff->save();
+
+                Mail::to($user->email)->queue(new NewStaffMemberMail($user));
             }
         }else{
                 $user = User::find($staff->user_id);
@@ -139,10 +160,7 @@ class StaffMemberController extends BaseController
         $temp['staff_member_id'] = $staff->society_staff_member_id;
         array_push($data, $temp);
         return $this->sendResponseWithData($data, 'Staff Member successfully');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return $this->sendError(500, 'An error occurred while saving the staff member.', "Internal Server Error", []);
-        }
+
     }
 
 
@@ -181,8 +199,8 @@ class StaffMemberController extends BaseController
         $staff_arr = [];
         foreach ($staffs as $staff) {
             $temp['staff_member_id'] = $staff->society_staff_member_id;
-            $temp['stand_area_id'] =  $staff->areatime->staff_duty_area_id;
-            $temp['stand_area_name'] = $staff->areatime->duty_area->area_name;
+            $temp['stand_area_id'] =  $staff->areatime->staff_duty_area_id??"";
+            $temp['stand_area_name'] = $staff->areatime->duty_area->area_name??"";
             $temp['designation_id'] =  $staff->resident_designation_id;
             $temp['designation_name'] = $staff->designation->designation_name ?? "";
             $temp['duty_start_time'] = $staff->duty_start_time;
@@ -217,6 +235,9 @@ class StaffMemberController extends BaseController
         $data = array();
         $temp['staff_member_id'] = $staff->society_staff_member_id;
         $temp['designation_id'] =  $staff->resident_designation_id;
+        $temp['designation_name'] = $staff->designation->designation_name ?? "";
+        $temp['department_id'] =  $staff->society_department_id;
+        $temp['department_name'] = $staff->department->department_name ?? "";
         $temp['user_id'] = $staff->user_id;
         $temp['daily_help_user_passcode'] = isset($staff->user)?$staff->user->user_code:"";
         $temp['full_name'] = isset($staff->user)?$staff->user->full_name:"";
@@ -248,6 +269,12 @@ class StaffMemberController extends BaseController
         if(getResidentDesignation($designation_id) == "Society Member" &&  $staff->created_by != auth()->id()){
             return $this->sendError(401, 'You are not authorized', "Unauthorized", []);
         }
+
+        $user = User::find($staff->user_id);
+        $user->estatus = 3;
+        $user->save();
+        $user->delete();
+
         $staff->estatus = 3;
         $staff->save();
         $staff->delete();

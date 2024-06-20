@@ -746,7 +746,7 @@ class DesignationController extends BaseController
         $use_for = $request->input('use_for', 0);
 
         // Initialize the query
-        $query = ResidentDesignation::with('claim')->where('society_id', $society_id);
+        $query = ResidentDesignation::where('society_id', $society_id);
 
         // Apply search filter if search_text is provided
         if (!empty($search_text)) {
@@ -765,24 +765,10 @@ class DesignationController extends BaseController
         $designations = $query->orderBy('designation_name', 'ASC')->paginate(10);
         $designation_arr = array();
         foreach ($designations as $designation) {
-            $all_claim = [];
-            foreach($designation->claim as $claim){
-                $c_temp['authority_id'] = $claim->resident_designate_auth_id;
-                $c_temp['eauthority'] = $claim->eauthority;
-                $c_temp['authority_name'] = getAuthName($claim->eauthority);
-                $c_temp['can_view'] = $claim->can_view;
-                $c_temp['can_add'] = $claim->can_add;
-                $c_temp['can_edit'] = $claim->can_edit;
-                $c_temp['can_delete'] = $claim->can_delete;
-                $c_temp['can_print'] = $claim->can_print;
-                array_push($all_claim, $c_temp);
-            }
-
             $temp['designation_id'] = $designation->resident_designation_id;
             $temp['designation_name'] = $designation->designation_name;
             $temp['can_update_permission'] = $designation->can_update_authority_claims ? True : False;
             $temp['use_for'] = (int) $designation->use_for;
-            $temp['claim'] =  $all_claim;
             array_push($designation_arr, $temp);
         }
 
@@ -960,19 +946,19 @@ class DesignationController extends BaseController
 
             $authority->updated_by = Auth::user()->user_id;
 
-            if ($authorityData['can_view'] != 0) {
+            if ($authority->can_view != 0) {
                 $authority->can_view = $authorityData['can_view'];
             }
-            if ($authorityData['can_add'] != 0) {
+            if ($authority->can_add != 0) {
                 $authority->can_add = $authorityData['can_add'];
             }
-            if ($authorityData['can_edit'] != 0) {
+            if ($authority->can_edit != 0) {
                 $authority->can_edit = $authorityData['can_edit'];
             }
-            if ($authorityData['can_delete'] != 0) {
+            if ($authority->can_delete != 0) {
                 $authority->can_delete = $authorityData['can_delete'];
             }
-            if ($authorityData['can_print'] != 0) {
+            if ($authority->can_print != 0) {
                 $authority->can_print = $authorityData['can_print'];
             }
 

@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\BusinessProfileController;
 use App\Http\Controllers\Api\V1\BloodDonateController;
 use App\Http\Controllers\Api\V1\DeliveredCourierController;
 use App\Http\Controllers\Api\V1\DesignationController;
+use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceProviderControler;
 use App\Http\Controllers\Api\V1\ServiceRequestController;
@@ -200,6 +201,9 @@ Route::group(['middleware' => 'jwt'], function(){
 
     Route::post('service_request/reply/save',[ServiceRequestController::class,'save_service_request_reply']);
     Route::post('service_request/reply/list',[ServiceRequestController::class,'service_request_reply_list']);
+
+    Route::post('invoice/create',[InvoiceController::class,'create_invoice']);
+    Route::post('invoice/list',[InvoiceController::class,'invoice_list']);
 
 });
 
