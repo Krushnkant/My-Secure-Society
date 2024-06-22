@@ -288,7 +288,7 @@ class DesignationController extends BaseController
                 'resident_designation_id' => $id,
                 "eAuthority" => 19, // Resident's Society Payment
                 "can_view" => 1,
-                "can_add" => 0,
+                "can_add" => 1,
                 "can_edit" => 0,
                 "can_delete" => 0,
                 "can_print" => 1,
@@ -438,6 +438,28 @@ class DesignationController extends BaseController
                 "updated_at" => now(),
                 "updated_by" => 1
             ),
+            array(
+                'resident_designation_id' => $id,
+                "eAuthority" => 33, // Society Department
+                "can_view" => 1,
+                "can_add" => 2,
+                "can_edit" => 2,
+                "can_delete" => 2,
+                "can_print" => 1,
+                "updated_at" => now(),
+                "updated_by" => 1
+            ),
+            array(
+                'resident_designation_id' => $id,
+                "eAuthority" => 34, // Service Category
+                "can_view" => 1,
+                "can_add" => 2,
+                "can_edit" => 2,
+                "can_delete" => 2,
+                "can_print" => 1,
+                "updated_at" => now(),
+                "updated_by" => 1
+            ),
 
         );
         DB::table('resident_designate_auth')->insert($DesignationAuthority);
@@ -570,8 +592,8 @@ class DesignationController extends BaseController
                 'resident_designation_id' => $id,
                 "eAuthority" => 62, // Resident's Society Payment
                 "can_view" => 1,
-                "can_add" => 0,
-                "can_edit" => 0,
+                "can_add" => 1,
+                "can_edit" => 1,
                 "can_delete" => 0,
                 "can_print" => 1,
                 "updated_at" => now(),
@@ -712,6 +734,17 @@ class DesignationController extends BaseController
             array(
                 'resident_designation_id' => $id,
                 "eAuthority" => 75, // Daily Help Member
+                "can_view" => 1,
+                "can_add" => 1,
+                "can_edit" => 1,
+                "can_delete" => 1,
+                "can_print" => 1,
+                "updated_at" => now(),
+                "updated_by" => 1
+            ),
+            array(
+                'resident_designation_id' => $id,
+                "eAuthority" => 76, // Service Category
                 "can_view" => 1,
                 "can_add" => 1,
                 "can_edit" => 1,

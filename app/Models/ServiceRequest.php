@@ -14,14 +14,10 @@ class ServiceRequest extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function images()
-    {
-        return $this->hasMany(ServiceRequestFile::class,'service_request_id', 'service_request_id')->where('file_type',1);
-    }
 
-    public function video()
+    public function description()
     {
-        return $this->hasOne(ServiceRequestFile::class,'service_request_id', 'service_request_id')->where('file_type',2);
+        return $this->hasOne(ServiceRequestDescription::class,'service_request_id', 'service_request_id');
     }
 
     public function createdBy()
@@ -36,7 +32,7 @@ class ServiceRequest extends Model
 
     public function replies()
     {
-        return $this->hasOne(ServiceRequest::class,'parent_service_request_id', 'service_category_id');
+        return $this->hasMany(ServiceRequestDescription::class,'service_request_id', 'service_request_id');
     }
 
 

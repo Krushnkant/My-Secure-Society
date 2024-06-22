@@ -66,21 +66,26 @@ class StaffMemberController extends BaseController
             ];
         }
 
-        // if ($request->staff_member_id > 0) {
-        //     $rules['email_address'] = [
-        //         'required',
-        //         'email',
-        //         'max:50',
-        //         Rule::unique('user')->where('user_type',6)->ignore($staff->user_id,'user_id')->whereNull('deleted_at'),
-        //     ];
-        // } else{
-        //     $rules['email_address'] = [
-        //         'required',
-        //         'email',
-        //         'max:50',
-        //         Rule::unique('user')->where('user_type',6)->whereNull('deleted_at'),
-        //     ];
-        // }
+        if ($request->staff_member_id > 0) {
+            $rules['email_address'] = [
+                'required',
+                'email',
+                'max:50',
+                Rule::unique('user', 'email')
+                    ->where('user_type', 6)
+                    ->ignore($staff->user_id, 'user_id')
+                    ->whereNull('deleted_at'),
+            ];
+        } else {
+            $rules['email_address'] = [
+                'required',
+                'email',
+                'max:50',
+                Rule::unique('user', 'email')
+                    ->where('user_type', 6)
+                    ->whereNull('deleted_at'),
+            ];
+        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -187,7 +192,11 @@ class StaffMemberController extends BaseController
         }
 
         // Retrieve service providers based on parameters
-        $query = StaffMember::with(['areatime.duty_area', 'user','designation'])->where('estatus', 1);
+        $query = StaffMember::with(['areatime.duty_area', 'user', 'designation'])
+        ->where('estatus', 1)
+        ->whereHas('designation', function($query) use ($society_id) {
+            $query->where('society_id', $society_id);
+        });
 
         if ($request->has('department_id') && $request->input('department_id') != 0) {
             $query->where('society_department_id', $request->department_id);

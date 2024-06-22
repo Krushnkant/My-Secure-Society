@@ -415,6 +415,28 @@ function generateServiceRequestNumber($societyId) {
     return $newServiceRequestNumber;
 }
 
+function generateLoanRequestNumber($societyId) {
+    $currentYear = date('Y');
+
+    $latestRequest = \DB::table('loan_request')
+        ->where('society_id', $societyId)
+        ->whereYear('created_at', $currentYear)
+        ->orderBy('loan_request_id', 'desc')
+        ->first();
+
+    if ($latestRequest) {
+        $latestNumber = explode('-', $latestRequest->loan_no);
+        $latestIncrement = (int) substr($latestNumber[2], -4);
+        $newIncrement = $latestIncrement + 1;
+    } else {
+        $newIncrement = 1;
+    }
+
+    $formattedIncrement = str_pad($newIncrement, 4, '0', STR_PAD_LEFT);
+    $newServiceRequestNumber = 'L-' . $currentYear . $societyId . '-' . $formattedIncrement;
+    return $newServiceRequestNumber;
+}
+
 function generateBookingNumber()
 {
     $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';

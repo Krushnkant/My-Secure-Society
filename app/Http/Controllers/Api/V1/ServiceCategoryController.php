@@ -101,7 +101,11 @@ class ServiceCategoryController extends BaseController
         }
 
         // Initialize the query
-        $query = ServiceCategory::with('department')->where('estatus', 1);
+        $query = ServiceCategory::with('department')
+        ->where('estatus', 1)
+        ->whereHas('department', function($query) use ($society_id) {
+            $query->where('society_id', $society_id);
+        });
 
         // Apply department filter if department_id is provided and not zero
         if ($request->department_id != 0) {

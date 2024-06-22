@@ -212,7 +212,7 @@ class PostController extends BaseController
         });
 
         $rules = [
-            'user_id' => 'required',
+            'user_id' => 'required|integer',
             'post_id' => 'required',
             'post_type' => 'required|in:0,1,2,3,4',
         ];

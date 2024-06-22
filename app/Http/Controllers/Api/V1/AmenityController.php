@@ -14,6 +14,7 @@ use App\Models\AmenityBooking;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\PaymentTransaction;
+use App\Models\SocietyLedgerDetail;
 
 class AmenityController extends BaseController
 {
@@ -441,6 +442,11 @@ class AmenityController extends BaseController
             $paymentTransaction->created_by = Auth::user()->user_id;
             $paymentTransaction->updated_by = Auth::user()->user_id;
             $paymentTransaction->save();
+
+            $ledger = SocietyLedgerDetail::where('society_id',$society_id)->first();
+            $ledger->current_balance = $ledger->current_balance  + $request->total_amount;
+            $ledger->total_balance = $ledger->total_balance + $request->total_amount;
+            $ledger->save();
         }
 
             \DB::commit();

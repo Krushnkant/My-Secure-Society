@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\ResidentDesignation;
 use App\Models\ResidentDesignationAuth;
 use App\Models\Society;
+use App\Models\SocietyLedgerDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -105,6 +106,16 @@ class SocietyController extends Controller
         $society->save();
 
         if($action == "add"){
+
+            $ledger = new SocietyLedgerDetail();
+            $ledger->society_id = $society->society_id;
+            $ledger->current_disbursed_loan_amount = 0;
+            $ledger->current_balance = 0;
+            $ledger->total_balance = 0;
+            $ledger->created_by = Auth::user()->user_id;
+            $ledger->updated_by = Auth::user()->user_id;
+            $ledger->save();
+
              $designation_array = ['Society Admin','Committee Member','Society Member'];
              foreach($designation_array as $designation){
 
@@ -322,7 +333,7 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 19, // Resident's Society Payment
                                 "can_view" => 1,
-                                "can_add" => 0,
+                                "can_add" => 1,
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
@@ -474,6 +485,28 @@ class SocietyController extends Controller
                             ),
                             array(
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
+                                "eAuthority" => 33, // Society Department
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 1,
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
+                                "eAuthority" => 34, // Service Category
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 1,
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 51, // Society Department
                                 "can_view" => 1,
                                 "can_add" => 1,
@@ -597,8 +630,8 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 62, // Resident's Society Payment
                                 "can_view" => 1,
-                                "can_add" => 0,
-                                "can_edit" => 0,
+                                "can_add" => 1,
+                                "can_edit" => 1,
                                 "can_delete" => 0,
                                 "can_print" => 1,
                                 "updated_at" => now(),
@@ -739,6 +772,17 @@ class SocietyController extends Controller
                             array(
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 75, // Daily Help Member
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
+                                "eAuthority" => 76, // Service Category
                                 "can_view" => 1,
                                 "can_add" => 1,
                                 "can_edit" => 1,
@@ -970,7 +1014,7 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 19, // Resident's Society Payment
                                 "can_view" => 1,
-                                "can_add" => 0,
+                                "can_add" => 1,
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
@@ -1134,6 +1178,28 @@ class SocietyController extends Controller
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
+                            array(
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
+                                "eAuthority" => 33, // Society Department
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 1,
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
+                                "eAuthority" => 34, // Service Category
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 1,
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
 
                             array(
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
@@ -1271,11 +1337,10 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 62, // Resident's Society Payment
                                 "can_view" => 1,
-                                "can_add" => 0,
-                                "can_edit" => 0,
+                                "can_add" => 1,
+                                "can_edit" => 1,
                                 "can_delete" => 0,
-                                "can_print" => 2,
-
+                                "can_print" => 1,
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -1432,6 +1497,17 @@ class SocietyController extends Controller
                                 "can_delete" => 2,
                                 "can_print" => 2,
 
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
+                                "eAuthority" => 76, // Service Category
+                                "can_view" => 1,
+                                "can_add" => 1,
+                                "can_edit" => 1,
+                                "can_delete" => 1,
+                                "can_print" => 1,
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -1660,7 +1736,7 @@ class SocietyController extends Controller
                                 'resident_designation_id' => $resident_designation->resident_designation_id,
                                 "eAuthority" => 19, // Resident's Society Payment
                                 "can_view" => 1,
-                                "can_add" => 0,
+                                "can_add" => 1,
                                 "can_edit" => 0,
                                 "can_delete" => 0,
                                 "can_print" => 1,
@@ -1821,6 +1897,28 @@ class SocietyController extends Controller
                                 "can_delete" => 1,
                                 "can_print" => 1,
 
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
+                                "eAuthority" => 33, // Society Department
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 1,
+                                "updated_at" => now(),
+                                "updated_by" => 1
+                            ),
+                            array(
+                                'resident_designation_id' => $resident_designation->resident_designation_id,
+                                "eAuthority" => 34, // Service Category
+                                "can_view" => 1,
+                                "can_add" => 2,
+                                "can_edit" => 2,
+                                "can_delete" => 2,
+                                "can_print" => 1,
                                 "updated_at" => now(),
                                 "updated_by" => 1
                             ),
@@ -3565,6 +3663,9 @@ class SocietyController extends Controller
             if ($block) {
                 return response()->json(['status' => '300', 'message' => 'Cannot delete society. It is associated with one or more society block.']);
             }
+            // Delete related society ledger details
+            SocietyLedgerDetail::where('society_id', $id)->delete();
+
             $society->estatus = 3;
             $society->save();
             $society->delete();

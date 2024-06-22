@@ -56,6 +56,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(SocietyMember::class,'user_id', 'user_id');
     }
 
+    public function staffmember()
+    {
+        return $this->hasOne(StaffMember::class,'user_id', 'user_id');
+    }
+
     public function societymembers()
     {
         return $this->hasMany(SocietyMember::class,'user_id', 'user_id');

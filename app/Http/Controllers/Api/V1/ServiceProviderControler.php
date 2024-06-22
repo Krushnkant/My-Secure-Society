@@ -55,7 +55,7 @@ class ServiceProviderControler extends BaseController
 
         // Validation rules
         $rules = [
-            'user_id' => 'required',
+            'user_id' => 'required|integer',
             // 'daily_help_service_id' => 'required|exists:daily_help_service,daily_help_service_id,deleted_at,NULL',
             'full_name' => 'required|string|max:50',
             'gender' => ['required', Rule::in([1, 2])],

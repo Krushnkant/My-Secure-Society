@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServiceRequest;
+use App\Models\ServiceRequestDescription;
 use App\Models\ServiceRequestFile;
 use App\Models\StaffMember;
 use Illuminate\Http\Request;
@@ -52,29 +53,35 @@ class ServiceRequestController extends BaseController
         $service->society_id = $this->payload['society_id'];
         $service->society_block_id = $flat_info['block_id'];
         $service->assigned_to_staff_member_id = 0;
-        $service->parent_service_request_id = 0;
         $service->service_category_id = $request->input('category_id');
         $service->service_subject = $request->input('subject');
-        $service->service_description = $request->input('description');
         $service->service_request_status = 2;
         $service->service_request_number = generateServiceRequestNumber($society_id);
         $service->save();
 
         if($service){
-            if ($request->hasFile('images')) {
-                $files = $request->file('images');
-                foreach ($files as $file) {
-                    $fileType = getFileType($file);
-                    $fileUrl = UploadImage($file, 'images/service_request');
-                    $this->storeFileEntry($service->service_request_id, $fileType, $fileUrl);
+           $desc =  new ServiceRequestDescription();
+           $desc->created_by = Auth::user()->user_id;
+           $desc->service_request_id =  $service->service_request_id;
+           $desc->description =  $request->input('description');
+           $desc->created_at = now();
+           $desc->save();
+            if($desc){
+                if ($request->hasFile('images')) {
+                    $files = $request->file('images');
+                    foreach ($files as $file) {
+                        $fileType = getFileType($file);
+                        $fileUrl = UploadImage($file, 'images/service_request');
+                        $this->storeFileEntry($desc->service_req_desc_id, $fileType, $fileUrl);
+                    }
                 }
-            }
 
-            if ($request->hasFile('video')) {
-                $file = $request->file('video');
-                $fileType = getFileType($file);
-                $fileUrl = UploadImage($file,'images/service_request');
-                $this->storeFileEntry($service->service_request_id, $fileType, $fileUrl);
+                if ($request->hasFile('video')) {
+                    $file = $request->file('video');
+                    $fileType = getFileType($file);
+                    $fileUrl = UploadImage($file,'images/service_request');
+                    $this->storeFileEntry($desc->service_req_desc_id, $fileType, $fileUrl);
+            }
            }
         }
 
@@ -87,9 +94,8 @@ class ServiceRequestController extends BaseController
 
     public function storeFileEntry($Id, $fileType, $fileUrl)
     {
-
         $fileEntry = new ServiceRequestFile();
-        $fileEntry->service_request_id = $Id;
+        $fileEntry->service_req_desc_id = $Id;
         $fileEntry->file_type = $fileType;
         $fileEntry->file_url = $fileUrl;
         $fileEntry->uploaded_at = now();
@@ -119,7 +125,7 @@ class ServiceRequestController extends BaseController
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-        $query = ServiceRequest::with('images','video')->where('society_id', $society_id);
+        $query = ServiceRequest::where('society_id', $society_id);
 
         if ($request->input('request_by_user_id') != 0) {
             $query->where('created_by', $request->input('request_by_user_id'));
@@ -149,18 +155,18 @@ class ServiceRequestController extends BaseController
             $temp['service_request_id'] = $serviceRequest->service_request_id;
             $temp['category'] = $serviceRequest->category->service_category_name ?? ''; // Assuming there's a relation 'category'
             $temp['subject'] = $serviceRequest->service_subject;
-            $temp['description'] = $serviceRequest->service_description;
-            $temp['images'] = $serviceRequest->images->map(function($image) {
+            $temp['images'] = $serviceRequest->description->images->map(function($image) {
                 return url($image->file_url);
             })->toArray();
-            $temp['video'] = $serviceRequest->video ? url($serviceRequest->video->file_url) : '';
-            $temp['total_reply'] = $serviceRequest->replies->count();
+            $temp['video'] = $serviceRequest->description->video ? url($serviceRequest->description->video->file_url) : '';
+            $temp['description'] = $serviceRequest->description->description ?? '';
+            $temp['total_reply'] = $serviceRequest->replies ? $serviceRequest->replies->count():0;
             $temp['request_status'] = $serviceRequest->service_request_status;
             $temp['request_status_name'] = getStatusName($serviceRequest->service_request_status);
             $temp['created_by_user_id'] = $serviceRequest->created_by;
             $temp['created_by_user_full_name'] = $serviceRequest->createdBy->full_name ?? ''; // Assuming there's a relation 'createdBy'
             $temp['profile_pic'] = $serviceRequest->createdBy->profile_pic ? url($serviceRequest->createdBy->profile_pic) : '';
-            $temp['request_date'] = $serviceRequest->created_at;
+            $temp['request_date'] = $serviceRequest->created_at->format('d-m-Y H:i:s');
             $temp['requested_time_str'] = Carbon::parse($serviceRequest->created_at)->diffForHumans();
             array_push($service_arr, $temp);
         }
@@ -201,12 +207,7 @@ class ServiceRequestController extends BaseController
             'service_request_id' => $serviceRequest->service_request_id,
             'category_id' => $serviceRequest->service_category_id,
             'subject' => $serviceRequest->service_subject,
-            'description' => $serviceRequest->service_description,
-            'images' => $serviceRequest->images->map(function($image) {
-                return url($image->file_url);
-            })->toArray(),
-            'video' => $serviceRequest->video ? url($serviceRequest->video->file_url) : '',
-            'total_reply' => $serviceRequest->replies->count(),
+            'total_reply' =>  $serviceRequest->replies ? $serviceRequest->replies->count():0,
             'request_status' => $serviceRequest->service_request_status,
             'request_status_name' => getStatusName($serviceRequest->service_request_status),
             'created_by_user_id' => $serviceRequest->created_by,
@@ -230,12 +231,12 @@ class ServiceRequestController extends BaseController
 
         $rules = [
             'service_request_id' => 'required|exists:service_request,service_request_id,deleted_at,NULL,society_id,'.$society_id,
-            'assign_to_staffmember_id' => 'required',
+            'assign_to_staffmember_id' => 'required|exists:society_staff_member,society_staff_member_id,deleted_at,NULL',
             'reply_text' => 'required|string|max:1000',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'video' => 'nullable|file|mimes:mp4|max:2048',
-            'request_status' => 'required|in:1,2,3',
+            'request_status' => 'required|in:1,2',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -243,29 +244,27 @@ class ServiceRequestController extends BaseController
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-        $flat_info = getSocietyBlockAndFlatInfo($this->payload['block_flat_id']);
-
-        $service = new ServiceRequest();
-        $service->created_by = Auth::user()->user_id;
-        $service->updated_by = Auth::user()->user_id;
-        $service->society_id = $this->payload['society_id'];
-        $service->society_block_id = $flat_info['block_id'];
-        $service->assigned_to_staff_member_id = $request->input('assign_to_staffmember_id');
-        $service->parent_service_request_id = $request->input('service_request_id');
-        $service->service_category_id = 0;
-        $service->service_subject = '';
-        $service->service_description = $request->input('reply_text');
-        $service->service_request_status = $request->input('request_status');
-        $service->service_request_number = generateServiceRequestNumber($society_id);
+        $service = ServiceRequest::find($request->service_request_id);
+        $service->service_request_status = $request->request_status;
+        if($request->assign_to_staffmember_id > 0){
+          $service->assigned_to_staff_member_id = $request->assign_to_staffmember_id;
+        }
         $service->save();
 
-        if($service){
+        $desc = new ServiceRequestDescription();
+        $desc->created_by = Auth::user()->user_id;
+        $desc->created_at = now();
+        $desc->service_request_id = $request->input('service_request_id');
+        $desc->description = $request->input('reply_text');
+        $desc->save();
+
+        if($desc){
             if ($request->hasFile('images')) {
                 $files = $request->file('images');
                 foreach ($files as $file) {
                     $fileType = getFileType($file);
                     $fileUrl = UploadImage($file, 'images/service_request');
-                    $this->storeFileEntry($service->service_request_id, $fileType, $fileUrl);
+                    $this->storeFileEntry($desc->service_req_desc_id, $fileType, $fileUrl);
                 }
             }
 
@@ -273,13 +272,11 @@ class ServiceRequestController extends BaseController
                 $file = $request->file('video');
                 $fileType = getFileType($file);
                 $fileUrl = UploadImage($file,'images/service_request');
-                $this->storeFileEntry($service->service_request_id, $fileType, $fileUrl);
+                $this->storeFileEntry($desc->service_req_desc_id, $fileType, $fileUrl);
            }
         }
 
-        // Prepare the response data
-        $data['service_request_id'] = $service->service_request_id;
-        $data['parent_service_request_id'] = $service->parent_service_request_id;
+        $data['service_req_desc_id'] = $desc->service_req_desc_id;
 
         // Return success response
         return $this->sendResponseWithData($data, "service request reply saved successfully");
@@ -302,26 +299,25 @@ class ServiceRequestController extends BaseController
             return $this->sendError(422, $validator->errors(), "Validation Errors", []);
         }
 
-        $query = ServiceRequest::with('images','video')->where('society_id', $society_id);
+        $query = ServiceRequestDescription::with('images','video');
         $query->where('service_request_id', $request->input('service_request_id'));
         $serviceRequests = $query->orderBy('created_at', 'DESC')->paginate(10);
 
         $service_arr = [];
         foreach ($serviceRequests as $serviceRequest) {
             $temp = [];
+            $temp['service_req_desc_id'] = $serviceRequest->service_req_desc_id;
             $temp['service_request_id'] = $serviceRequest->service_request_id;
-            $temp['reply_text'] = $serviceRequest->service_description;
+            $temp['reply_text'] = $serviceRequest->description;
             $temp['images'] = $serviceRequest->images->map(function($image) {
                 return url($image->file_url);
             })->toArray();
             $temp['video'] = $serviceRequest->video ? url($serviceRequest->video->file_url) : '';
-            $temp['request_status'] = $serviceRequest->service_request_status;
-            $temp['request_status_name'] = getStatusName($serviceRequest->service_request_status);
             $temp['created_by_user_id'] = $serviceRequest->created_by;
             $temp['created_by_user_full_name'] = $serviceRequest->createdBy->full_name ?? ''; // Assuming there's a relation 'createdBy'
             $temp['profile_pic'] = $serviceRequest->createdBy->profile_pic ? url($serviceRequest->createdBy->profile_pic) : '';
-            $temp['request_date'] = $serviceRequest->created_at;
-            $temp['requested_time_str'] = Carbon::parse($serviceRequest->created_at)->diffForHumans();
+            $temp['reply_date'] = $serviceRequest->created_at;
+            $temp['reply_time_str'] = Carbon::parse($serviceRequest->created_at)->diffForHumans();
             array_push($service_arr, $temp);
         }
 

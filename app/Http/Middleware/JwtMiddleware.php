@@ -661,10 +661,10 @@ class JwtMiddleware extends BaseMiddleware
 
             if($request->calling_by == 1){
                 if ($request->route()->uri() == $v1 . 'category/save') {
-                    if ($request->contact_id == 0 && is_add_resident(34) == 0) {
+                    if ($request->category_id == 0 && is_add_resident(34) == 0) {
                         return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                     }
-                    if ($request->contact_id > 0 && is_edit_resident(34) == 0) {
+                    if ($request->category_id > 0 && is_edit_resident(34) == 0) {
                         return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                     }
                 }
@@ -679,10 +679,10 @@ class JwtMiddleware extends BaseMiddleware
                 }
             }else{
                 if ($request->route()->uri() == $v1 . 'category/save') {
-                    if ($request->contact_id == 0 && is_add_resident(76) == 0) {
+                    if ($request->category_id == 0 && is_add_resident(76) == 0) {
                         return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                     }
-                    if ($request->contact_id > 0 && is_edit_resident(76) == 0) {
+                    if ($request->category_id > 0 && is_edit_resident(76) == 0) {
                         return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                     }
                 }
@@ -695,11 +695,122 @@ class JwtMiddleware extends BaseMiddleware
                 if ($request->route()->uri() == $v1 . 'category/delete' && is_delete_resident(76) == 0) {
                     return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
                 }
+            }
 
+            if($request->calling_by == 1){
+                if ($request->route()->uri() == $v1 . 'service_request/save' && is_add_resident(22) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'service_request/list' && is_view_resident(22) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'service_request/get' && is_view_resident(22) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'service_request/reply/save' && is_edit_resident(22) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'service_request/reply/list' && is_view_resident(22) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+
+            }else{
+                if ($request->route()->uri() == $v1 . 'service_request/save' && is_add_resident(65) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'service_request/list' && is_view_resident(65) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'service_request/get' && is_view_resident(65) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'service_request/reply/save' && is_edit_resident(65) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'service_request/reply/list' && is_view_resident(65) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }
+
+            if($request->calling_by == 1){
+                if ($request->route()->uri() == $v1 . 'payment/charge/save') {
+                    if ($request->contact_id == 0 && is_add_resident(19) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->contact_id > 0 && is_edit_resident(19) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'payment/charge/list' && is_view_resident(19) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'payment/charge/get' && is_view_resident(19) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'payment/charge/delete' && is_delete_resident(19) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }else{
+                if ($request->route()->uri() == $v1 . 'payment/charge/save') {
+                    if ($request->charge_id == 0 && is_add_resident(62) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                    if ($request->charge_id > 0 && is_edit_resident(62) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                    }
+                }
+                if ($request->route()->uri() == $v1 . 'payment/charge/list' && is_view_resident(62) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'payment/charge/get' && is_view_resident(62) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'payment/charge/delete' && is_delete_resident(62) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }
+
+            if ($request->route()->uri() == $v1 . 'invoice/create' && is_add_resident(63) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'invoice/list' && is_view_resident(63) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'invoice/get' && is_view_resident(63) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+            }
+            if ($request->route()->uri() == $v1 . 'invoice/cancel' && is_delete_resident(63) == 0) {
+                return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
             }
 
 
-
+            if($request->calling_by == 1){
+                if ($request->route()->uri() == $v1 . 'loan/request/create' && is_add_resident(21) == 0) {
+                        return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'loan/request/list' && is_view_resident(21) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'loan/request/get' && is_view_resident(21) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'loan/request/change_status' && is_edit_resident(21) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }else{
+                if ($request->route()->uri() == $v1 . 'loan/request/save' && is_add_resident(64) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'loan/request/list' && is_view_resident(64) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'loan/request/get' && is_view_resident(64) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+                if ($request->route()->uri() == $v1 . 'loan/request/change_status' && is_edit_resident(64) == 0) {
+                    return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized',  'message' => $message), 401);
+                }
+            }
             return $next($request);
 
         // }else{

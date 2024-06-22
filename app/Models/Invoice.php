@@ -13,4 +13,9 @@ class Invoice extends Model
     protected $table = 'invoice';
     protected $primaryKey = 'invoice_id';
 
+    public function paymentTransaction()
+    {
+        return $this->hasOne(PaymentTransaction::class, 'invoice_id','invoice_id');
+    }
+
 }

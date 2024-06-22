@@ -4,7 +4,9 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Throwable;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class Handler extends ExceptionHandler
 {
@@ -34,6 +36,18 @@ class Handler extends ExceptionHandler
         if ($exception instanceof NotFoundHttpException) {
             return response()->view('admin.404', [], 404);
         }
+
+        // try {
+        //     $user = JWTAuth::parseToken()->authenticate();
+        // } catch (\Exception $e) {
+        //     if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+        //         return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized', 'message' => 'Token expired'), 401);
+        //     } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+        //         return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized', 'message' => 'Token invalid'), 401);
+        //     } else {
+        //         return response()->json(array('success' => false, 'status_code' => 401, 'error' => 'Unauthorized', 'message' => 'Token absent'), 401);
+        //     }
+        // }
 
         return parent::render($request, $exception);
     }

@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\V1\BloodDonateController;
 use App\Http\Controllers\Api\V1\DeliveredCourierController;
 use App\Http\Controllers\Api\V1\DesignationController;
 use App\Http\Controllers\Api\V1\InvoiceController;
+use App\Http\Controllers\Api\V1\LoanRequestController;
+use App\Http\Controllers\Api\V1\PaymentChargeController;
 use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceProviderControler;
 use App\Http\Controllers\Api\V1\ServiceRequestController;
@@ -43,8 +45,13 @@ use App\Http\Controllers\Api\V1\VisitorController;
 Route::post('login', [AuthController::class, 'login']);
 Route::post('verify_otp',[AuthController::class,'verify_otp']);
 Route::post('send_otp',[AuthController::class,'send_otp']);
+Route::post('auth/staff_member/login', [AuthController::class, 'staff_member_login']);
+Route::post('auth/staff_member/forgot_password', [AuthController::class, 'staff_member_forgot_password']);
+Route::post('auth/staff_member/otp_verify',[AuthController::class,'staff_member_verify_otp']);
+
 
 Route::group(['middleware' => 'jwt'], function(){
+    Route::post('auth/staff_member/change_password',[AuthController::class,'staff_member_change_password']);
     Route::post('get_token',[AuthController::class,'get_token']);
 
     Route::post('profile/set',[UserController::class,'edit_profile']);
@@ -198,13 +205,25 @@ Route::group(['middleware' => 'jwt'], function(){
     Route::post('service_request/save',[ServiceRequestController::class,'save_service_request']);
     Route::post('service_request/list',[ServiceRequestController::class,'service_request_list']);
     Route::post('service_request/get',[ServiceRequestController::class,'get_service_request']);
-
     Route::post('service_request/reply/save',[ServiceRequestController::class,'save_service_request_reply']);
     Route::post('service_request/reply/list',[ServiceRequestController::class,'service_request_reply_list']);
+
+    Route::post('payment/charge/save',[PaymentChargeController::class,'save_payment_charge']);
+    Route::post('payment/charge/list',[PaymentChargeController::class,'payment_charge_list']);
+    Route::post('payment/charge/get',[PaymentChargeController::class,'get_payment_charge']);
+    Route::post('payment/charge/delete',[PaymentChargeController::class,'delete_payment_charge']);
+    Route::post('payment/society_ledger/get',[PaymentChargeController::class,'get_payment_society_ledger']);
 
     Route::post('invoice/create',[InvoiceController::class,'create_invoice']);
     Route::post('invoice/list',[InvoiceController::class,'invoice_list']);
     Route::post('invoice/get',[InvoiceController::class,'get_invoice']);
+    Route::post('invoice/cancel',[InvoiceController::class,'cancel_invoice']);
+    Route::post('invoice/payment/pay',[InvoiceController::class,'pay_invoice_payment']);
+
+    Route::post('loan/request/create',[LoanRequestController::class,'create_loan_request']);
+    Route::post('loan/request/list',[LoanRequestController::class,'loan_request_list']);
+    Route::post('loan/request/get',[LoanRequestController::class,'get_loan_request']);
+    Route::post('loan/request/change_status',[LoanRequestController::class,'loan_request_change_status']);
 
 });
 
