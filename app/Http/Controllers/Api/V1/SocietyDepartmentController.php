@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\ServiceCategory;
 use App\Models\SocietyDepartment;
 use App\Models\StaffMember;
 use Illuminate\Http\Request;
@@ -118,6 +119,11 @@ class SocietyDepartmentController extends BaseController
         }
 
         $isReferenced = StaffMember::where('society_department_id', $department->society_department_id)->exists();
+        if ($isReferenced) {
+            return $this->sendError(400, 'Department cannot be deleted because it is referenced in other records.', "Bad Request", []);
+        }
+
+        $isReferenced = ServiceCategory::where('society_department_id', $department->society_department_id)->exists();
         if ($isReferenced) {
             return $this->sendError(400, 'Department cannot be deleted because it is referenced in other records.', "Bad Request", []);
         }

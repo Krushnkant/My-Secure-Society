@@ -118,7 +118,7 @@ class ServiceCategoryController extends BaseController
         foreach ($categories as $category) {
             $temp['category_id'] = $category->service_category_id;
             $temp['department_id'] = $category->society_department_id;
-            $temp['department_name'] = $category->department->department_name;
+            $temp['department_name'] = $category->department->department_name??"";
             $temp['category_name'] = $category->service_category_name;
             $temp['description'] = $category->category_description;
             array_push($category_arr, $temp);
@@ -149,6 +149,7 @@ class ServiceCategoryController extends BaseController
         $data = array();
         $temp['category_id'] = $category->service_category_id;
         $temp['department_id'] = $category->society_department_id;
+        $temp['department_name'] = $category->department->department_name??"";
         $temp['category_name'] = $category->service_category_name;
         $temp['description'] = $category->category_description;
         array_push($data, $temp);

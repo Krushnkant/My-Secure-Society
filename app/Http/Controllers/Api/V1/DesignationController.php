@@ -979,19 +979,19 @@ class DesignationController extends BaseController
 
             $authority->updated_by = Auth::user()->user_id;
 
-            if ($authority->can_view != 0) {
+            if ($authority->can_view != 0 && $authorityData['can_view'] != 0) {
                 $authority->can_view = $authorityData['can_view'];
             }
-            if ($authority->can_add != 0) {
+            if ($authority->can_add != 0 && $authorityData['can_add'] != 0) {
                 $authority->can_add = $authorityData['can_add'];
             }
-            if ($authority->can_edit != 0) {
+            if ($authority->can_edit != 0 && $authorityData['can_edit'] != 0) {
                 $authority->can_edit = $authorityData['can_edit'];
             }
-            if ($authority->can_delete != 0) {
+            if ($authority->can_delete != 0 && $authorityData['can_delete'] != 0) {
                 $authority->can_delete = $authorityData['can_delete'];
             }
-            if ($authority->can_print != 0) {
+            if ($authority->can_print != 0 && $authorityData['can_print'] != 0) {
                 $authority->can_print = $authorityData['can_print'];
             }
 

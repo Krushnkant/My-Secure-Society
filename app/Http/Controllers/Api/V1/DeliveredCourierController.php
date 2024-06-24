@@ -47,7 +47,7 @@ class DeliveredCourierController extends BaseController
             'total_parcel' => 'required|integer',
             'courier_note' => 'nullable|string|max:100',
             'courier_images' => 'required|array|min:1|max:5',
-            'courier_images.*.file' => 'nullable|file|mimetypes:image/jpeg,image|max:20480',
+            'courier_images.*.file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
             'courier_images.*.file_id' => [
             'nullable',
             'integer',
