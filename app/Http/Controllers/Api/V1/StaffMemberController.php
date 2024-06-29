@@ -337,6 +337,18 @@ class StaffMemberController extends BaseController
             return $duty['is_standing_location'] == 1;
         });
 
+        // Custom validation to ensure unique staff_duty_area_id for each time slot
+        $uniqueAreas = [];
+        foreach ($request->duty_area as $duty) {
+            if ($duty['is_removed'] == 2) {
+                $key = $duty['staff_duty_area_id'] . '-' . $duty['visit_time'];
+                if (isset($uniqueAreas[$key])) {
+                    return $this->sendError(422, ['duty_area' => ['Each staff duty area ID must be unique for the same time slot']], 'Validation Errors', []);
+                }
+                $uniqueAreas[$key] = true;
+            }
+        }
+
         if (count($standingLocations) !== 1) {
             return $this->sendError(422, ['duty_area' => ['Exactly one duty area must have is_standing_location set to 1']], "Validation Errors", []);
         }
@@ -485,7 +497,7 @@ class StaffMemberController extends BaseController
     {
         $rules = [
             'duty_area_time_id' => 'required|exists:staff_duty_area_time,duty_area_time_id,deleted_at,NULL',
-            'attendance_photo' => 'required|image|mimes:jpeg,png,jpg',
+            'attendance_photo' => 'nullable|image|mimes:jpeg,png,jpg',
             'attendance_status' => 'required|in:1,2,3',
         ];
 
