@@ -443,24 +443,38 @@ class StaffMemberController extends BaseController
 
     public function get_staff_member_duty_area(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+
         $validator = Validator::make($request->all(), [
-            'duty_area_time_id' => 'required|exists:staff_duty_area_time,duty_area_time_id,deleted_at,NULL',
+            'staff_member_id' => 'required|exists:society_staff_member,society_staff_member_id,deleted_at,NULL,society_id,'.$society_id,
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $staff = StaffDutyAreaTime::find($request->duty_area_time_id);
-
+        $staff = StaffMember::with('duty_areas')->find($request->staff_member_id);
         if (!$staff) {
-            return response()->json(['error' => 'duty area not found'], 404);
+            return response()->json(['error' => 'ftaff member not found'], 404);
+        }
+
+        $area_arr = array();
+        foreach ($staff->duty_areas as $area) {
+            $temp_area['duty_area_time_id'] = $area->duty_area_time_id;
+            $temp_area['staff_duty_area_id'] = $area->staff_duty_area_id;
+            $temp_area['is_standing_location'] = $area->is_standing_location;
+            $temp_area['visit_time'] = $area->visit_time;
+            array_push($area_arr, $temp_area);
         }
 
         $data = array();
-        $temp['duty_area_time_id'] = $staff->duty_area_time_id;
-        $temp['staff_duty_area_id'] = $staff->staff_duty_area_id;
-        $temp['visit_time'] = $staff->visit_time;
+        $temp['staff_member_id'] = $staff->society_staff_member_id;
+        $temp['duty_start_time'] = $staff->duty_start_time;
+        $temp['duty_end_time'] = $staff->duty_end_time;
+        $temp['duty_area'] = $area_arr;
 
         array_push($data, $temp);
 
@@ -507,6 +521,17 @@ class StaffMemberController extends BaseController
             return $this->sendError(422,$validator->errors(), "Validation Errors", []);
         }
 
+        $currentDate = Carbon::now()->format('Y-m-d');
+
+        // Check if attendance is already filled for the same date and duty_area_time_id
+        $existingAttendance = StaffDutyAttendance::where('duty_area_time_id', $request->duty_area_time_id)
+            ->whereDate('created_at', $currentDate)
+            ->first();
+
+        if ($existingAttendance) {
+            return $this->sendError(422, ['attendance' => 'Attendance has already been filled for this duty area and time slot today.'], 'Validation Errors', []);
+        }
+
         DB::beginTransaction();
         try {
             $area_time = StaffDutyAreaTime::find($request->duty_area_time_id);
@@ -530,7 +555,7 @@ class StaffMemberController extends BaseController
         $temp['staff_duty_attendance_id'] = $attendance->staff_duty_attendance_id;
         $temp['duty_area_name'] = $attendance->duty_area_time->duty_area->area_name;
         $temp['attendance_status'] = $attendance->attendance_status;
-        $temp['attendance_photo'] = url($attendance->selfie_photo);
+        $temp['attendance_photo'] = $attendance->selfie_photo ?? url($attendance->selfie_photo);
         array_push($data, $temp);
         return $this->sendResponseWithData($data, 'attendance  successfully');
         } catch (\Exception $e) {
@@ -541,11 +566,21 @@ class StaffMemberController extends BaseController
 
     public function staff_member_attendance_list(Request $request)
     {
+        $society_id = $this->payload['society_id'];
+        if($society_id == ""){
+            return $this->sendError(400,'Society Not Found.', "Not Found", []);
+        }
+
         $rules = [
+            'staff_member_id' => 'required',
             'from_date' => 'required|date_format:Y-m-d',
             'to_date' => 'required|date_format:Y-m-d|after_or_equal:from_date',
             'attendance_status' => 'required|integer|in:0,1,2,3'
         ];
+
+        if ($request->has('staff_member_id') && $request->input('staff_member_id') != 0) {
+            $rules['staff_member_id'] .= '|exists:society_staff_member,society_staff_member_id,deleted_at,NULL,society_id,'.$society_id;
+        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -557,10 +592,17 @@ class StaffMemberController extends BaseController
         $from_date = $request->from_date;
         $to_date = $request->to_date;
         $attendance_status = $request->attendance_status;
+        $staff_member_id = $request->staff_member_id;
 
         // Build the query
         $query = StaffDutyAttendance::with(['duty_area_time.duty_area'])
         ->whereBetween('updated_at', [$from_date . ' 00:00:00', $to_date . ' 23:59:59']);
+
+        if ($staff_member_id != 0) {
+            $query->whereHas('duty_area_time', function ($query) use ($staff_member_id) {
+                $query->where('society_staff_member_id', $staff_member_id);
+            });
+        }
 
         if ($attendance_status != 0) {
             $query->where('attendance_status', $attendance_status);
@@ -576,6 +618,9 @@ class StaffMemberController extends BaseController
             $temp['attendance_photo'] = url($attendance->selfie_photo);
             $updated_at = Carbon::parse($attendance->updated_at);
             $temp['date'] = $updated_at->format('d-m-Y');
+            $temp['full_name'] = $attendance->staff->user->full_name ?? "";
+            $temp['profile_pic_url'] = $attendance->staff->user->profile_pic_url ? url($attendance->staff->user->profile_pic_url) : "";
+            $temp['update_time'] = $attendance->updated_at->toDateTimeString();
             array_push($attendance_list, $temp);
         }
 

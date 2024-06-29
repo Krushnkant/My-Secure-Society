@@ -17,4 +17,9 @@ class StaffDutyAttendance extends Model
     {
         return $this->belongsTo(StaffDutyAreaTime::class, 'duty_area_time_id', 'duty_area_time_id');
     }
+
+    public function staff()
+    {
+        return $this->belongsTo(StaffMember::class, 'society_staff_member_id', 'society_staff_member_id');
+    }
 }

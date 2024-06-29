@@ -37,7 +37,7 @@ class ServiceRequestController extends BaseController
             'description' => 'required|string|max:1000',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'video' => 'nullable|file|mimes:mp4|max:2048',
+            'video' => 'nullable|file|mimes:mp4|max:10240',
         ];
         $validator = Validator::make($request->all(), $rules);
 

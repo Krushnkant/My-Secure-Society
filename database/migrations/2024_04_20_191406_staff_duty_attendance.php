@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigIncrements('staff_duty_attendance_id')->index();
             $table->integer('society_staff_member_id')->index();
             $table->integer('duty_area_time_id')->index();
-            $table->string('selfie_photo', 500);
+            $table->string('selfie_photo', 500)->nullable();
             $table->integer('attendance_status')->enum([1, 2, 3])->default(1)->comment('1 - Present, 2 - Absent, 3 - Pending')->index();
             $table->dateTime('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->integer('updated_by')->index();
