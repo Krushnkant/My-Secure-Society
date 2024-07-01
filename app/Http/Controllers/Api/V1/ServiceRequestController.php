@@ -231,13 +231,18 @@ class ServiceRequestController extends BaseController
 
         $rules = [
             'service_request_id' => 'required|exists:service_request,service_request_id,deleted_at,NULL,society_id,'.$society_id,
-            'assign_to_staffmember_id' => 'required|exists:society_staff_member,society_staff_member_id,deleted_at,NULL',
+            'assign_to_staffmember_id' => 'required',
             'reply_text' => 'required|string|max:1000',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'video' => 'nullable|file|mimes:mp4|max:2048',
             'request_status' => 'required|in:1,2',
         ];
+
+        if ($request->has('assign_to_staffmember_id') && $request->input('assign_to_staffmember_id') != 0) {
+            $rules['assign_to_staffmember_id'] .= '|exists:society_staff_member,society_staff_member_id,deleted_at,NULL';
+        }
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -248,6 +253,12 @@ class ServiceRequestController extends BaseController
         $service->service_request_status = $request->request_status;
         if($request->assign_to_staffmember_id > 0){
           $service->assigned_to_staff_member_id = $request->assign_to_staffmember_id;
+        }else{
+            $society_staff_member_id = $this->payload['staff_member_id'];
+            $serviceRequest = ServiceRequest::where('society_id', $society_id)->where('assign_to_staffmember_id', $society_staff_member_id)->first();
+            if (!$serviceRequest) {
+                return $this->sendError(404, 'Service Request Not Found.', "Not Found", []);
+            }
         }
         $service->save();
 

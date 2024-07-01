@@ -293,6 +293,7 @@ function getResidentDesignationId()
     $token = JWTAuth::parseToken()->getToken();
     $payload = JWTAuth::decode($token);
     $society_member_id = $payload['society_member_id'];
+    return $payload['designation_id']??null;
     $society_member = SocietyMember::where('society_member_id',$society_member_id)->where('estatus',1)->first();
     if ($society_member) {
         return $society_member->resident_designation_id;

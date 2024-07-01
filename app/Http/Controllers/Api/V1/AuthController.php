@@ -231,7 +231,7 @@ class AuthController extends BaseController
         $userJwt = [
             'user_id' => $user->user_id, // Subject of the token
             'society_id' => $user->staffmember->designation->society_id ?? "",
-            'staff_member_id' => $user->staffmember->staff_member_id ?? "",
+            'staff_member_id' => $user->staffmember->society_staff_member_id ?? "",
             'designation_id' => $user->staffmember->resident_designation_id ?? "",
             'authority' => $authority_array
         ];
