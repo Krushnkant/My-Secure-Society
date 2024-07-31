@@ -31,7 +31,7 @@ class UserController extends BaseController
     }
 
 
-    public function edit_profile(Request $request){ 
+    public function edit_profile(Request $request){
         $user_id = Auth::id();
         $rules = [
             'full_name' => 'required',
@@ -43,11 +43,11 @@ class UserController extends BaseController
             //     return $query->where('user_type', 4)->where('user_id','!=',$user_id)->where('estatus','!=',3);
             // })],
         ];
-        
+
         if (!empty($request->input('blood_group'))) {
             $rules['blood_group'] = Rule::in(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']);
         }
-        
+
         $validator = Validator::make($request->all(), $rules);
 
         if($validator->fails()){
@@ -69,16 +69,17 @@ class UserController extends BaseController
         return $this->sendResponseWithData(new UserResource($user),'Set user profile successfully.');
     }
 
-    public function update_profilepic(Request $request){ 
+    public function update_profilepic(Request $request){
         $user_id = Auth::id();
-        $rules = [
-            'profile_pic' => 'image|mimes:jpeg,png,jpg|max:5024',
-        ];
-        
-        $validator = Validator::make($request->all(), $rules);
+        if ($request->hasFile('profile_pic')) {
+            $rules = [
+                'profile_pic' => 'image|mimes:jpeg,png,jpg|max:5024',
+            ];
+            $validator = Validator::make($request->all(), $rules);
 
-        if($validator->fails()){
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            if($validator->fails()){
+                return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            }
         }
 
         $user = User::find($user_id);
@@ -93,7 +94,7 @@ class UserController extends BaseController
             }
         }
         $image_full_path = "";
-        if ($request->hasFile('profile_pic')) { 
+        if ($request->hasFile('profile_pic')) {
             $image = $request->file('profile_pic');
             $image_full_path = UploadImage($image,'images/profile_pic');
         }
@@ -103,16 +104,18 @@ class UserController extends BaseController
         return $this->sendResponseWithData(['profile_pic_url' => $image_full_path != "" ?url($image_full_path):""],'User profile pic updated successfully.');
     }
 
-    public function update_coverpic(Request $request){ 
+    public function update_coverpic(Request $request){
         $user_id = Auth::id();
-        $rules = [
-            'cover_pic' => 'image|mimes:jpeg,png,jpg|max:2048',
-        ];
-        
-        $validator = Validator::make($request->all(), $rules);
+        if($request->hasFile('cover_pic')) {
+            $rules = [
+                'cover_pic' => 'image|mimes:jpeg,png,jpg|max:2048',
+            ];
 
-        if($validator->fails()){
-            return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            $validator = Validator::make($request->all(), $rules);
+
+            if($validator->fails()){
+                return $this->sendError(422,$validator->errors(), "Validation Errors", []);
+            }
         }
 
         $user = User::find($user_id);
@@ -127,7 +130,7 @@ class UserController extends BaseController
             }
         }
         $image_full_path = "";
-        if ($request->hasFile('cover_pic')) { 
+        if ($request->hasFile('cover_pic')) {
             $image = $request->file('cover_pic');
             $image_full_path = UploadImage($image,'images/cover_pic');
         }
@@ -146,7 +149,7 @@ class UserController extends BaseController
         $rules = [
             'country_id' => 'required',
         ];
-        
+
         $validator = Validator::make($request->all(), $rules);
 
         if($validator->fails()){
@@ -168,7 +171,7 @@ class UserController extends BaseController
         $cities = City::where('state_id',$request->state_id)->get(['city_id','city_name']);
         return $this->sendResponseWithData($cities,"City Retrieved Successfully.");
     }
-    
+
     public function address_list()
     {
         $user_id = Auth::id();
@@ -186,5 +189,5 @@ class UserController extends BaseController
         $data['address_list'] = $member_arr;
         return $this->sendResponseWithData($data, "All Address Retrieved Successfully.");
     }
-    
+
 }
